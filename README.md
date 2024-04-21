@@ -1,18 +1,5 @@
 # 极简朋友圈
 
-![moments github action status](https://img.shields.io/github/actions/workflow/status/kingwrcy/moments/deploy.yml)
-[![docker pull](https://img.shields.io/docker/pulls/kingwrcy/moments)](https://hub.docker.com/repository/docker/kingwrcy/moments)
-
-
-S3兼容的对象存储配置方法(不是必须的,只有你需要把图片存储到对象存储时才需要配置,默认图片存在本地,可备份):
-
-[Cloudflare R2配置](https://jerry.mblog.club/moments-r2-config)  
-
-[阿里云OSS配置](https://jerry.mblog.club/moments-config-aliyun)
-
-
-[在线DEMO](https://m.mblog.club),欢迎体验.
-
 - 支持匿名评论/点赞
 - 支持引入网易云音乐,b站视频,插入链接等
 - 支持自定义头图,个人头像,网站标题等
@@ -21,39 +8,30 @@ S3兼容的对象存储配置方法(不是必须的,只有你需要把图片存�
 - 支持暗黑模式
 - 数据库采用sqlite,可随时备份
 
-有其他需求欢迎提issues.
-
-默认用户名密码:`admin/a123456`,登录进去后后台可以自己修改密码.
-
-## Docker启动
-Docker首次启动看[这里](https://github.com/kingwrcy/moments/blob/master/docker-start.sh)
-
-Docker更新看[这里](https://github.com/kingwrcy/moments/blob/master/docker-update.sh)
-
-## Docker Compose启动
-Docker Compose启动看[这里](https://github.com/kingwrcy/moments/blob/master/docker-compose.yml)
+默认用户名密码:`admin/a123456`
 
 ## 源码编译启动
 
 首先设置环境变量:
 
 ```
--- sqlite数据库位置
-DATABASE_URL="file:/app/data/db.sqlite" 
--- 本地上传的文件目录
-UPLOAD_DIR="/app/data/upload"
+# 设置 sqlite 数据库位置
+export DATABASE_URL="file:/app/data/db.sqlite" 
+# 设置本地上传的文件目录
+export UPLOAD_DIR="/app/data/upload"
 ```
+> 或者写进环境变量中
 
 执行命令
 
 ```
--- 安装依赖
+# 安装依赖
 npm install
--- 脚本迁移
+# 脚本迁移
 npx prisma migrate dev
--- 执行构建
+# 执行构建
 npm run build
--- 预览
+# 预览
 npm run preview
 ```
 
@@ -75,10 +53,6 @@ npx prisma studio
 
 另外,要求在S3上配置跨域,配置你当前的域名能够访问S3的资源,不配置的话,是无法使用的.
 
-比如我这里使用的是[缤纷云](https://www.bitiful.com/),配置如下:
-
-![缤纷云](https://yoyo.s3.bitiful.net/2024/04/12/6618b41d6b65c.png?fmt=webp)
-
 ## 重置密码
 
 目前没有别的办法重置密码,只有修改数据库.见[编辑SQLITE数据库](https://github.com/kingwrcy/moments?tab=readme-ov-file#%E7%BC%96%E8%BE%91sqlite%E6%95%B0%E6%8D%AE%E5%BA%93).
@@ -88,9 +62,3 @@ npx prisma studio
 打开[bcrypt-generator](https://bcrypt-generator.com/)或者其他类似的bcrypt在线加密的网站,加密你的密码.
 
 复制加密后的密码,编辑数据库,更新User表pwd字段,更新完后记得关掉5555端口的映射,执行`npx prisma studio`命令停止5555端口.
-
-## 打赏
-
-如果你觉得这个项目对你有帮助,可以对我打赏,感谢!
-
-![1713695645770.png](https://yoyo.s3.bitiful.net/2024/04/21/6624eb9a4fd18.png)
