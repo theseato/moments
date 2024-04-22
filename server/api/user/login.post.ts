@@ -40,12 +40,12 @@ export default defineEventHandler(async (event) => {
   }
 
   token = jwt.sign(
-    {
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-      username: user.username,
-      userId: user.id,
-    },
-    jwtKey
+      {
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+        username: user.username,
+        userId: user.id,
+      },
+      jwtKey
   );
   setCookie(event, "token", token, {
     expires: new Date(Date.now() + 60 * 60 * 24 * 1000),

@@ -61,7 +61,7 @@ model User {
   endpoint        String?
   thumbnailSuffix String?
   favicon         String?
-  title           String   @default("极简朋友圈")
+  title           String   @default("Randall的小屋")
   css             String?
   js              String?
   beianNo         String?

@@ -117,7 +117,7 @@ import type { User } from '~/lib/types';
 const userinfo = useState<User>('userinfo')
 
 useHead({
-  title: '设置-'+(userinfo.value.title || '极简朋友圈'),
+  title: '设置-'+(userinfo.value.title || 'Randall的小屋'),
 })
 
 const enableS3 = useStorage("enableS3", false);
@@ -146,11 +146,11 @@ const state = reactive({
 
 const { data: res } = await useFetch<{ data: typeof state }>('/api/user/settings/full',{key:'settings'})
 const data = res.value?.data
-state.title = data?.title || '极简朋友圈'
+state.title = data?.title || 'Randall的小屋'
 state.favicon = data?.favicon || '/avatar.webp'
 state.coverUrl = data?.coverUrl || ''
 state.avatarUrl = data?.avatarUrl || '/cover.webp'
-state.nickname = data?.nickname || 'Jerry'
+state.nickname = data?.nickname || 'Randall'
 state.slogan = data?.slogan || '星垂平野阔，月涌大江流。'
 state.enableS3 = data?.enableS3 || false
 state.domain = data?.domain || ''

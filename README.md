@@ -16,9 +16,9 @@
 
 ```
 # 设置 sqlite 数据库位置
-export DATABASE_URL="file:/app/data/db.sqlite" 
+export DATABASE_URL="file:/root/moments/data/db.sqlite" 
 # 设置本地上传的文件目录
-export UPLOAD_DIR="/app/data/upload"
+export UPLOAD_DIR="/root/moments/data/upload"
 ```
 > 或者写进环境变量中
 

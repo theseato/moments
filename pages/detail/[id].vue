@@ -13,7 +13,7 @@ import type { User } from '~/lib/types';
 const userinfo = useState<User>('userinfo')
 
 useHead({
-  title: userinfo.value.title || '极简朋友圈',
+  title: userinfo.value.title || 'Randall的小屋',
 })
 const route = useRoute()
 const id = route.params.id

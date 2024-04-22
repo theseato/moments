@@ -26,7 +26,7 @@ import type { User } from '~/lib/types';
 const userinfo = useState<User>('userinfo')
 
 useHead({
-  title: '登录-'+(userinfo.value.title || '极简朋友圈'),
+  title: '登录-'+(userinfo.value.title || 'Randall的小屋'),
 })
 
 

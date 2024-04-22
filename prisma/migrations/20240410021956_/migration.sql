@@ -25,7 +25,7 @@ CREATE TABLE "new_User" (
     "endpoint" TEXT,
     "thumbnailSuffix" TEXT,
     "favicon" TEXT,
-    "title" TEXT NOT NULL DEFAULT '极简朋友圈'
+    "title" TEXT NOT NULL DEFAULT 'Randall的小屋'
 );
 INSERT INTO "new_User" ("accessKey", "avatarUrl", "bucket", "coverUrl", "createdAt", "domain", "enableS3", "endpoint", "id", "nickname", "password", "region", "secretKey", "slogan", "thumbnailSuffix", "updatedAt", "username") SELECT "accessKey", "avatarUrl", "bucket", "coverUrl", "createdAt", "domain", "enableS3", "endpoint", "id", "nickname", "password", "region", "secretKey", "slogan", "thumbnailSuffix", "updatedAt", "username" FROM "User";
 DROP TABLE "User";
