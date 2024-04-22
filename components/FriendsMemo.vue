@@ -7,8 +7,7 @@
         <div class="username text-[#576b95] cursor-default mb-1 dark:text-white">{{ props.memo.user.nickname }}</div>
         <Pin :size=14 v-if="props.memo.pinned" />
       </div>
-      <div class="memo-content text-sm friend-md" ref="el" v-html="props.memo.content.replaceAll(/\n/g, '<br/>')"> </div>
-
+      <div class="memo-content text-sm friend-md" ref="el" v-html="props.memo.content"> </div>
       <div class="flex flex-row gap-2 my-2 bg-[#f7f7f7] dark:bg-[#212121] items-center p-2 border rounded"
         v-if="props.memo.externalFavicon && props.memo.externalTitle">
         <img class="w-8 h-8" :src="props.memo.externalFavicon" alt="">
@@ -132,17 +131,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {marked} from "marked";
 const token = useCookie('token')
 
 
-
 dayjs.extend(relativeTime)
+
+
+
 const props = withDefaults(
   defineProps<{
     memo: Memo,
     showMore: boolean
   }>(), {}
 )
+
+// 修改memo.content的为markdown
+props.memo.content = marked(props.memo.content)
+
+
 
 const emit = defineEmits(['memo-update'])
 

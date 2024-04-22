@@ -167,7 +167,7 @@
           <PopoverContent class="w-80">
             <div class="flex flex-row gap-2 text-sm">
               <Input v-model="location" placeholder="空格分割" />
-              <Button variant="outline" @click="getTmpLocation">自动获取</Button>
+              <Button variant="outline" @click="updateLocation">自动获取</Button>
               <Button variant="outline" @click="location = ''">清空</Button>
             </div>
           </PopoverContent>
@@ -391,8 +391,7 @@ const getTmpLocation = () => {
     navigator.geolocation.getCurrentPosition(
         position => {
           // 构造一个位置字符串，例如 "Latitude: 34.0522, Longitude: -118.2437"
-          const coords = `${position.coords.latitude} ${position.coords.longitude}`;
-          console.log('Location:', coords);
+          const coords = `${position.coords.latitude},${position.coords.longitude}`;
           resolve(coords);
         },
         error => {
@@ -405,7 +404,7 @@ const getTmpLocation = () => {
 async function updateLocation() {
   try {
     const loc = await getTmpLocation();
-    location.value = loc.replace(',', ' ');  // 用空格替换逗号，并更新 location 变量
+    location.value = loc;
   } catch (error) {
     console.error(error);
     location.value = '获取位置失败';  // 可以设置错误消息或留空

@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       script: [
-        { src: 'https://notification.randallanjie.com/r_notification.js', type: 'text/javascript', async: true, defer: true }
+        { src: 'https://notification.randallanjie.com/r_notification.js', type: 'text/javascript', async: true, defer: true },
       ]
     }
   }

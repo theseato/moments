@@ -27,6 +27,8 @@
       ·V0.1 2024-04-22 创建模板
       <br/>
       ·V0.1.1 2024-04-22 更新通知弹窗，添加动态加载
+      <br/>
+      ·V0.1.2 2024-04-23 支持markdown（不修改字体大小，也无列表等，保持朋友圈显示和谐）
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -39,7 +41,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 const getMore = ref(null);
 const token = useCookie('token')
 const userinfo = useState<User>('userinfo')
-const version = '0.1.1'
+const version = '0.1.2'
 
 
 onMounted(() => {
