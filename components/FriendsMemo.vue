@@ -120,7 +120,6 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
 import { Heart, HeartCrack, MessageSquareMore, Trash2, FilePenLine, Pin } from 'lucide-vue-next'
 import { memoUpdateEvent } from '@/lib/event'
-import { toast } from 'vue-sonner';
 import { getImgUrl } from '~/lib/utils';
 import {
   AlertDialog,
@@ -192,7 +191,7 @@ const pinned = async ()=>{
     })
   })
   if (res.success) {
-    toast.success('操作成功')
+    rStatusMessage.success('操作成功')
     emit('memo-update')
   }
 }
@@ -206,7 +205,7 @@ const removeMemo = async () => {
     })
   })
   if (res.success) {
-    toast.success('删除成功')
+    rStatusMessage.success('删除成功')
     emit('memo-update')
   }
 }

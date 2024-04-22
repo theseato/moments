@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-import { toast } from 'vue-sonner';
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -52,11 +51,11 @@ const pending = ref(false)
 const saveComment = async () => {
 
   if (!content.value) {
-    toast.warning('先填写评论')
+    rStatusMessage.warning('先填写评论')
     return
   }
   if (!info.value.username) {
-    toast.warning('用户名必填')
+    rStatusMessage.warning('用户名必填')
     return
   }
   pending.value = true
@@ -74,11 +73,11 @@ const saveComment = async () => {
   })
 
   if (res.success) {
-    toast.success('评论成功')
+    rStatusMessage.success('评论成功')
     content.value=''
     emit('commentAdded')
   } else {
-    toast.warning('评论失败')
+    rStatusMessage.warning('评论失败', res.message)
   }
   pending.value = false
 }

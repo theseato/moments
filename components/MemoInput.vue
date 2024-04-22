@@ -64,9 +64,6 @@
           <PopoverContent as-child @interact-outside="music163Open = false">
             <div class="">
               <div class=" text-xs my-2 flex justify-between"><span>嵌入网易云音乐</span>
-                <NuxtLink to="https://jerry.mblog.club/simple-moments-import-music-and-video"
-                  class="text-gray-500 underline">
-                  如何获取?</NuxtLink>
               </div>
               <Input class="my-2" placeholder="请输入网易云音乐代码" v-model="music163Url" />
               <Button size="sm" @click="importMusic">提交</Button>
@@ -92,9 +89,6 @@
           <PopoverContent as-child @interact-outside="bilibiliOpen = false">
             <div class="">
               <div class=" text-xs my-2 flex justify-between"><span>嵌入B站视频</span>
-                <NuxtLink to="https://jerry.mblog.club/simple-moments-import-music-and-video"
-                  class="text-gray-500 underline">
-                  如何获取?</NuxtLink>
               </div>
               <Input class="my-2" placeholder="请输入B站视频代码" v-model="bilibiliUrl" />
               <Button size="sm" @click="importBiliBili">提交</Button>
@@ -172,7 +166,8 @@
           </PopoverTrigger>
           <PopoverContent class="w-80">
             <div class="flex flex-row gap-2 text-sm">
-              <Input v-model="location" placeholder="空格分割,火星都行!" />
+              <Input v-model="location" placeholder="空格分割" />
+              <Button variant="outline" @click="getTmpLocation">自动获取</Button>
               <Button variant="outline" @click="location = ''">清空</Button>
             </div>
           </PopoverContent>
@@ -187,11 +182,12 @@
 import { getImgUrl, insertTextAtCursor } from '~/lib/utils';
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { toast } from 'vue-sonner'
 import { memoUpdateEvent } from '@/lib/event'
 import type { Memo } from '~/lib/types';
 import { useAnimate } from '@vueuse/core';
 import { Image, Music4, Settings, Trash2, LogOut,  Link, Youtube, CircleX, Check } from 'lucide-vue-next'
+import { ref } from 'vue';
+const location = ref('');
 
 const textareaRef = ref()
 const showEmojiRef = ref<HTMLElement>()
@@ -202,7 +198,6 @@ const toggleShowEmoji = () => {
   showEmoji.value = !showEmoji.value
   useAnimate(showEmojiRef.value, keyframes, { duration: 1000, easing: 'ease-in-out' })
 }
-const location = ref('')
 const fmtLocation = computed(() => {
   if (location.value) {
     return location.value.split(' ').join(' · ')
@@ -236,7 +231,7 @@ const clearExternalUrl = () => {
 }
 const addLink = async () => {
   if (externalFetchError.value && externalTitle.value === '') {
-    toast.warning('请填写标题和图标')
+    rStatusMessage.warning('请填写标题和图标')
     return
   }
   if (externalFetchError.value && externalTitle.value !== '') {
@@ -260,7 +255,7 @@ const addLink = async () => {
     linkOpen.value = false
     externalPending.value = false
   } else {
-    toast.warning(res.value?.message || '获取失败')
+    rStatusMessage.warning('获取失败', res.value?.message)
     externalPending.value = false
     externalFetchError.value = true
   }
@@ -283,7 +278,7 @@ const submitMemo = async () => {
     })
   })
   if (res.success) {
-    toast.success('提交成功')
+    rStatusMessage.success('提交成功')
     content.value = ''
     id.value = -1
     imgs.value = []
@@ -298,7 +293,7 @@ const submitMemo = async () => {
     showEmoji.value = false
     emit('memoAdded')
   } else {
-    toast.warning('提交失败')
+    rStatusMessage.warning('提交失败', res.message)
   }
 }
 
@@ -318,7 +313,7 @@ const pasteImg = async (event: ClipboardEvent) => {
     if (res.success) {
       imgs.value = [...imgs.value, res.filename]
     } else {
-      toast.warning(res.message || '上传失败')
+      rStatusMessage.warning('上传失败', res.message)
     }
   })
 }
@@ -334,14 +329,14 @@ const uploadImgs = async (event: Event) => {
       (event.target as HTMLInputElement).value = ''
       imgs.value = [...imgs.value, res.filename]
     } else {
-      toast.warning(res.message || '上传失败')
+      rStatusMessage.warning('上传失败', res.message)
     }
   })
 }
 
 const importMusic = () => {
   if (music163Url.value === '') {
-    toast.warning('请输入网易云音乐代码')
+    rStatusMessage.warning('请输入网易云音乐代码')
     return
   }
   const match = music163Url.value.match(/src="(.*)&auto.*"/)
@@ -355,7 +350,7 @@ const importMusic = () => {
 
 const importBiliBili = () => {
   if (bilibiliUrl.value === '') {
-    toast.warning('请输入B站视频代码')
+    rStatusMessage.warning('请输入B站视频代码')
     return
   }
   const match = bilibiliUrl.value.match(/src="(.*?)"/)
@@ -385,6 +380,38 @@ memoUpdateEvent.on((event: Memo) => {
   externalTitle.value = event.externalTitle || ''
   externalUrl.value = event.externalUrl || ''
 })
+
+
+const getTmpLocation = () => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation is not supported by this browser.'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+        position => {
+          // 构造一个位置字符串，例如 "Latitude: 34.0522, Longitude: -118.2437"
+          const coords = `${position.coords.latitude} ${position.coords.longitude}`;
+          console.log('Location:', coords);
+          resolve(coords);
+        },
+        error => {
+          reject(new Error('Error getting location: ' + error.message));
+        }
+    );
+  });
+}
+
+async function updateLocation() {
+  try {
+    const loc = await getTmpLocation();
+    location.value = loc.replace(',', ' ');  // 用空格替换逗号，并更新 location 变量
+  } catch (error) {
+    console.error(error);
+    location.value = '获取位置失败';  // 可以设置错误消息或留空
+  }
+}
+
 </script>
 
 <style scoped></style>

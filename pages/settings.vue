@@ -108,7 +108,6 @@
 </template>
 
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
 import { settingsUpdateEvent } from '~/lib/event'
 const token = useCookie('token')
 import { useStorage } from "@vueuse/core";
@@ -183,7 +182,7 @@ const uploadImgs = async (event: Event, id: string) => {
         state.favicon = res.filename
       }
     } else {
-      toast.warning(res.message || '上传失败')
+      rStatusMessage.warning('上传失败', res.message)
     }
   })
 }
@@ -197,10 +196,10 @@ const saveSettings = async () => {
     enableS3.value = state.enableS3
     if (state.password) {
       token.value = ''
-      toast.success('密码修改成功,请重新登录')
+      rStatusMessage.success('密码修改成功,请重新登录')
       navigateTo('/login')
     } else {
-      toast.success('保存成功')
+      rStatusMessage.success('保存成功')
       location.reload()
     }
     state.password = ''

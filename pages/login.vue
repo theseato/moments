@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { User } from '~/lib/types';
@@ -42,10 +41,10 @@ const login = async () => {
   })
 
   if (res.success) {
-    toast.success('登录成功',)
+    rStatusMessage.success('登录成功')
     await navigateTo('/')
   } else {
-    toast.warning(res.message || '登录失败')
+    rStatusMessage.warning('登录失败', res.message)
   }
 }
 </script>

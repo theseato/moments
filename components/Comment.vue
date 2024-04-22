@@ -71,7 +71,7 @@ const removeComment = async () => {
     })
   })
   if (res.success) {
-    toast.success('删除成功')
+    rStatusMessage.success('删除成功')
     emit('memo-update')
   }
 }

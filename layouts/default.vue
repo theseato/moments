@@ -15,7 +15,6 @@
 
 
 </template>
-
 <script setup lang="ts">
 import { Toaster } from '@/components/ui/sonner';
 import type { User } from '~/lib/types';

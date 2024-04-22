@@ -12,7 +12,11 @@
         @memo-update="refresh" />
 
     </div>
-    <div class="cursor-pointer text-center text-sm opacity-70  my-4" @click="loadMore()" v-if="state.hasNext">点击加载更多...
+    <div id="get-more" ref="getMore" class="cursor-pointer text-center text-sm opacity-70 my-4" @click="loadMore()" v-if="state.hasNext">
+      点击加载更多...
+    </div>
+    <div class="cursor-pointer text-center text-sm opacity-70 my-4">
+      ———— 没有更多啦～ ————
     </div>
   </div>
   <div id="version-info">
@@ -21,6 +25,8 @@
       更新日志:
       <br/>
       ·V0.1 2024-04-22 创建模板
+      <br/>
+      ·V0.1.1 2024-04-22 更新通知弹窗，添加动态加载
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -28,9 +34,35 @@
 
 <script setup lang="ts">
 import { type User, type Memo } from '~/lib/types';
+import { onMounted, onUnmounted, ref } from 'vue';
+
+const getMore = ref(null);
 const token = useCookie('token')
 const userinfo = useState<User>('userinfo')
-const version = '0.1'
+const version = '0.1.1'
+
+
+onMounted(() => {
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadMore();
+    }
+  }, {
+    threshold: 0.1  // 当至少10%的元素可见时触发
+  });
+
+  if (getMore.value) {
+    observer.observe(getMore.value);
+  }
+
+  // 当组件卸载时，停止观察
+  onUnmounted(() => {
+    if (getMore.value) {
+      observer.unobserve(getMore.value);
+    }
+  });
+});
+
 
 useHead({
   title: userinfo.value.title || 'Randall的小屋',
@@ -65,6 +97,7 @@ const loadMore = async () => {
   state.memoList.push(...data as any as Memo[])
   state.hasNext = hasNext
 }
+
 
 </script>
 
