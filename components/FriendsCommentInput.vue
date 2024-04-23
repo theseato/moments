@@ -35,6 +35,8 @@ const info = useStorage('anonymous', {
   username:''
 })
 
+
+
 const toggleShowEmoji = ()=>{
   showEmoji.value = !showEmoji.value
   useAnimate(showEmojiRef.value, keyframes, { duration: 1000, easing: 'ease-in-out' })
@@ -48,39 +50,50 @@ const emojiSelected = (emoji: string) => {
 
 const pending = ref(false)
 
-const saveComment = async () => {
+const saveComment = async (e) => {
+  e.preventDefault();
+  grecaptcha.ready(function() {
+    grecaptcha.execute('6LeHIsQpAAAAAJMJVw9NaFZUJsBwA6-22Jz59Emc', {action: 'submit'}).then(async function(token) {
+      if (!content.value) {
+        rStatusMessage.warning('先填写评论');
+        return;
+      }
+      if (!info.value.username) {
+        rStatusMessage.warning('用户名必填');
+        return;
+      }
+      pending.value = true;
+      try {
+        const res = await $fetch('/api/comment/save', {
+          method: 'POST',
+          body: JSON.stringify({
+            content: content.value,
+            memoId: props.memoId,
+            replyTo: props.reply,
+            author:false,
+            email:info.value.email,
+            website:info.value.website,
+            username:info.value.username,
+            retoken:token,
+          })
+        });
 
-  if (!content.value) {
-    rStatusMessage.warning('先填写评论')
-    return
-  }
-  if (!info.value.username) {
-    rStatusMessage.warning('用户名必填')
-    return
-  }
-  pending.value = true
-  const res = await $fetch('/api/comment/save', {
-    method: 'POST',
-    body: JSON.stringify({
-      content: content.value,
-      memoId: props.memoId,      
-      replyTo: props.reply,
-      author:false,
-      email:info.value.email,
-      website:info.value.website,
-      username:info.value.username
-    })
-  })
-
-  if (res.success) {
-    rStatusMessage.success('评论成功')
-    content.value=''
-    emit('commentAdded')
-  } else {
-    rStatusMessage.warning('评论失败', res.message)
-  }
-  pending.value = false
+        if (res.success) {
+          rStatusMessage.success('评论成功');
+          content.value = '';
+          emit('commentAdded');
+        } else {
+          rStatusMessage.warning('评论失败', res.message);
+        }
+      } catch (error) {
+        console.error('请求错误：', error);
+        rStatusMessage.warning('评论失败：网络错误');
+      }
+      pending.value = false;
+    });
+  });
 }
+
 
 onMounted(async () => {
 

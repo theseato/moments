@@ -277,6 +277,7 @@ const submitMemo = async () => {
       externalUrl: externalUrl.value
     })
   })
+  console.log(res)
   if (res.success) {
     rStatusMessage.success('提交成功')
     content.value = ''

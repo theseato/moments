@@ -1,18 +1,18 @@
 <template>
   <div>
 
-    <MemoInput v-if="token" @memo-added="refresh" />
+    <MemoInput v-if="token" @memo-added="firstLoad" />
 
     <div class="content flex flex-col divide-y divide-gray-100/50 gap-2">
-      <div v-if="(data?.data as any as Memo[]).length === 0 && !token" class="text-center">
+      <div v-if="state.memoList.length === 0 && !token" class="text-center">
         <div class="my-2 text-sm">什么也没有,赶紧去登录发表Moments吧!</div>
         <Button @click="navigateTo('/login')">去登录</Button>
       </div>
-      <FriendsMemo :memo="memo" v-for="(memo, index) in data?.data as any as Memo[]" :key="index" :show-more="true"
-        @memo-update="refresh" />
-
+      <FriendsMemo :memo="memo" v-for="(memo, index) in state.memoList" :key="index" :show-more="true"
+                   @memo-update="firstLoad" />
     </div>
-    <div id="get-more" ref="getMore" class="cursor-pointer text-center text-sm opacity-70 my-4" @click="loadMore()" v-if="state.hasNext">
+
+    <div id="get-more" ref="getMore" class="cursor-pointer text-center text-sm opacity-70 my-4" @click="loadMore()" v-if="state.hasNext" >
       点击加载更多...
     </div>
     <div class="cursor-pointer text-center text-sm opacity-70 my-4">
@@ -24,11 +24,15 @@
     <div class="update-details">
       更新日志:
       <br/>
-      ·V0.1 2024-04-22 创建模板
+      ·V0.1.0 2024-04-22 创建模板
       <br/>
       ·V0.1.1 2024-04-22 更新通知弹窗，添加动态加载
       <br/>
       ·V0.1.2 2024-04-23 支持markdown（不修改字体大小，也无列表等，保持朋友圈显示和谐）
+      <br/>
+      ·V0.2.0 2024-04-23 markdown功能完善，修复更新页面内容时markdown文本显示异常
+      <br/>
+      ·V0.2.1 2024-04-23 新增验证码功能
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -36,15 +40,18 @@
 
 <script setup lang="ts">
 import { type User, type Memo } from '~/lib/types';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, watch, ref } from 'vue';
 
 const getMore = ref(null);
 const token = useCookie('token')
 const userinfo = useState<User>('userinfo')
-const version = '0.1.2'
+const version = '0.2.1'
+
+let observer: IntersectionObserver | null = null;
 
 
-onMounted(() => {
+onMounted(async () => {
+  await firstLoad();
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
       loadMore();
@@ -63,7 +70,34 @@ onMounted(() => {
       observer.unobserve(getMore.value);
     }
   });
+  // 监听 getMore 引用的变化，并重新设置观察者
+  watch(getMore, () => {
+    setupObserver();
+  }, {
+    immediate: true // 立即触发，确保初始 setup
+  });
 });
+
+const setupObserver = () => {
+  // 清除现有的观察者（如果有）
+  if (observer && getMore.value) {
+    observer.unobserve(getMore.value);
+  }
+
+  // 创建新的观察者实例
+  observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadMore();
+    }
+  }, {
+    threshold: 0.1 // 当至少10%的元素可见时触发
+  });
+
+  // 设置新的观察目标
+  if (getMore.value) {
+    observer.observe(getMore.value);
+  }
+};
 
 
 useHead({
@@ -78,15 +112,20 @@ const state = reactive({
 })
 
 
-const { data, refresh } = await useFetch('/api/memo/list', {
-  key: 'memoList',
-  method: 'POST',
-  body: JSON.stringify({
-    page: state.page,
+const firstLoad = async () => {
+  state.page = 1
+  const { data, hasNext } = await $fetch('/api/memo/list', {
+    key: 'memoList',
+    method: 'POST',
+    body: JSON.stringify({
+      page: state.page,
+    })
   })
-})
-state.memoList = data.value?.data as any as Memo[]
-state.hasNext = data.value?.hasNext || false
+  state.memoList = data as any as Memo[]
+  state.hasNext = hasNext || false
+  // await loadMore()
+}
+
 
 const loadMore = async () => {
   const { data, hasNext } = await $fetch('/api/memo/list', {
@@ -99,6 +138,7 @@ const loadMore = async () => {
   state.memoList.push(...data as any as Memo[])
   state.hasNext = hasNext
 }
+
 
 
 </script>
