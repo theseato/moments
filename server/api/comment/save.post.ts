@@ -10,24 +10,26 @@ type SaveCommentReq = {
     website?: string;
     username: string;
     author: Boolean;
-    retoken: string;
+    reToken: string;
 };
-
-// 此处填写你的 Google reCAPTCHA 私钥
-const secret = "YOUR_SECRET_KEY";
 
 export default defineEventHandler(async (event) => {
     // 从请求体中读取数据
-    const { memoId, content, replyTo, username, email, website, retoken } =
+    const { memoId, content, replyTo, username, email, website, reToken } =
         (await readBody(event)) as SaveCommentReq;
 
-    // 验证 reCAPTCHA 响应
-    const recaptchaResult = await validateRecaptcha(retoken);
-    if (!recaptchaResult.success) {
-        return {
-            success: false,
-            message: "reCAPTCHA failed：" + recaptchaResult["error-codes"].join(", ")
-        };
+    if(process.env.RECAPTCHA_SITE_KEY === undefined || process.env.RECAPTCHA_SITE_KEY === '' || process.env.RECAPTCHA_SITE_KEY === 'undefined' || process.env.RECAPTCHA_SITE_KEY === 'null' ||
+        process.env.RECAPTCHA_SECRET_KEY === undefined || process.env.RECAPTCHA_SECRET_KEY === '' || process.env.RECAPTCHA_SECRET_KEY === 'undefined' || process.env.RECAPTCHA_SECRET_KEY === 'null'){
+
+    }else{
+        // 验证 reCAPTCHA 响应
+        const recaptchaResult = await validateRecaptcha(reToken);
+        if (!recaptchaResult.success) {
+            return {
+                success: false,
+                message: "reCAPTCHA failed：" + recaptchaResult["error-codes"].join(", ")
+            };
+        }
     }
 
     // 创建评论
@@ -50,14 +52,14 @@ export default defineEventHandler(async (event) => {
 });
 
 // reCAPTCHA 验证函数
-async function validateRecaptcha(retoken) {
+async function validateRecaptcha(reToken: string) {
     try {
-        const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+        const response = await fetch('https://recaptcha.net/recaptcha/api/siteverify', {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: `secret=${secret}&response=${retoken}`
+            body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${reToken}`
         });
         return await response.json();
     } catch (error) {

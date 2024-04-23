@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
       memoId,
     },
     orderBy: {
-      createdAt:"asc"
+      createdAt:"desc"
     },
     take:5
   });
