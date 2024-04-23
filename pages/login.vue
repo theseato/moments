@@ -44,7 +44,7 @@ const login = async () => {
     rStatusMessage.success('登录成功')
     await navigateTo('/')
   } else {
-    rStatusMessage.warning('登录失败', res.message)
+    rStatusMessage.warning(res.message, '登录失败')
   }
 }
 </script>

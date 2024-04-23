@@ -35,5 +35,5 @@ export default defineNuxtConfig({
         { src: `https://recaptcha.net/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`, type: 'text/javascript', async: true, defer: true },
       ]
     }
-  }
+  },
 });

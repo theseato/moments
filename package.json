@@ -23,6 +23,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.10",
+    "express-rate-limit": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-vue-next": "^0.372.0",
     "marked": "^12.0.2",

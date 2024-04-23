@@ -182,7 +182,7 @@ const uploadImgs = async (event: Event, id: string) => {
         state.favicon = res.filename
       }
     } else {
-      rStatusMessage.warning('上传失败', res.message)
+      rStatusMessage.warning(res.message, '上传失败')
     }
   })
 }

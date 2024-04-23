@@ -33,6 +33,8 @@
       ·V0.2.0 2024-04-23 markdown功能完善，修复更新页面内容时markdown文本显示异常
       <br/>
       ·V0.2.1 2024-04-23 新增验证码功能
+      <br/>
+      ·V0.2.2 2024-04-24 新增访问速率限制，新增评论字数限制，将可变变量移动到.env文件
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -128,16 +130,27 @@ const firstLoad = async () => {
 
 
 const loadMore = async () => {
-  const { data, hasNext } = await $fetch('/api/memo/list', {
-    key: 'memoList',
-    method: 'POST',
-    body: JSON.stringify({
-      page: ++state.page,
-    })
-  })
-  state.memoList.push(...data as any as Memo[])
-  state.hasNext = hasNext
+  try {
+    const { data, hasNext } = await $fetch('/api/memo/list', {
+      key: 'memoList',
+      method: 'POST',
+      body: JSON.stringify({
+        page: state.page + 1, // 先不增加页码
+      })
+    });
+    state.page += 1;
+    state.memoList.push(...data as any as Memo[]);
+    state.hasNext = hasNext;
+  } catch (error) {
+    if (error.response && error.response.status === 429) {
+      rStatusMessage.warning('请求过于频繁，请稍后再试');
+    } else {
+      // 处理其他错误
+      console.error('Failed to load more memos:', error);
+    }
+  }
 }
+
 
 
 

@@ -255,7 +255,7 @@ const addLink = async () => {
     linkOpen.value = false
     externalPending.value = false
   } else {
-    rStatusMessage.warning('获取失败', res.value?.message)
+    rStatusMessage.warning(res.value?.message, '获取失败')
     externalPending.value = false
     externalFetchError.value = true
   }
@@ -277,7 +277,6 @@ const submitMemo = async () => {
       externalUrl: externalUrl.value
     })
   })
-  console.log(res)
   if (res.success) {
     rStatusMessage.success('提交成功')
     content.value = ''
@@ -294,7 +293,7 @@ const submitMemo = async () => {
     showEmoji.value = false
     emit('memoAdded')
   } else {
-    rStatusMessage.warning('提交失败', res.message)
+    rStatusMessage.warning(res.message, '提交失败')
   }
 }
 
@@ -314,7 +313,7 @@ const pasteImg = async (event: ClipboardEvent) => {
     if (res.success) {
       imgs.value = [...imgs.value, res.filename]
     } else {
-      rStatusMessage.warning('上传失败', res.message)
+      rStatusMessage.warning(res.message, '上传失败')
     }
   })
 }
@@ -330,7 +329,7 @@ const uploadImgs = async (event: Event) => {
       (event.target as HTMLInputElement).value = ''
       imgs.value = [...imgs.value, res.filename]
     } else {
-      rStatusMessage.warning('上传失败', res.message)
+      rStatusMessage.warning(res.message, '上传失败')
     }
   })
 }

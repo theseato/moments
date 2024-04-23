@@ -32,6 +32,13 @@ export default defineEventHandler(async (event) => {
         }
     }
 
+    // 判断字符长度是否大于500
+    if (content.length > 500) {
+        return {
+            success: false,
+            message: "评论内容长度不能超过500个字符",
+        };
+    }
     // 创建评论
     await prisma.comment.create({
         data: {
