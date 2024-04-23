@@ -7,8 +7,8 @@
     <Emoji v-if="showEmoji" class="mt-2" @emoji-selected="emojiSelected"/>
     <div class="flex flex-row items-center justify-end mt-2 gap-2">
       <Input placeholder="昵称,必填" type="text"  v-model="info.username" class=" dark:bg-slate-500 text-xs sm:text-sm  py-0.5"></Input>
-      <Input placeholder="主页,可空" type="text" v-model="info.website" class="dark:bg-slate-500 text-xs sm:text-sm  py-0.5"> </Input>
       <Input placeholder="邮箱,可空" type="text" v-model="info.email" class="hidden sm:block dark:bg-slate-500 text-xs sm:text-sm py-0.5"></Input>
+      <Input placeholder="主页,可空" type="text" v-model="info.website" class="dark:bg-slate-500 text-xs sm:text-sm  py-0.5"> </Input>
       <Button size="sm" @click="saveComment" :disabled="pending">发表评论</Button>
     </div>
   </div>
@@ -27,7 +27,7 @@ const placeholder = ref('发表评论')
 const emit = defineEmits(['commentAdded'])
 const showEmoji = ref(false)
 const keyframes = { transform: 'rotate(360deg)' }
-const props = defineProps<{ memoId: number, reply?: string }>()
+const props = defineProps<{ memoId: number, reply?: string, replyId?: number }>()
 const showEmojiRef = ref<HTMLElement>()
 const info = useStorage('anonymous', {
   email:'',
@@ -71,6 +71,7 @@ const saveComment = async (e) => {
           content: content.value,
           memoId: props.memoId,
           replyTo: props.reply,
+          replyToId: props.replyId,
           author:false,
           email:info.value.email,
           website:info.value.website,
@@ -135,10 +136,11 @@ const saveComment = async (e) => {
 
 
 onMounted(async () => {
-
   if (props.reply) {
     placeholder.value = "回复给@" + props.reply
   }
+
+
 })
 </script>
 

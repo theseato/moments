@@ -35,6 +35,8 @@
       ·V0.2.1 2024-04-23 新增验证码功能
       <br/>
       ·V0.2.2 2024-04-24 新增访问速率限制，新增评论字数限制，将可变变量移动到.env文件
+      <br/>
+      ·V0.2.3 2024-04-24 新增邮件通知功能，所有被评论者（如果填写过邮箱）将会收到邮件通知
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>

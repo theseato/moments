@@ -34,7 +34,7 @@
       </AlertDialog>
     </div>
     <FriendsCommentInput @commentAdded="refreshComment" :memoId="comment.memoId" :commentId="comment.id"
-      :reply="comment.username" v-if="showCommentInput" />
+      :reply="comment.username" :replyId="comment.id" v-if="showCommentInput" />
   </div>
 </template>
 
