@@ -146,11 +146,6 @@ const props = withDefaults(
   }>(), {}
 )
 
-// 修改memo.content的为markdown
-// props.memo.content = marked(props.memo.content)
-
-
-
 const emit = defineEmits(['memo-update'])
 
 const showAll = ref(false)
