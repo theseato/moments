@@ -47,12 +47,25 @@ import { onMounted, onUnmounted, watch, ref } from 'vue';
 const getMore = ref(null);
 const token = useCookie('token')
 const userinfo = useState<User>('userinfo')
-const version = '0.2.1'
+const version = ref('');
 
 let observer: IntersectionObserver | null = null;
 
+function setLatestVersion() {
+  const element = document.querySelector('.update-details');
+  if (element) {
+    const updatesText = element.innerText;
+    const updates = updatesText.match(/V\d+\.\d+\.\d+/g); // 匹配所有版本号格式
+    if (updates && updates.length) {
+      version.value = updates.pop(); // 获取最后一个元素，即最新版本号
+    }
+  } else {
+    console.warn('No update details found in the DOM.');
+  }
+}
 
 onMounted(async () => {
+  setLatestVersion();
   await firstLoad();
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {

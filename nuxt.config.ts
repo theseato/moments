@@ -1,6 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-export default defineNuxtConfig({ 
+export default defineNuxtConfig({
   devtools: { enabled: true },
+  runtimeConfig: {
+    public: {
+      RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY
+    },
+    private: {
+      RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY
+    }
+  },
   modules: [
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",

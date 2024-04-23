@@ -52,10 +52,11 @@ const pending = ref(false)
 
 const saveComment = async (e) => {
   e.preventDefault();
-  if(process.env.RECAPTCHA_SITE_KEY === undefined || process.env.RECAPTCHA_SITE_KEY === '' || process.env.RECAPTCHA_SITE_KEY === 'undefined' || process.env.RECAPTCHA_SITE_KEY === 'null' ||
-  process.env.RECAPTCHA_SECRET_KEY === undefined || process.env.RECAPTCHA_SECRET_KEY === '' || process.env.RECAPTCHA_SECRET_KEY === 'undefined' || process.env.RECAPTCHA_SECRET_KEY === 'null'){
+  const config = useRuntimeConfig();
+  console.log(config.public.RECAPTCHA_SITE_KEY);
+  if(config.public.RECAPTCHA_SITE_KEY === undefined || config.public.RECAPTCHA_SITE_KEY === '' || config.public.RECAPTCHA_SITE_KEY === 'undefined' || config.public.RECAPTCHA_SITE_KEY === 'null'){
     if (!content.value) {
-      rStatusMessage.warning('先填写评论');
+      rSttusMessage.warning('先填写评论');
       return;
     }
     if (!info.value.username) {
