@@ -3,7 +3,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
-      RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY
+      RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,
+      TENCENT_MAP_KEY: process.env.TENCENT_MAP_KEY
     },
     private: {
       RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY

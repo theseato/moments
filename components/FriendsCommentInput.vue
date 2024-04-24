@@ -53,7 +53,6 @@ const pending = ref(false)
 const saveComment = async (e) => {
   e.preventDefault();
   const config = useRuntimeConfig();
-  console.log(config.public.RECAPTCHA_SITE_KEY);
   if(config.public.RECAPTCHA_SITE_KEY === undefined || config.public.RECAPTCHA_SITE_KEY === '' || config.public.RECAPTCHA_SITE_KEY === 'undefined' || config.public.RECAPTCHA_SITE_KEY === 'null'){
     if (!content.value) {
       rSttusMessage.warning('先填写评论');

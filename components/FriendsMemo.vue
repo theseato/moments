@@ -97,10 +97,10 @@
         </div>
         <template v-if="props.memo.comments.length > 0">
           <div class="px-4 py-2 flex flex-col gap-1">
-            <div class="relative flex flex-col gap-2 text-sm" v-for="(comment, index) in [...props.memo.comments].reverse()" :key="index">
+            <div class="relative flex flex-col gap-2 text-sm" v-for="(comment, index) in props.memo.comments" :key="index">
               <Comment :comment="comment" @memo-update="refreshComment" />
             </div>
-            <div v-if="props.memo._count.comments > 5 && props.showMore" class="text-[#576b95] cursor-pointer"
+            <div v-if="props.memo.hasMoreComments" class="text-[#576b95] cursor-pointer"
               @click="navigateTo(`/detail/${props.memo.id}`)">查看更多...</div>
           </div>
         </template>
