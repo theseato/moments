@@ -28,7 +28,7 @@ export async function sendEmail(options: SendEmailOptions) {
     try {
         const info = await transporter.sendMail(mailOptions);
         return { success: true, messageId: info.messageId };
-    } catch (error) {
+    } catch (error: any) {
         return { success: false, error: error.message };
     }
 }

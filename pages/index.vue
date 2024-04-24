@@ -80,8 +80,8 @@ onMounted(async () => {
       loadMore();
     }
   }, {
-    // 上边框距离屏幕底部10px时触发
-    rootMargin: '50px',
+    // 上边框距离屏幕底部一定距离时触发
+    rootMargin: '500px',
   });
 
   if (getMore.value) {
@@ -114,8 +114,8 @@ const setupObserver = () => {
       loadMore();
     }
   }, {
-    // 上边框距离屏幕底部10px时触发
-    rootMargin: '50px',
+    // 上边框距离屏幕底部一定距离时触发
+    rootMargin: '500px',
   });
 
   // 设置新的观察目标

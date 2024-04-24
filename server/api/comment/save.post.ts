@@ -119,7 +119,7 @@ export default defineEventHandler(async (event) => {
                 flag = false;
             }
             // 邮箱通知被回复者
-            const result = await sendEmail({
+            const result = sendEmail({
                 email: comment.email,
                 subject: '新回复',
                 message: `您在moments中的评论有新回复！
@@ -140,7 +140,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // 邮箱通知管理员
-        const result = await sendEmail({
+        const result = sendEmail({
             email: process.env.NOTIFY_MAIL || '',
             subject: '新评论',
             message: `您的moments有新评论！
