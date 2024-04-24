@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     orderBy: {
       createdAt:"asc"
     },
-    take:5
+    take:10
   });
   return {
     success: true,data

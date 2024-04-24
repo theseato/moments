@@ -13,7 +13,7 @@
     </div>
 
     <div id="get-more" ref="getMore" class="cursor-pointer text-center text-sm opacity-70 my-4" @click="loadMore()" v-if="state.hasNext" >
-      点击加载更多...
+      加载中...
     </div>
     <div class="cursor-pointer text-center text-sm opacity-70 my-4">
       ———— 没有更多啦～ ————
@@ -80,7 +80,8 @@ onMounted(async () => {
       loadMore();
     }
   }, {
-    threshold: 0.1  // 当至少10%的元素可见时触发
+    // 上边框距离屏幕底部10px时触发
+    rootMargin: '50px',
   });
 
   if (getMore.value) {
@@ -113,7 +114,8 @@ const setupObserver = () => {
       loadMore();
     }
   }, {
-    threshold: 0.1 // 当至少10%的元素可见时触发
+    // 上边框距离屏幕底部10px时触发
+    rootMargin: '50px',
   });
 
   // 设置新的观察目标
@@ -171,6 +173,7 @@ const loadMore = async () => {
       // 处理其他错误
       console.error('Failed to load more memos:', error);
     }
+    setTimeout(loadMore, 1000);
   } finally {
     loadLock = false;
   }
