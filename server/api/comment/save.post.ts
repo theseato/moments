@@ -21,6 +21,25 @@ export default defineEventHandler(async (event) => {
     const { memoId, content, replyTo, replyToId, username, email, website, reToken } =
         (await readBody(event)) as SaveCommentReq;
 
+    if (content.length > 500) {
+        return { success: false, message: "评论内容长度不能超过500个字符",};
+    }
+    if (username.length > 8) {
+        return { success: false, message: "用户名长度不能超过8个字符" };
+    }
+    if (email && email.length > 30) {
+        return { success: false, message: "邮箱长度不能超过30个字符" };
+    }
+    if (website && website.length > 100) {
+        return { success: false, message: "网址长度不能超过100个字符" };
+    }
+    if (email && !/^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(email)) {
+        return { success: false, message: "邮箱格式不正确" };
+    }
+    if (website && !/^(https?:\/\/)?[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/.test(website)) {
+        return { success: false, message: "网址格式不正确" };
+    }
+
     if(process.env.RECAPTCHA_SITE_KEY === undefined || process.env.RECAPTCHA_SITE_KEY === '' || process.env.RECAPTCHA_SITE_KEY === 'undefined' || process.env.RECAPTCHA_SITE_KEY === 'null' ||
         process.env.RECAPTCHA_SECRET_KEY === undefined || process.env.RECAPTCHA_SECRET_KEY === '' || process.env.RECAPTCHA_SECRET_KEY === 'undefined' || process.env.RECAPTCHA_SECRET_KEY === 'null'){
 
@@ -35,13 +54,6 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    // 判断字符长度是否大于500
-    if (content.length > 500) {
-        return {
-            success: false,
-            message: "评论内容长度不能超过500个字符",
-        };
-    }
     // 文本内容检查
     if(process.env.ALIYUN_ACCESS_KEY_ID === undefined || process.env.ALIYUN_ACCESS_KEY_ID === '' || process.env.ALIYUN_ACCESS_KEY_ID === 'undefined' || process.env.ALIYUN_ACCESS_KEY_ID === 'null' ||
         process.env.ALIYUN_ACCESS_KEY_SECRET === undefined || process.env.ALIYUN_ACCESS_KEY_SECRET === '' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'undefined' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'null'){
