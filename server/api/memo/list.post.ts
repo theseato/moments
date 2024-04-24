@@ -6,7 +6,7 @@ type ListMemoReq = {
 
 export default defineEventHandler(async (event) => {
   const { page } = (await readBody(event)) as ListMemoReq;
-  const size = 5;
+  const size = 10;
   let data = await prisma.memo.findMany({
     include: {
       user: {

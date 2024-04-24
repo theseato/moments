@@ -75,7 +75,6 @@ export default defineEventHandler(async (event) => {
 
     }else{
         const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection');
-        console.log(aliJudgeResponse1)
         if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
             let labelsList = aliJudgeResponse1.Data.labels.split(',');
 
