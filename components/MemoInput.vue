@@ -187,6 +187,7 @@ import type { Memo } from '~/lib/types';
 import { useAnimate } from '@vueuse/core';
 import { Image, Music4, Settings, Trash2, LogOut,  Link, Youtube, CircleX, Check } from 'lucide-vue-next'
 import { ref } from 'vue';
+import jsonp from "jsonp";
 const location = ref('');
 
 const textareaRef = ref()
@@ -384,20 +385,65 @@ memoUpdateEvent.on((event: Memo) => {
 
 const getTmpLocation = () => {
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by this browser.'));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-        position => {
-          // 构造一个位置字符串，例如 "Latitude: 34.0522, Longitude: -118.2437"
-          const coords = `${position.coords.latitude},${position.coords.longitude}`;
-          resolve(coords);
-        },
-        error => {
-          reject(new Error('Error getting location: ' + error.message));
+    try {
+      const url = 'https://apis.map.qq.com/ws/location/v1/ip';
+      const config = useRuntimeConfig();
+      const params = {
+        key: config.public.TENCENT_MAP_KEY,
+        output: 'jsonp'
+      };
+      const queryString = new URLSearchParams(params).toString();
+      const jsonpUrl = `${url}?${queryString}`;
+      jsonp(jsonpUrl, null, (err, data) => {
+        console.log('data:', data);
+        if (err) {
+          return '获取位置失败';
+        } else {
+          const ipLocation = data;
+          if (ipLocation.status === 0){
+            let pos = ipLocation.result.ad_info.nation;
+            if (ipLocation.result.ad_info.province !== undefined && ipLocation.result.ad_info.province !== '') {
+              pos += '-' + ipLocation.result.ad_info.province;
+            }
+            if (ipLocation.result.ad_info.city !== undefined && ipLocation.result.ad_info.city !== '' && ipLocation.result.ad_info.city !== ipLocation.result.ad_info.province) {
+              pos += '-' + ipLocation.result.ad_info.city;
+            }
+            if (ipLocation.result.ad_info.district !== undefined && ipLocation.result.ad_info.district !== '') {
+              pos += '-' + ipLocation.result.ad_info.district;
+            }
+            console.log(ipLocation.result.address_reference)
+            if (ipLocation.result.address_reference !== undefined && ipLocation.result.address_reference !== '') {
+              if (ipLocation.result.address_reference.famous_area !== undefined && ipLocation.result.address_reference.famous_area !== '') {
+                pos += ' ' + ipLocation.result.address_reference.famous_area.title;
+              }else if (ipLocation.result.address_reference.business_area !== undefined && ipLocation.result.address_reference.business_area !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.town !== undefined && ipLocation.result.address_reference.town !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.landmark_l1 !== undefined && ipLocation.result.address_reference.landmark_l1 !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.landmark_l2 !== undefined && ipLocation.result.address_reference.landmark_l2 !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.street !== undefined && ipLocation.result.address_reference.street !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.street_number !== undefined && ipLocation.result.address_reference.street_number !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.crossroad !== undefined && ipLocation.result.address_reference.crossroad !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.water !== undefined && ipLocation.result.address_reference.water !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }else if (ipLocation.result.address_reference.ocean !== undefined && ipLocation.result.address_reference.ocean !== ''){
+                pos += ' ' + ipLocation.result.address_reference.town.title;
+              }
+            }
+            console.log(pos)
+            resolve(pos);
+          }
         }
-    );
+        reject('获取位置失败');
+      });
+    } catch (error) {
+      console.error(error);
+    }
   });
 }
 
@@ -407,7 +453,7 @@ async function updateLocation() {
     location.value = loc;
   } catch (error) {
     console.error(error);
-    location.value = '获取位置失败';  // 可以设置错误消息或留空
+    location.value = '获取位置失败';
   }
 }
 

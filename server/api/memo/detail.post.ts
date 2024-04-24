@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
       },
       comments: {
         orderBy: {
-          createdAt: "desc",
+          createdAt: "asc",
         },
       },
       _count: {
