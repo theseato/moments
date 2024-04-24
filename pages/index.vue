@@ -148,8 +148,11 @@ const firstLoad = async () => {
   // await loadMore()
 }
 
+let loadLock = false;
 
 const loadMore = async () => {
+  if(loadLock) return;
+  loadLock = true;
   try {
     const { data, hasNext } = await $fetch('/api/memo/list', {
       key: 'memoList',
@@ -168,6 +171,8 @@ const loadMore = async () => {
       // 处理其他错误
       console.error('Failed to load more memos:', error);
     }
+  } finally {
+    loadLock = false;
   }
 }
 
