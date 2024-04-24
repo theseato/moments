@@ -75,22 +75,23 @@ export default defineEventHandler(async (event) => {
 
     }else{
         const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection');
+        console.log(aliJudgeResponse1)
         if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
-            // 解析reason字段，因为它是一个JSON字符串
-            const reason = JSON.parse(aliJudgeResponse1.Data.reason);
+            let labelsList = aliJudgeResponse1.Data.labels.split(',');
+
             return {
                 success: false,
-                message: "评论内容不符合规范：" + staticWord[aliJudgeResponse1.Data.labels],
+                message: "评论内容不符合规范：" + labelsList.map((label: string) => staticWord[label]).join(', '),
             };
         }
 
         const aliJudgeResponse2 = await aliTextJudge(username, 'nickname_detection');
         if (aliJudgeResponse2.Data && aliJudgeResponse2.Data.labels && aliJudgeResponse2.Data.labels !== '') {
-            // 解析reason字段，因为它是一个JSON字符串
-            const reason = JSON.parse(aliJudgeResponse2.Data.reason);
+            let labelsList = aliJudgeResponse2.Data.labels.split(',');
+
             return {
                 success: false,
-                message: "用户名不符合规范：" + staticWord[aliJudgeResponse2.Data.labels],
+                message: "用户名不符合规范：" + labelsList.map((label: string) => staticWord[label]).join(', '),
             };
         }
 
