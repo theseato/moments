@@ -18,7 +18,7 @@ export async function sendEmail(options: SendEmailOptions) {
     });
 
     const mailOptions = {
-        from: `"${process.env.MAIL_NAME}" <${process.env.MAIL_FROM}>`,
+        from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM}>`,
         to: options.email,
         subject: options.subject,
         text: options.message,

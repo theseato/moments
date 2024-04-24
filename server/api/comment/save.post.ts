@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
     }else{
         // 验证 reCAPTCHA 响应
         const recaptchaResult = await validateRecaptcha(reToken);
-        if (!recaptchaResult.success) {
+        if (!recaptchaResult.success || recaptchaResult.score < 0.5) {
             return {
                 success: false,
                 message: "reCAPTCHA failed: " + recaptchaResult["error-codes"].join(", ")
