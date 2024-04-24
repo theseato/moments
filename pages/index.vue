@@ -39,6 +39,8 @@
       ·V0.2.3 2024-04-24 新增邮件通知功能，所有被评论者（如果填写过邮箱）将会收到邮件通知
       <br/>
       ·V0.2.4 2024-04-24 新增自动获取位置，新增超长评论首页隐藏
+      <br/>
+      ·V0.2.5 2024-04-24 新增评论审核功能
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -131,7 +133,6 @@ const state = reactive({
   page: 1,
   hasNext: false
 })
-
 
 const firstLoad = async () => {
   state.page = 1
