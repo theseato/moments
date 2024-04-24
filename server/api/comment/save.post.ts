@@ -16,6 +16,21 @@ type SaveCommentReq = {
     reToken: string;
 };
 
+const staticWord = {
+    'ad': '广告引流',
+    'political_content': '涉政内容',
+    'profanity': '辱骂内容',
+    'contraband': '违禁内容',
+    'sexual_content': '色情内容',
+    'violence': '暴恐内容',
+    'nonsense': '无意义内容',
+    'negative_content': '不良内容',
+    'religion': '宗教内容',
+    'cyberbullying': '网络暴力',
+    'ad_compliance': '广告法合规',
+    'C_customized': '违反本站规定',
+}
+
 export default defineEventHandler(async (event) => {
     // 从请求体中读取数据
     const { memoId, content, replyTo, replyToId, username, email, website, reToken } =
@@ -24,7 +39,7 @@ export default defineEventHandler(async (event) => {
     if (content.length > 500) {
         return { success: false, message: "评论内容长度不能超过500个字符",};
     }
-    if (username.length > 8) {
+    if (username.length > 10) {
         return { success: false, message: "用户名长度不能超过8个字符" };
     }
     if (email && email.length > 30) {
@@ -49,7 +64,7 @@ export default defineEventHandler(async (event) => {
         if (!recaptchaResult.success) {
             return {
                 success: false,
-                message: "reCAPTCHA failed：" + recaptchaResult["error-codes"].join(", ")
+                message: "reCAPTCHA failed: " + recaptchaResult["error-codes"].join(", ")
             };
         }
     }
@@ -57,16 +72,28 @@ export default defineEventHandler(async (event) => {
     // 文本内容检查
     if(process.env.ALIYUN_ACCESS_KEY_ID === undefined || process.env.ALIYUN_ACCESS_KEY_ID === '' || process.env.ALIYUN_ACCESS_KEY_ID === 'undefined' || process.env.ALIYUN_ACCESS_KEY_ID === 'null' ||
         process.env.ALIYUN_ACCESS_KEY_SECRET === undefined || process.env.ALIYUN_ACCESS_KEY_SECRET === '' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'undefined' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'null'){
-        const aliJudgeResponse = await aliTextJudge(content);
-        if (aliJudgeResponse.Data && aliJudgeResponse.Data.reason) {
-            const reason = JSON.parse(aliJudgeResponse.Data.reason);
-            if (reason.riskTips) {
-                return {
-                    success: false,
-                    message: "评论内容不符合规范，原因：" + reason.riskTips,
-                };
-            }
+
+    }else{
+        const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection');
+        if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
+            // 解析reason字段，因为它是一个JSON字符串
+            const reason = JSON.parse(aliJudgeResponse1.Data.reason);
+            return {
+                success: false,
+                message: "评论内容不符合规范：" + staticWord[aliJudgeResponse1.Data.labels],
+            };
         }
+
+        const aliJudgeResponse2 = await aliTextJudge(username, 'nickname_detection');
+        if (aliJudgeResponse2.Data && aliJudgeResponse2.Data.labels && aliJudgeResponse2.Data.labels !== '') {
+            // 解析reason字段，因为它是一个JSON字符串
+            const reason = JSON.parse(aliJudgeResponse2.Data.reason);
+            return {
+                success: false,
+                message: "用户名不符合规范：" + staticWord[aliJudgeResponse2.Data.labels],
+            };
+        }
+
     }
     // 创建评论
     await prisma.comment.create({
@@ -96,7 +123,7 @@ export default defineEventHandler(async (event) => {
                 email: comment.email,
                 subject: '新回复',
                 message: `您在moments中的评论有新回复！
-                用户名为： ${username} 回复了您的评论(${comment.content})，他回复道：${content}，点击查看：${process.env.SITE_URL}/detail/${memoId}`,
+                用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}，点击查看: ${process.env.SITE_URL}/detail/${memoId}`,
             });
         }
     }
@@ -117,7 +144,7 @@ export default defineEventHandler(async (event) => {
             email: process.env.NOTIFY_MAIL || '',
             subject: '新评论',
             message: `您的moments有新评论！
-            用户名为： ${username} 在您的moment中发表了评论：${content}，点击查看：${siteUrl}/detail/${memoId}`,
+            用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
         });
     }
 
@@ -145,15 +172,15 @@ async function validateRecaptcha(reToken: string) {
 }
 
 // 阿里云文本审核
-async function aliTextJudge(content: string) {
+async function aliTextJudge(content: string, Service: string = "comment_detection") {
     // 注意，此处实例化的client请尽可能重复使用，避免重复建立连接，提升检测性能。
     let client = new RPCClient({
         /**
          * 阿里云账号AccessKey拥有所有API的访问权限，建议您使用RAM用户进行API访问或日常运维。
          * 强烈建议不要把AccessKey ID和AccessKey Secret保存到工程代码里，否则可能导致AccessKey泄露，威胁您账号下所有资源的安全。
-         * 常见获取环境变量方式：
-         * 获取RAM用户AccessKey ID：process.env['ALIBABA_CLOUD_ACCESS_KEY_ID']
-         * 获取RAM用户AccessKey Secret：process.env['ALIBABA_CLOUD_ACCESS_KEY_SECRET']
+         * 常见获取环境变量方式: 
+         * 获取RAM用户AccessKey ID: process.env['ALIBABA_CLOUD_ACCESS_KEY_ID']
+         * 获取RAM用户AccessKey Secret: process.env['ALIBABA_CLOUD_ACCESS_KEY_SECRET']
          */
         accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID,
         accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET,
@@ -167,8 +194,8 @@ async function aliTextJudge(content: string) {
     });
     // 通过以下代码创建API请求并设置参数。
     const params = {
-        // 文本检测service：内容安全控制台文本增强版规则配置的serviceCode，示例：chat_detection
-        "Service": "comment_detection",
+        // 文本检测service: 内容安全控制台文本增强版规则配置的serviceCode，示例: chat_detection
+        "Service": Service,
         "ServiceParameters": JSON.stringify({
             //待检测文本内容。
             "content": content,
@@ -180,7 +207,7 @@ async function aliTextJudge(content: string) {
         formatParams: false,
     };
 
-    let response; // 将response的声明移动到这里
+    let response;
     try {
         response = await client.request('TextModeration', params, requestOption);
         if (response.Code === 500) {
