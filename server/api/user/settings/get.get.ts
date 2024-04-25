@@ -1,7 +1,7 @@
 import prisma from "~/lib/db";
 
 type GetSettingReq = {
-  user: string;
+  user?: string;
 };
 
 export default defineEventHandler(async (event) => {
@@ -14,8 +14,6 @@ export default defineEventHandler(async (event) => {
   if (!userId || userId < 1) {
     userId = event.context.userId;
   }
-
-  console.log(userId);
 
   userId = userId ? userId : 1;
 
@@ -46,7 +44,6 @@ export default defineEventHandler(async (event) => {
     throw new Error("User not found");
   }
   const data = { ...userData, ...configData };
-  console.log(data);
   return {
     success: true,
     data: data,

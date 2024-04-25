@@ -58,7 +58,6 @@ import jsonp from 'jsonp';
 
 const getMore = ref(null);
 const token = useCookie('token')
-const userinfo = useState<User>('userinfo')
 const version = ref('');
 
 let observer: IntersectionObserver | null = null;
@@ -128,11 +127,6 @@ const setupObserver = () => {
     observer.observe(getMore.value);
   }
 };
-
-
-useHead({
-  title: userinfo.value.title || 'Randall的小屋',
-})
 
 
 const state = reactive({

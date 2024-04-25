@@ -19,30 +19,34 @@ import { Toaster } from '@/components/ui/sonner';
 import type { User } from '~/lib/types';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { useState, useAsyncData } from '#imports';
-import { useCookie } from '#app';
 
-const userinfo = useState<User>('userinfo')
-const { data: res } = await useAsyncData('userinfo', async () => await $fetch('/api/user/settings/get?user=0'))
-userinfo.value = res.value?.data as any as User
+onMounted(async () => {
+  const userinfo = useState<User>('userinfo')
+  const response = await $fetch('/api/user/settings/get?user=0');
+  console.log("default.vue", response)
+  const { data: res } = await useAsyncData('userinfo', async () => response);
+  userinfo.value = res.value?.data as any as User;
+  useHead({
+    link: [
+      {
+        rel: 'shortcut icon',
+        type: 'image/png',
+        href: userinfo.value?.favicon || '/favicon.png',
+      },
+    ],
+    style: [
+      {
+        textContent: userinfo.value?.css || '',
+      }
+    ],
+    script: [
+      {
+        type: 'text/javascript',
+        textContent: userinfo.value?.js || '',
+      }
+    ],
+    title: userinfo.value.title || 'Randall的小屋',
+  })
+});
 
-useHead({
-  link: [
-    {
-      rel: 'shortcut icon',
-      type: 'image/png',
-      href: userinfo.value?.favicon || '/favicon.png',
-    },
-  ],
-  style: [
-    {
-      textContent: userinfo.value?.css || '',
-    }
-  ],
-  script: [
-    {
-      type: 'text/javascript',
-      textContent: userinfo.value?.js || '',
-    }
-  ]
-})
 </script>

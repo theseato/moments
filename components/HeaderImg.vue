@@ -32,6 +32,8 @@
 import { settingsUpdateEvent } from '~/lib/event'
 import { getImgUrl } from '~/lib/utils';
 import { Sun, MoonStar, LogIn, ArrowLeft } from 'lucide-vue-next'
+import {useAsyncData} from "#imports";
+import type {User} from "~/lib/types";
 const colorMode = useColorMode()
 const token = useCookie('token')
 const route = useRoute()
@@ -39,7 +41,10 @@ const showBack = () => {
   return route.path.startsWith('/detail') || route.path.startsWith('/settings')
 }
 
-const { data: res, refresh } = await useAsyncData('userinfo', async () => await $fetch('/api/user/settings/get?user=0'))
+const response = await $fetch('/api/user/settings/get?user=0');
+console.log("HeaderImg.vue", response)
+
+const { data: res, refresh } = await useAsyncData('userinfo', async () => response)
 
 settingsUpdateEvent.on(async () => {
   await refresh()
