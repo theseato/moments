@@ -399,10 +399,13 @@ const welcome = async () => {
           else if (date.getHours() >= 19 && date.getHours() < 24) timeChange = "<span>🌙 晚上好，夜生活嗨起来！</span>";
           else timeChange = "夜深了，早点休息，少熬夜";
 
-          // 新增ipv6显示为指定内容
-          if (ip.includes(":")) {
-            ip = "<br>好复杂，咱看不懂~(ipv6)";
+          // 如果ip是ipv6
+          if (ip.indexOf(":") > -1) {
+            ip = "您的IP地址为：<b><span>IPv6</span></b>";
           }
+
+
+
           rStatusMessage.info(`欢迎来自<br><b><span>${pos}</span></b><br>的朋友<br>${posdesc}🍂<br>您的IP地址为：<b><span>${ip}</span></b><br>${timeChange} <br>`);
         }
       }
