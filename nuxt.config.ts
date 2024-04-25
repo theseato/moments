@@ -46,6 +46,6 @@ export default defineNuxtConfig({
     }
   },
   plugins: [
-    { src: '~/plugins/vue-lazyload.ts', mode: 'client' },
+    '~/plugins/vue-lazyload.ts',
   ],
 });
