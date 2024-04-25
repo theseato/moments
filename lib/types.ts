@@ -15,6 +15,7 @@ export type Memo = {
   externalTitle?: string;
   externalFavicon?: string;
   comments: Array<Comment>;
+  hasMoreComments:boolean;
   pinned:boolean,
   _count: {
     comments: number;

@@ -38,9 +38,11 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "vue": "^3.4.23",
+    "vue-lazyload": "^3.0.0",
     "vue-recaptcha": "^3.0.0-alpha.6",
     "vue-router": "^4.3.2",
     "vue-sonner": "^1.1.2",
+    "vue3-lazy": "^1.0.0-alpha.1",
     "worktop": "^0.7.3"
   },
   "devDependencies": {

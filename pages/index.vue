@@ -41,6 +41,8 @@
       ·V0.2.4 2024-04-24 新增自动获取位置，新增超长评论首页隐藏
       <br/>
       ·V0.2.5 2024-04-24 新增评论审核功能
+      <br/>
+      ·V0.2.6 2024-04-25 更新图片显示，新增图片懒加载
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>

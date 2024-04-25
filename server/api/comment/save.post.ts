@@ -182,8 +182,8 @@ async function aliTextJudge(content: string, Service: string = "comment_detectio
          * 获取RAM用户AccessKey ID: process.env['ALIBABA_CLOUD_ACCESS_KEY_ID']
          * 获取RAM用户AccessKey Secret: process.env['ALIBABA_CLOUD_ACCESS_KEY_SECRET']
          */
-        accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID,
-        accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET,
+        accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID || 'default',
+        accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET || 'default',
         // 接入区域和地址请根据实际情况修改
         endpoint: "https://green-cip.cn-shanghai.aliyuncs.com",
         apiVersion: '2022-03-02',
@@ -207,7 +207,7 @@ async function aliTextJudge(content: string, Service: string = "comment_detectio
         formatParams: false,
     };
 
-    let response;
+    let response: any;
     try {
         response = await client.request('TextModeration', params, requestOption);
         if (response.Code === 500) {
