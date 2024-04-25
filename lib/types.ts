@@ -49,3 +49,20 @@ export type User = {
   js:string;
   beianNo:string;
 }
+
+export type config = {
+  id: number;
+  enableS3: boolean;
+  s3Domain: string;
+    s3Bucket: string;
+    s3Region: string;
+    s3AccessKey: string;
+    s3SecretKey: string;
+    s3Endpoint: string;
+    s3ThumbnailSuffix: string;
+    favicon: string;
+    title: string;
+    css: string;
+    js: string;
+    beianNo: string;
+}

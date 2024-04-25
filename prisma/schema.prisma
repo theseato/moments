@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = env("DATABASE_TYPE")
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:/Users/randall/IdeaProjects/moments/data/db.sqlite"
 }
 
 model Comment {
@@ -65,4 +65,21 @@ model User {
   css             String?
   js              String?
   beianNo         String?
+}
+
+model Config {
+    id              Int      @id @default(autoincrement())
+    enableS3        Boolean  @default(false)
+    s3Domain        String?
+    s3Bucket        String?
+    s3Region        String?
+    s3AccessKey     String?
+    s3SecretKey     String?
+    s3Endpoint      String?
+    s3ThumbnailSuffix String?
+    favicon         String?
+    title           String   @default("Randall的小屋")
+    css             String?
+    js              String?
+    beianNo         String?
 }

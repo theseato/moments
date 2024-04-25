@@ -1,12 +1,26 @@
 import prisma from "~/lib/db";
 
 type ListMemoReq = {
+  user: any;
   page: number;
 };
 
 export default defineEventHandler(async (event) => {
-  const { page } = (await readBody(event)) as ListMemoReq;
+  let { user, page } = (await readBody(event)) as ListMemoReq;
+  user = parseInt(user);
+     if (user) {
+        const userExist = await prisma.user.findUnique({
+        where: {
+            id: user,
+        },
+        });
+        if (!userExist) {
+        user = undefined;
+        }
+    }
+
   const size = 10;
+
   let data = await prisma.memo.findMany({
     include: {
       user: {
@@ -33,6 +47,7 @@ export default defineEventHandler(async (event) => {
     },
     where: {
       pinned: false,
+      userId: user ? user : undefined,
     },
     orderBy: {
       createdAt: "desc",
@@ -67,6 +82,7 @@ export default defineEventHandler(async (event) => {
       },
       where: {
         pinned: true,
+        userId: user ? user : undefined,
       },
     });
     if (pinnedMemo) {
@@ -79,7 +95,11 @@ export default defineEventHandler(async (event) => {
     comments: memo.comments.filter(comment => comment.content && comment.content.length < 100),
     hasMoreComments: memo._count.comments > 5 || memo.comments.some(comment => comment.content && comment.content.length >= 100),
   }));
-  const total = await prisma.memo.count();
+  const total = await prisma.memo.count({
+    where: {
+        userId: user ? user : undefined,
+        },
+      });
   const totalPage = Math.ceil(total / size);
   return {
     data,

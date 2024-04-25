@@ -53,7 +53,18 @@ export default defineEventHandler(async (event) => {
 
   return {
     success: true,
-    username: user.username,
+    userinfo: {
+      username: user.username,
+      userId: user.id,
+      nickname: user.nickname,
+      avatarUrl: user.avatarUrl,
+      slogan: user.slogan,
+      coverUrl: user.coverUrl,
+      favicon: user.favicon,
+      title: user.title,
+      css: user.css,
+      js: user.js,
+    },
     message:""
   };
 });

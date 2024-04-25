@@ -1,4 +1,5 @@
 <template>
+  <HeaderImg />
   <div class="flex flex-col gap-4 p-2 sm:p-4">
     <div class="flex flex-col gap-2">
       <Label for="title" class="font-bold">网站标题</Label>

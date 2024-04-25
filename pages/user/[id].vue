@@ -1,7 +1,30 @@
 <template>
-  <HeaderImg />
-  <div>
+  <div class="header relative mb-8 ">
+    <img class="header-img w-full  max-h-[300px]" :src="getImgUrl(res?.data?.coverUrl!)" alt="" />
+    <div class="absolute right-2 bottom-[-40px]">
+      <div class="userinfo flex flex-col">
+        <div class="flex flex-row items-center gap-4 justify-end">
+          <div class="username text-lg font-bold text-white">{{ res?.data?.nickname }}</div>
+          <img :src="getImgUrl(res?.data?.avatarUrl!)" class="avatar w-[70px] h-[70px] rounded-xl" />
+        </div>
+        <div class="slogon text-gray truncate w-full text-end text-xs mt-2">{{ res?.data?.slogan }}</div>
+      </div>
+    </div>
 
+    <div class="absolute right-2 top-2 bg-slate-100 rounded p-1 flex flex-row gap-2">
+      <div title="返回" v-if="showBack()" @click="navigateTo('/')">
+        <ArrowLeft color="#9FC84A" :size="20" class="cursor-pointer" />
+      </div>
+
+      <div title="亮色" v-if="colorMode.value === 'dark'" @click="colorMode.value = 'light'">
+        <Sun color="#FDE047" :size="20" class="cursor-pointer" />
+      </div>
+      <div title="暗色" v-else>
+        <MoonStar color="#FDE047" :size="20" class="cursor-pointer" @click="colorMode.value = 'dark'" />
+      </div>
+    </div>
+  </div>
+  <div>
     <MemoInput v-if="token" @memo-added="firstLoad" />
 
     <div class="content flex flex-col divide-y divide-gray-100/50 gap-2">
@@ -20,64 +43,37 @@
       ———— 没有更多啦～ ————
     </div>
   </div>
-  <div id="version-info">
-    当前版本: <span id="version">{{ version }}</span>
-    <div class="update-details">
-      更新日志:
-      <br/>
-      ·V0.1.0 2024-04-22 创建模板
-      <br/>
-      ·V0.1.1 2024-04-22 更新通知弹窗，添加动态加载
-      <br/>
-      ·V0.1.2 2024-04-23 支持markdown（不修改字体大小，也无列表等，保持朋友圈显示和谐）
-      <br/>
-      ·V0.2.0 2024-04-23 markdown功能完善，修复更新页面内容时markdown文本显示异常
-      <br/>
-      ·V0.2.1 2024-04-23 新增验证码功能
-      <br/>
-      ·V0.2.2 2024-04-24 新增访问速率限制，新增评论字数限制，将可变变量移动到.env文件
-      <br/>
-      ·V0.2.3 2024-04-24 新增邮件通知功能，所有被评论者（如果填写过邮箱）将会收到邮件通知
-      <br/>
-      ·V0.2.4 2024-04-24 新增自动获取位置，新增超长评论首页隐藏
-      <br/>
-      ·V0.2.5 2024-04-24 新增评论审核功能
-      <br/>
-      ·V0.2.6 2024-04-25 更新图片显示，新增图片懒加载
-      <br/>
-      ·V0.2.7 2024-04-26 更新多用户，demo版
-    </div>
-    <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
-  </div>
 </template>
 
 <script setup lang="ts">
 import { type User, type Memo } from '~/lib/types';
 import { onMounted, onUnmounted, watch, ref } from 'vue';
 import jsonp from 'jsonp';
+import {getImgUrl} from "~/lib/utils";
+import { Sun, MoonStar, LogIn, ArrowLeft } from 'lucide-vue-next'
+
+import { settingsUpdateEvent } from '~/lib/event'
+
+const colorMode = useColorMode()
+const token = useCookie('token')
+const route = useRoute()
+const showBack = () => {
+  return route.path.startsWith('/detail') || route.path.startsWith('/settings') || route.path.startsWith('/user')
+}
+const { data: res, refresh } = await useAsyncData('userinfo', async () => await $fetch('/api/user/settings/get?user='+route.params.id))
+
+settingsUpdateEvent.on(async () => {
+  await refresh()
+})
+
 
 const getMore = ref(null);
-const token = useCookie('token')
 const userinfo = useState<User>('userinfo')
 const version = ref('');
 
 let observer: IntersectionObserver | null = null;
 
-function setLatestVersion() {
-  const element = document.querySelector('.update-details');
-  if (element) {
-    const updatesText = element.innerText;
-    const updates = updatesText.match(/V\d+\.\d+\.\d+/g); // 匹配所有版本号格式
-    if (updates && updates.length) {
-      version.value = updates.pop(); // 获取最后一个元素，即最新版本号
-    }
-  } else {
-    console.warn('No update details found in the DOM.');
-  }
-}
-
 onMounted(async () => {
-  setLatestVersion();
   await firstLoad();
   await welcome();
   const observer = new IntersectionObserver((entries) => {
@@ -147,6 +143,7 @@ const firstLoad = async () => {
     key: 'memoList',
     method: 'POST',
     body: JSON.stringify({
+      user: route.params.id,
       page: state.page,
     })
   })
@@ -165,7 +162,8 @@ const loadMore = async () => {
       key: 'memoList',
       method: 'POST',
       body: JSON.stringify({
-        page: state.page + 1, // 先不增加页码
+        user: route.params.id,
+        page: state.page + 1,
       })
     });
     state.page += 1;

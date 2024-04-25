@@ -2,7 +2,6 @@
   <div class="wrapper w-full h-full bg-[#f1f5f9] dark:bg-slate-800 rounded-md dark:text-[#C0BEBF]">
     <ScrollArea class="h-full" type="hover">
       <div class="main lg:w-[567px] mx-auto shadow-2xl bg-white dark:bg-[#181818]">
-        <HeaderImg />
         <slot />
         <Footer />
       </div>
@@ -19,13 +18,12 @@
 import { Toaster } from '@/components/ui/sonner';
 import type { User } from '~/lib/types';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { useState, useAsyncData } from '#imports';
+import { useCookie } from '#app';
 
 const userinfo = useState<User>('userinfo')
-await callOnce(async () => {
-  const { data: res } = await useAsyncData('userinfo', async () => await $fetch('/api/user/settings/get'))
-  userinfo.value = res.value?.data as any as User
-
-})
+const { data: res } = await useAsyncData('userinfo', async () => await $fetch('/api/user/settings/get?user=0'))
+userinfo.value = res.value?.data as any as User
 
 useHead({
   link: [

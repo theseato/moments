@@ -21,14 +21,6 @@ export default defineEventHandler(async (event) => {
     return;
   }
 
-  if (url.pathname === "/api/comment/save" && token) {
-    try {
-      const result = jwt.verify(token, jwtKey);
-      const payload = result as JwtPayload;
-      event.context.userId = payload.userId;
-    } catch (error) {}
-  }
-
   if (needLoginUrl.includes(url.pathname) && !token) {
     throw createError({
       statusCode: 401,
@@ -36,7 +28,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if (needLoginUrl.includes(url.pathname) && token) {
+  if (token) {
     try {
       const result = jwt.verify(token, jwtKey);
       const payload = result as JwtPayload;
@@ -48,4 +40,5 @@ export default defineEventHandler(async (event) => {
       });
     }
   }
+  return
 });

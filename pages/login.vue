@@ -1,4 +1,5 @@
 <template>
+  <HeaderImg />
   <div class="p-2 sm:p-4 flex justify-center min-h-[500px w-full]">
     <div class="p-8 rounded shadow-md max-w-sm w-full">
       <div class="mb-4">
