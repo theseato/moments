@@ -8,12 +8,10 @@
 
 <script setup lang="ts">
 import type { Memo } from '~/lib/types';
-import type { User } from '~/lib/types';
 
-const userinfo = useState<User>('userinfo')
 
 useHead({
-  title: userinfo.value.title || 'Randall的小屋',
+
 })
 const route = useRoute()
 const id = route.params.id

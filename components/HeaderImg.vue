@@ -42,7 +42,6 @@ const showBack = () => {
 }
 
 const response = await $fetch('/api/user/settings/get?user=0');
-console.log("HeaderImg.vue", response)
 
 const { data: res, refresh } = await useAsyncData('userinfo', async () => response)
 

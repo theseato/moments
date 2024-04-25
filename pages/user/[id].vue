@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { type User, type Memo } from '~/lib/types';
+import { type Memo } from '~/lib/types';
 import { onMounted, onUnmounted, watch, ref } from 'vue';
 import jsonp from 'jsonp';
 import {getImgUrl} from "~/lib/utils";
@@ -68,7 +68,6 @@ settingsUpdateEvent.on(async () => {
 
 
 const getMore = ref(null);
-const userinfo = useState<User>('userinfo')
 const version = ref('');
 
 let observer: IntersectionObserver | null = null;
@@ -124,11 +123,6 @@ const setupObserver = () => {
     observer.observe(getMore.value);
   }
 };
-
-
-useHead({
-  title: userinfo.value.title || 'Randall的小屋',
-})
 
 
 const state = reactive({

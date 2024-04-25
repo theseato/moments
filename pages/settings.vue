@@ -114,10 +114,10 @@ const token = useCookie('token')
 import { useStorage } from "@vueuse/core";
 import type { User } from '~/lib/types';
 
-const userinfo = useState<User>('userinfo')
+const response = await $fetch('/api/user/settings/get?user=0');
 
 useHead({
-  title: '设置-'+(userinfo.value.title || 'Randall的小屋'),
+  title: '设置-'+(response.data.title || 'Randall的小屋'),
 })
 
 const enableS3 = useStorage("enableS3", false);
