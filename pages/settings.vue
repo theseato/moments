@@ -44,12 +44,12 @@
     </div>
 
     <div class="flex flex-col gap-2">
-      <Label for="css" class="font-bold">自定义CSS</Label>
+      <Label for="css" class="font-bold">自定义个人页面CSS</Label>
       <Textarea id="css" v-model="state.css" rows="3"></Textarea>
     </div>
 
     <div class="flex flex-col gap-2">
-      <Label for="js" class="font-bold">自定义JS</Label>
+      <Label for="js" class="font-bold">自定义个人页面JS</Label>
       <Textarea id="js" v-model="state.js" rows="3"></Textarea>
     </div>
 

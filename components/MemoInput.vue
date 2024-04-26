@@ -99,15 +99,27 @@
 
 
       <div class="flex mx-auto gap-2">
-        <TooltipProvider>
+        <TooltipProvider v-if="false">
           <Tooltip>
             <TooltipTrigger as-child>
-              <a href="/settings">
+              <a href="/config">
                 <Settings :stroke-width="1.5" class="cursor-pointer w-[20px] h-[20px]" />
               </a>
             </TooltipTrigger>
             <TooltipContent>
-              <p>进入设置</p>
+              <p>系统设置</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <a href="/settings">
+                <FileSliders :stroke-width="1.5" class="cursor-pointer w-[20px] h-[20px]" />
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>个人设置</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -185,7 +197,7 @@ import { Button } from '@/components/ui/button'
 import { memoUpdateEvent } from '@/lib/event'
 import type { Memo } from '~/lib/types';
 import { useAnimate } from '@vueuse/core';
-import { Image, Music4, Settings, Trash2, LogOut,  Link, Youtube, CircleX, Check } from 'lucide-vue-next'
+import { Image, Music4, Settings, Trash2, LogOut,  Link, Youtube, CircleX, Check, FileSliders } from 'lucide-vue-next'
 import { ref } from 'vue';
 import jsonp from "jsonp";
 const location = ref('');

@@ -1,55 +1,29 @@
 <template>
   <HeaderImg />
   <div class="flex flex-col gap-4 p-2 sm:p-4">
+
     <div class="flex flex-col gap-2">
       <Label for="title" class="font-bold">网站标题</Label>
       <Input type="text" id="title" placeholder="网站标题" autocomplete="off" v-model="state.title" />
     </div>
-    <div class="flex flex-col gap-2 border rounded p-2">
-      <Label for="avatarUrl" class="font-bold">头像</Label>
-      <Input type="file" id="avatarUrl" @change="(e: Event) => { uploadImgs(e, 'avatarUrl') }" />
-      <Label for="avatarUrl-input" class="font-medium">或者输入在线地址</Label>
-      <Input type="text" id="avatarUrl-input" placeholder="或者填入在线地址" autocomplete="off" v-model="state.avatarUrl" />
-      <img :src="state.avatarUrl" alt="avatar" class="w-[70px] h-[70px] rounded-xl" v-if="state.avatarUrl" />
-    </div>
-    <div class="flex flex-col gap-2 border rounded p-2">
+
+    <div class="flex flex-col gap-2">
       <Label for="favicon" class="font-bold">Favicon</Label>
-      <Input type="file" id="favicon" autocomplete="off" @change="(e: Event) => { uploadImgs(e, 'favicon') }" />
-      <Label for="favicon-input" class="font-medium">或者输入在线地址</Label>
-      <Input type="text" id="favicon-input" placeholder="或者填入在线地址" autocomplete="off" v-model="state.favicon" />
+      <div class="flex gap-2">
+        <Input type="file" id="favicon" autocomplete="off" @change="(e: Event) => { uploadImgs(e, 'favicon') }" style="width: 35%" />
+        <Label for="favicon-input" class="font-medium" style="align-content: center;">或者输入在线地址:</Label>
+        <Input type="text" id="favicon-input" placeholder="或者填入在线地址" autocomplete="off" v-model="state.favicon" style="width: 35%" />
+      </div>
       <img class="max-w-[50px] max-h-[50px]" v-if="state.favicon" :src="state.favicon" alt="" />
     </div>
-    <div class="flex flex-col gap-2 border rounded p-2">
-      <Label for="coverUrl" class="font-bold">顶部图片</Label>
-      <Input type="file" id="coverUrl" autocomplete="off" @change="(e: Event) => { uploadImgs(e, 'coverUrl') }" />
-      <Label for="coverUrl-input" class="font-medium">或者输入在线地址</Label>
-      <Input type="text" id="coverUrl-input" placeholder="或者填入在线地址" autocomplete="off" v-model="state.coverUrl" />
-      <img class="w-full h-[250px]" v-if="state.avatarUrl" :src="state.coverUrl" alt="" />
-    </div>
 
     <div class="flex flex-col gap-2">
-      <Label for="nickname" class="font-bold">昵称</Label>
-      <Input type="text" id="nickname" placeholder="头像左边的作者名字" autocomplete="off" v-model="state.nickname" />
-    </div>
-
-
-    <div class="flex flex-col gap-2">
-      <Label for="slogan" class="font-bold">心情状态</Label>
-      <Input type="text" id="slogan" placeholder="头像下方文字,最好别超过15个汉字" autocomplete="off" v-model="state.slogan" />
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <Label for="password" class="font-bold">密码</Label>
-      <Input type="password" id="password" placeholder="不修改密码不要填写" autocomplete="off" v-model="state.password" />
-    </div>
-
-    <div class="flex flex-col gap-2">
-      <Label for="css" class="font-bold">自定义CSS</Label>
+      <Label for="css" class="font-bold">全局自定义CSS</Label>
       <Textarea id="css" v-model="state.css" rows="3"></Textarea>
     </div>
 
     <div class="flex flex-col gap-2">
-      <Label for="js" class="font-bold">自定义JS</Label>
+      <Label for="js" class="font-bold">全局自定义JS</Label>
       <Textarea id="js" v-model="state.js" rows="3"></Textarea>
     </div>
 
@@ -103,7 +77,7 @@
     </template>
 
     <div class="flex flex-col gap-2 ">
-      <Button @click="saveSettings">保存</Button>
+      <Button @click="saveConfig">保存</Button>
     </div>
   </div>
 </template>
@@ -124,11 +98,6 @@ const enableS3 = useStorage("enableS3", false);
 
 
 const state = reactive({
-  coverUrl: '',
-  avatarUrl: '',
-  nickname: '',
-  slogan: '',
-  password: '',
   enableS3: false,
   domain: '',
   bucket: '',
@@ -144,14 +113,10 @@ const state = reactive({
   beianNo:""
 })
 
-const { data: res } = await useFetch<{ data: typeof state }>('/api/user/settings/full',{key:'settings'})
+const { data: res } = await useFetch<{ data: typeof state }>('/api/site/config/get',{key:'settings'})
 const data = res.value?.data
 state.title = data?.title || 'Randall的小屋'
-state.favicon = data?.favicon || '/avatar.webp'
-state.coverUrl = data?.coverUrl || ''
-state.avatarUrl = data?.avatarUrl || '/cover.webp'
-state.nickname = data?.nickname || 'Randall'
-state.slogan = data?.slogan || '星垂平野阔，月涌大江流。'
+state.favicon = data?.favicon || '/favicon.png'
 state.enableS3 = data?.enableS3 || false
 state.domain = data?.domain || ''
 state.bucket = data?.bucket || ''
@@ -175,11 +140,7 @@ const uploadImgs = async (event: Event, id: string) => {
   await useUpload(file, async (res) => {
     if (res.success) {
       (event.target as HTMLInputElement).value = ''
-      if (id === 'coverUrl') {
-        state.coverUrl = res.filename
-      } else if (id === 'avatarUrl') {
-        state.avatarUrl = res.filename
-      } else if (id === 'favicon') {
+      if (id === 'favicon') {
         state.favicon = res.filename
       }
     } else {
@@ -188,22 +149,15 @@ const uploadImgs = async (event: Event, id: string) => {
   })
 }
 
-const saveSettings = async () => {
-  const { success } = await $fetch('/api/user/settings/save', {
+const saveConfig = async () => {
+  const { success } = await $fetch('/api/site/config/save', {
     method: 'POST',
     body: JSON.stringify(state)
   })
   if (success) {
     enableS3.value = state.enableS3
-    if (state.password) {
-      token.value = ''
-      rStatusMessage.success('密码修改成功,请重新登录')
-      navigateTo('/login')
-    } else {
       rStatusMessage.success('保存成功')
       location.reload()
-    }
-    state.password = ''
     settingsUpdateEvent.emit()
   }
 }

@@ -38,7 +38,7 @@ const colorMode = useColorMode()
 const token = useCookie('token')
 const route = useRoute()
 const showBack = () => {
-  return route.path.startsWith('/detail') || route.path.startsWith('/settings')
+  return route.path.startsWith('/detail') || route.path.startsWith('/settings') || route.path.startsWith('/config')
 }
 
 const response = await $fetch('/api/user/settings/get?user=0');

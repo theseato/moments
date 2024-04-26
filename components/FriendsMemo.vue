@@ -182,6 +182,14 @@ const gridCols = computed(() => {
   return imgLen >= 3 ? 3 : imgLen
 })
 
+if (token) {
+  const userId = async () => {
+    const result = await $fetch('/api/user/settings/get')
+    console.log(result)
+    return result
+  }
+  userId()
+}
 const like = async () => {
   showToolbar.value = false
   const contain = likeList.value.find((id) => id === props.memo.id)
