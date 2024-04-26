@@ -15,6 +15,19 @@ type SaveMemoReq = {
 export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as SaveMemoReq;
 
+  const memo = await prisma.memo.findUnique({
+    where: {
+      id: body.id ?? -1,
+    },
+  });
+
+  if(memo && (memo?.userId !== event.context.userId)){
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Unauthorized",
+    });
+  }
+
   const updated = {
     imgs: body.imgUrls?.join(","),
     music163Url: body.music163Url,

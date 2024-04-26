@@ -16,6 +16,19 @@ export default defineEventHandler(async (event) => {
     },
   });
 
+  const memo = await prisma.memo.findUnique({
+    where: {
+      id: memoId,
+    },
+  });
+
+  if(memo && (memo?.userId !== event.context.userId)){
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Unauthorized",
+    });
+  }
+
   await prisma.memo.update({
     where: {
       id: memoId,

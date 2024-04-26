@@ -12,7 +12,7 @@ type SaveCommentReq = {
     email?: string;
     website?: string;
     username: string;
-    author: Boolean;
+    author: number;
     reToken: string;
 };
 
@@ -95,6 +95,16 @@ export default defineEventHandler(async (event) => {
         }
 
     }
+
+    // 根据memoId查找memo的作者
+    const memo = await prisma.memo.findUnique({
+        where: {
+            id: memoId,
+        },
+        select: {
+            userId: true,
+        },
+    });
     // 创建评论
     await prisma.comment.create({
         data: {
@@ -104,7 +114,7 @@ export default defineEventHandler(async (event) => {
             username,
             email,
             website,
-            author: event.context.userId !== undefined
+            author: event.context.userId !== undefined? (event.context.userId === memo?.userId? 1: 2): 0,
         },
     });
     let flag = true;

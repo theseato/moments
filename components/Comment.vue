@@ -5,15 +5,17 @@
       <span class="text-[#576b95] text-nowrap"><a class="cursor-pointer" v-if="comment.website" target="_blank" :href="comment.website">{{
         comment.username ?? '匿名' }}</a>
         <span v-else>{{ comment.username ?? '匿名' }}</span>
-        <b v-if="comment.author"
-          class="border text-xs border-[#C64A4A] rounded mx-0.5 px-0.5 text-[#C64A4A]">作者</b></span>
+        <b v-if="comment.author==1"
+          class="border text-xs border-[#C64A4A] rounded mx-0.5 px-0.5 text-[#C64A4A]">本文作者</b>
+      <b v-if="comment.author==2"
+         class="border text-xs border-[#D0B880] rounded mx-0.5 px-0.5 text-[#D0B880]">同站道友</b></span>
       <span v-if="comment.replyTo" class="text-nowrap mx-1">回复<span class="text-[#576b95] ml-1">{{
         comment.replyTo }}</span> </span>
       <span class="mr-0.5">:</span>
       <span :title="`点击回复${comment.username}`" class="inline w-full break-all cursor-pointer"
         @click="toggleUserComment">{{
           comment.content }}</span>
-      <AlertDialog v-if="token">
+      <AlertDialog v-if="belongToMe ">
         <AlertDialogTrigger asChild>
           <Trash2 :size=14 class="align-text-top	ml-2 cursor-pointer inline-block text-gray-300" />
         </AlertDialogTrigger>
@@ -51,6 +53,7 @@ const showCommentInput = ref(false)
 const props = withDefaults(
   defineProps<{
     comment: Comment
+    belongToMe: boolean
   }>(), {}
 )
 

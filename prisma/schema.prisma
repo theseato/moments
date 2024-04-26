@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:/Users/randall/IdeaProjects/moments/data/db.sqlite"
+  url      = "file:/root/moments/data/db.sqlite"
 }
 
 model Comment {
@@ -18,7 +18,7 @@ model Comment {
   updatedAt DateTime @updatedAt
   memoId    Int
   memo      Memo?    @relation(fields: [memoId], references: [id], onDelete: Cascade)
-  author    Boolean?
+  author    Int?
 }
 
 model Memo {

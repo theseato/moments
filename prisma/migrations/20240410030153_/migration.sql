@@ -1,1 +1,0 @@
-update User set avatarUrl = '/avatar.png',favicon = '/favicon.png',title = 'Randall的小屋' where id = 1;

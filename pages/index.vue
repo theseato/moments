@@ -46,6 +46,8 @@
       ·V0.2.6 2024-04-25 更新图片显示，新增图片懒加载
       <br/>
       ·V0.2.7 2024-04-26 更新多用户，demo版
+      <br/>
+      ·V0.2.8 2024-04-26 更新多用户权限控制
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>

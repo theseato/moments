@@ -10,6 +10,7 @@ const needLoginUrl = [
   "/api/user/settings/save",
   "/api/user/settings/full",
   "/api/sendEmail",
+  "/api/user/getid",
 ];
 
 const needAdminUrl = [

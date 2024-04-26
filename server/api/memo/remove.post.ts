@@ -13,6 +13,12 @@ export default defineEventHandler(async (event) => {
       id: memoId,
     },
   });
+  if(memo && (memo?.userId !== event.context.userId)){
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Unauthorized",
+    });
+  }
   await prisma.memo.delete({
     where: {
       id: memoId,

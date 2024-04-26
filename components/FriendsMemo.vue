@@ -45,18 +45,18 @@
         <div class="text-xs absolute top-[-8px] right-[30px] bg-[#4c4c4c] rounded text-white p-2" v-if="showToolbar"
           ref="toolbarRef">
           <div class="flex flex-row gap-4">
-            <div class="flex flex-row gap-2 cursor-pointer items-center" v-if="token "
+            <div class="flex flex-row gap-2 cursor-pointer items-center" v-if="token && userId === props.memo.userId"
               @click="pinned(); showToolbar = false">
               <Pin :size=14 />
               <div>{{ (props.memo.pinned ? '取消' :'') + '置顶'}}</div>
             </div>
-            <div class="flex flex-row gap-2 cursor-pointer items-center" v-if="token" @click="editMemo">
+            <div class="flex flex-row gap-2 cursor-pointer items-center" v-if="token && userId === props.memo.userId" @click="editMemo">
               <FilePenLine :size=14 />
               <div>编辑</div>
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <div class="flex flex-row gap-2 cursor-pointer items-center" v-if="token">
+                <div class="flex flex-row gap-2 cursor-pointer items-center" v-if="token && userId === props.memo.userId">
                   <Trash2 :size=14 />
                   <div>删除</div>
                 </div>
@@ -97,7 +97,7 @@
         <template v-if="props.memo.comments.length > 0">
           <div class="px-4 py-2 flex flex-col gap-1">
             <div class="relative flex flex-col gap-2 text-sm" v-for="(comment, index) in props.memo.comments" :key="index">
-              <Comment :comment="comment" @memo-update="refreshComment" />
+              <Comment :comment="comment" :belongToMe="token && userId == props.memo.userId" @memo-update="refreshComment" />
             </div>
             <div v-if="props.memo.hasMoreComments" class="text-[#576b95] cursor-pointer"
               @click="navigateTo(`/detail/${props.memo.id}`)">查看更多...</div>
@@ -176,20 +176,22 @@ const el = ref<any>(null)
 let hh = ref(0)
 const { height } = useElementSize(el)
 const likeList = useStorage<Array<number>>('likeList', [])
+let userId = ref(0)
 
 const gridCols = computed(() => {
   const imgLen = (props.memo.imgs || '').split(',').length;
   return imgLen >= 3 ? 3 : imgLen
 })
 
-if (token) {
-  const userId = async () => {
-    const result = await $fetch('/api/user/settings/get')
-    console.log(result)
-    return result
+onMounted(async () => {
+  if (token) {
+    const getUserId = async () => {
+      const result = await $fetch('/api/user/getid')
+      return result
+    };
+    userId = (await getUserId()).data.id
   }
-  userId()
-}
+})
 const like = async () => {
   showToolbar.value = false
   const contain = likeList.value.find((id) => id === props.memo.id)
