@@ -65,6 +65,8 @@ model User {
   css             String?
   js              String?
   beianNo         String?
+  eMail           String?
+  code            String?
 }
 
 model Config {

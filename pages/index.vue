@@ -48,6 +48,8 @@
       ·V0.2.7 2024-04-26 更新多用户，demo版
       <br/>
       ·V0.2.8 2024-04-26 更新多用户权限控制
+      <br/>
+      ·V0.3.0 2024-04-26 正式开放多用户，欢迎注册尝试
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -106,6 +108,10 @@ onMounted(async () => {
   }, {
     immediate: true // 立即触发，确保初始 setup
   });
+
+  rShowMessage('本站点已经开放注册，<a href="/register">点我去注册</a>', 0, 'up', 0);
+  rShowMessage('需要登陆？<a href="/login">点我去登陆</a>', 0, 'up', 0);
+
 });
 
 const setupObserver = () => {

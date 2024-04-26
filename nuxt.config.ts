@@ -46,5 +46,6 @@ export default defineNuxtConfig({
   },
   plugins: [
     '~/plugins/vue-lazyload.ts',
+    '~/plugins/pinia.ts',
   ],
 });

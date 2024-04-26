@@ -3,6 +3,7 @@ import { readBody } from "h3";
 import { sendEmail } from '~/utils/sendEmail';
 import RPCClient from '@alicloud/pop-core';
 
+
 // 定义评论请求的数据类型
 type SaveCommentReq = {
     memoId: number;
@@ -140,6 +141,15 @@ export default defineEventHandler(async (event) => {
 
     // 非管理员
     if(event.context.userId == undefined && flag){
+        // 找到文章所有者的邮箱
+        const user = await prisma.user.findUnique({
+            where: {
+                id: memo?.userId,
+            },
+            select: {
+                eMail: true,
+            },
+        });
         // 判断process.env.SITE_URL是否以/结尾，如果是则去掉
         let siteUrl = process.env.SITE_URL;
         if(siteUrl === undefined || siteUrl === '' || siteUrl === 'undefined' || siteUrl === 'null'){
@@ -151,7 +161,7 @@ export default defineEventHandler(async (event) => {
 
         // 邮箱通知管理员
         const result = sendEmail({
-            email: process.env.NOTIFY_MAIL || '',
+            email: user.eMail || process.env.NOTIFY_MAIL || '',
             subject: '新评论',
             message: `您的moments有新评论！
             用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,

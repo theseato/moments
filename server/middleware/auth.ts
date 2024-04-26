@@ -27,6 +27,11 @@ export default defineEventHandler(async (event) => {
     return;
   }
 
+  if (token && url.pathname === "/register") {
+    await sendRedirect(event, "/", 302);
+    return;
+  }
+
     if (needAdminUrl.includes(url.pathname) && token) {
       try {
         const result = jwt.verify(token, jwtKey);
