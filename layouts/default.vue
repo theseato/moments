@@ -23,7 +23,6 @@ import { useState, useAsyncData } from '#imports';
 onMounted(async () => {
   const userinfo = useState<User>('userinfo')
   const response = await $fetch('/api/user/settings/get?user=0');
-  console.log("default.vue", response)
   const { data: res } = await useAsyncData('userinfo', async () => response);
   userinfo.value = res.value?.data as any as User;
   useHead({
