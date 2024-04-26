@@ -46,18 +46,22 @@ onMounted(() => {
 
   document.getElementById('vcode').hidden = true
   const sendMail = async () => {
+    // 按钮禁用
+    document.getElementById('sendMail').disabled = true
     const res = await $fetch('/api/user/sendMail', {
       method: 'POST',
       body: JSON.stringify({ email: state.email })
     })
 
     if (res.success) {
-      rStatusMessage.success('发送成功')
+      this.$rNotification.rStatusMessage.success('发送成功')
       // 平滑显示验证码输入框
       document.getElementById('vcode').hidden = false
     } else {
-      rStatusMessage.warning(res.message, '发送失败')
+      this.$rNotification.rStatusMessage.warning(res.message, '发送失败')
     }
+    // 恢复按钮
+    document.getElementById('sendMail').disabled = false
   }
 
   document.getElementById('sendMail').addEventListener('click', sendMail)
@@ -71,10 +75,10 @@ const register = async () => {
   })
 
   if (res.success) {
-    rStatusMessage.success('登录成功')
-    await navigateTo('/')
+    rStatusMessage.success('注册成功')
+    await navigateTo('/login')
   } else {
-    rStatusMessage.warning(res.message, '登录失败')
+    rStatusMessage.warning(res.message, '注册失败')
   }
 }
 </script>

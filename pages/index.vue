@@ -59,6 +59,7 @@
 import { type User, type Memo } from '~/lib/types';
 import { onMounted, onUnmounted, watch, ref } from 'vue';
 import jsonp from 'jsonp';
+import {toast} from "vue-sonner";
 
 const getMore = ref(null);
 const token = useCookie('token')
@@ -108,10 +109,8 @@ onMounted(async () => {
   }, {
     immediate: true // 立即触发，确保初始 setup
   });
-
   rShowMessage('本站点已经开放注册，<a href="/register">点我去注册</a>', 0, 'up', 0);
   rShowMessage('需要登陆？<a href="/login">点我去登陆</a>', 0, 'up', 0);
-
 });
 
 const setupObserver = () => {
@@ -408,8 +407,6 @@ const welcome = async () => {
           if (ip.indexOf(":") > -1) {
             ip = "您的IP地址为：<b><span>IPv6</span></b>";
           }
-
-
 
           rStatusMessage.info(`欢迎来自<br><b><span>${pos}</span></b><br>的朋友<br>${posdesc}🍂<br>您的IP地址为：<b><span>${ip}</span></b><br>${timeChange} <br>`);
         }

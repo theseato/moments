@@ -9,7 +9,7 @@
     </ScrollArea>
   </div>
 
-  <Toaster position="top-center" rich-colors />
+  <Toaster position="top-right" :expand="true" rich-colors />
 
 
 

@@ -1,7 +1,7 @@
 
 export default defineEventHandler(async (event) => {
     const data = {
-        id: event.context.userId,
+        id: event.context.userId || 0,
     };
 
     return {
