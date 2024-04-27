@@ -99,7 +99,7 @@
 
 
       <div class="flex mx-auto gap-2">
-        <TooltipProvider v-if="false">
+        <TooltipProvider v-if="shouConfigButton">
           <Tooltip>
             <TooltipTrigger as-child>
               <a href="/config">
@@ -234,7 +234,12 @@ const externalFavicon = ref('')
 const externalPending = ref(false)
 const externalFetchError = ref(false)
 const externalTitleEditing = ref(false)
-
+let shouConfigButton = false
+let userId = ref(0)
+userId = useCookie('userId') || 0
+if (userId.value === 1) {
+  shouConfigButton = true
+}
 const clearExternalUrl = () => {
   externalUrl.value = ''
   externalTitle.value = ''
@@ -311,8 +316,11 @@ const submitMemo = async () => {
 }
 
 const token = useCookie('token')
+const userIdOut = useCookie('userId')
 const logout = () => {
   token.value = ''
+  userIdOut.value = '0'
+
   navigateTo('/', { replace: true })
 }
 

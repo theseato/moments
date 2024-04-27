@@ -41,7 +41,13 @@ const showBack = () => {
   return route.path.startsWith('/detail') || route.path.startsWith('/settings') || route.path.startsWith('/config')
 }
 
-const response = await $fetch('/api/user/settings/get?user=0');
+const userId = useCookie('userId');
+const url = window.location.pathname
+let findId = userId.value
+if(url.startsWith('/user/')) {
+  findId = url.split('/user/')[1]
+}
+const response = await $fetch('/api/user/settings/get?user=' + (findId == 'undefined' ? '0' : findId));
 
 const { data: res, refresh } = await useAsyncData('userinfo', async () => response)
 

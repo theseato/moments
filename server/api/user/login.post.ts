@@ -50,6 +50,9 @@ export default defineEventHandler(async (event) => {
   setCookie(event, "token", token, {
     expires: new Date(Date.now() + 60 * 60 * 24 * 1000),
   });
+  setCookie(event, "userId", ''+user.id, {
+    expires: new Date(Date.now() + 60 * 60 * 24 * 1000),
+  });
 
   return {
     success: true,

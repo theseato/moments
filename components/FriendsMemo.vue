@@ -97,7 +97,7 @@
         <template v-if="props.memo.comments.length > 0">
           <div class="px-4 py-2 flex flex-col gap-1">
             <div class="relative flex flex-col gap-2 text-sm" v-for="(comment, index) in props.memo.comments" :key="index">
-              <Comment :comment="comment" :belongToMe="token && userId == props.memo.userId" @memo-update="refreshComment" />
+              <Comment :comment="comment" :belongToMe="userId === props.memo.userId" @memo-update="refreshComment" />
             </div>
             <div v-if="props.memo.hasMoreComments" class="text-[#576b95] cursor-pointer"
               @click="navigateTo(`/detail/${props.memo.id}`)">查看更多...</div>
@@ -134,6 +134,7 @@ import {marked} from "marked";
 const token = useCookie('token')
 
 const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
+let userId = ref(0)
 
 const gridStyle = computed(() => {
   let style = 'align-items: start;'; // 确保内容顶部对齐
@@ -161,9 +162,10 @@ dayjs.extend(relativeTime)
 const props = withDefaults(
   defineProps<{
     memo: Memo,
-    showMore: boolean
+    showMore: boolean,
   }>(), {}
 )
+
 
 const emit = defineEmits(['memo-update'])
 
@@ -176,22 +178,18 @@ const el = ref<any>(null)
 let hh = ref(0)
 const { height } = useElementSize(el)
 const likeList = useStorage<Array<number>>('likeList', [])
-let userId = ref(0)
+
+onMounted(async () => {
+  if (token) {
+    userId = useCookie('userId')
+  }
+})
 
 const gridCols = computed(() => {
   const imgLen = (props.memo.imgs || '').split(',').length;
   return imgLen >= 3 ? 3 : imgLen
 })
 
-onMounted(async () => {
-  if (token) {
-    const getUserId = async () => {
-      const result = await $fetch('/api/user/getid')
-      return result
-    };
-    userId = (await getUserId()).data.id
-  }
-})
 const like = async () => {
   showToolbar.value = false
   const contain = likeList.value.find((id) => id === props.memo.id)

@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  ssr: false,
   runtimeConfig: {
     public: {
       RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,

@@ -2,7 +2,7 @@
   <HeaderImg />
   <div>
 
-    <MemoInput v-if="token" @memo-added="firstLoad" />
+    <MemoInput v-if="token" @memo-added="firstLoad"/>
 
     <div class="content flex flex-col divide-y divide-gray-100/50 gap-2">
       <div v-if="state.memoList.length === 0 && !token" class="text-center">
@@ -76,7 +76,6 @@ function setLatestVersion() {
       version.value = updates.pop(); // 获取最后一个元素，即最新版本号
     }
   } else {
-    console.warn('No update details found in the DOM.');
   }
 }
 
@@ -111,6 +110,7 @@ onMounted(async () => {
   });
   rShowMessage('本站点已经开放注册，<a href="/register">点我去注册</a>', 0, 'up', 0);
   rShowMessage('需要登陆？<a href="/login">点我去登陆</a>', 0, 'up', 0);
+
 });
 
 const setupObserver = () => {

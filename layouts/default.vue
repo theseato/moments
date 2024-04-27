@@ -22,7 +22,13 @@ import { useState, useAsyncData } from '#imports';
 
 onMounted(async () => {
   const userinfo = useState<User>('userinfo')
-  const response = await $fetch('/api/user/settings/get?user=0');
+  const userId = useCookie('userId');
+  const url = window.location.pathname
+  let findId = userId.value
+  if(url.startsWith('/user/')) {
+    findId = url.split('/user/')[1]
+  }
+  const response = await $fetch('/api/user/settings/get?user=' + (findId == 'undefined' ? '0' : findId));
   const { data: res } = await useAsyncData('userinfo', async () => response);
   userinfo.value = res.value?.data as any as User;
   useHead({
