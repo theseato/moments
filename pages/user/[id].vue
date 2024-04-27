@@ -176,6 +176,7 @@ const firstLoad = async () => {
     key: 'memoList',
     method: 'POST',
     body: JSON.stringify({
+      user: route.params.id,
       page: state.page,
     })
   })
