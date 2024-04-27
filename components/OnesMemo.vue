@@ -1,5 +1,5 @@
 <template>
-  <div class="memo flex flex-row sm:gap-4 text-sm border-0 sm:p-4 w-full" :class="{'bg-slate-100 dark:bg-neutral-900':props.memo.pinned}">
+  <div class="memo flex flex-row sm:gap-4 text-sm border-0 sm:py-2 sm:px-4 w-full" :class="{'bg-slate-100 dark:bg-neutral-900':props.memo.pinned}">
     <div class="flex flex-col w-1/5">
       {{ props.memo.displayDay }}
       <div v-if="(!props.memo.pinned) && props.memo.displayDay">
@@ -17,10 +17,10 @@
         <FancyBox class="grid my-1 gap-0.5" :style="gridStyle"
                   :options="{ Carousel: { infinite: false } }">
           <img loading="lazy"
-               :class="imgs.length === 1 ? 'cursor-pointer rounded full-cover-image-single' : 'cursor-pointer rounded full-cover-image-mult'"
+               class="cursor-pointer rounded full-cover-image-mult"
                v-lazy="getImgUrl(img)"
                v-for="(img, index) in imgs" :key="index"
-               :style="imgs.length === 1 ? '' : 'object-fit: cover; object-position: center;'" />
+               style="object-fit: cover; object-position: center;" />
         </FancyBox>
       </div>
       <div class="flex w-full" style="flex-direction: column;" @click="$router.push('/detail/'+props.memo.id)">
@@ -58,10 +58,10 @@ const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
 let userId = ref(0)
 
 const gridStyle = computed(() => {
-  let style = 'align-items: start;'; // 确保内容顶部对齐
+  let style = 'align-items: start;';
   switch (imgs.value.length) {
     case 1:
-      style += 'grid-template-columns: 1fr;';
+      style += 'grid-template-columns: 1fr; aspect-ratio: 1 / 1;';
       break;
     case 2:
       style += 'grid-template-columns: 1fr 1fr; aspect-ratio: 2 / 1;';
@@ -113,7 +113,7 @@ watchOnce(height, () => {
   if (height.value > 96) {
     el.value.classList.add('line-clamp-4')
     // 将内容截断为4行，后面的内容删除
-    el.value.style.height = '90px'
+    el.value.style.height = '93px'
   }
 })
 
