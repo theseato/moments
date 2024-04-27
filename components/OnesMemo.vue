@@ -8,7 +8,6 @@
         {{props.memo.location?.split(/\s+/g).join(' · ')}}
       </div>
       <div class="flex flex-row justify-between items-center" v-if="props.memo.pinned" style="width: 100%; height: 100%">
-        <Pin :size=14 />
         <div style="width: 100%; height: 100%; display: flex; align-items: center;"><span style="font-size: 30px">置顶</span></div>
       </div>
     </div>
