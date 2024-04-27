@@ -7,14 +7,14 @@ type LikeMemoReq = {
 
 export default defineEventHandler(async (event) => {
   const { memoId,pinned } = (await readBody(event)) as LikeMemoReq;
-  await prisma.memo.updateMany({
-    where: {
-      pinned: true,
-    },
-    data: {
-      pinned: false,
-    },
-  });
+  // await prisma.memo.updateMany({
+  //   where: {
+  //     pinned: true,
+  //   },
+  //   data: {
+  //     pinned: false,
+  //   },
+  // });
 
   const memo = await prisma.memo.findUnique({
     where: {

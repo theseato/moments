@@ -30,10 +30,18 @@
     <div class="content flex flex-col divide-y divide-gray-100/50 gap-2">
       <div v-if="state.memoList.length === 0 && !token" class="text-center">
         <div class="my-2 text-sm">什么也没有,赶紧去登录发表Moments吧!</div>
-        <Button @click="navigateTo('/login')">去登录</Button>
       </div>
-      <FriendsMemo :memo="memo" v-for="(memo, index) in state.memoList" :key="index" :show-more="true"
-                   @memo-update="firstLoad" />
+      <div v-for="(memo, index) in annotatedMemoList" :key="index">
+        <!-- 检查是否需要显示年份 -->
+        <div v-if="memo.displayYear">
+          <div style="margin: 0 20px">
+            <span style="font-size: 30px">{{ memo.displayYear }}</span>
+          </div>
+        </div>
+
+        <!-- 显示memo -->
+        <OnesMemo :memo="memo" :show-more="true" @memo-update="firstLoad" />
+      </div>
     </div>
 
     <div id="get-more" ref="getMore" class="cursor-pointer text-center text-sm opacity-70 my-4" @click="loadMore()" v-if="state.hasNext" >
@@ -47,13 +55,15 @@
 
 <script setup lang="ts">
 import { type Memo } from '~/lib/types';
-import { onMounted, onUnmounted, watch, ref } from 'vue';
+import {onMounted, onUnmounted, watch, ref, computed} from 'vue';
 import jsonp from 'jsonp';
 import {getImgUrl} from "~/lib/utils";
 import { Sun, MoonStar, LogIn, ArrowLeft } from 'lucide-vue-next'
 
 import { settingsUpdateEvent } from '~/lib/event'
 import {useAsyncData} from "#imports";
+import OnesMemo from "~/components/OnesMemo.vue";
+import dayjs from "dayjs";
 
 const colorMode = useColorMode()
 const token = useCookie('token')
@@ -81,9 +91,30 @@ const version = ref('');
 
 let observer: IntersectionObserver | null = null;
 
+const annotatedMemoList = computed(() => {
+  if (!state.memoList.length) return [];
+  let lastYear = null;
+  let started = false;
+  return state.memoList.map((memo) => {
+    if (!started && memo.pinned) {
+      return memo;
+    }
+    const currentYear = dayjs(memo.createdAt).locale('zh-cn').format('YYYY');
+    if (!started && !memo.pinned) {
+      started = true;
+      lastYear = currentYear;
+      return { ...memo, displayYear: currentYear };
+    }
+    if (currentYear !== lastYear) {
+      lastYear = currentYear;
+      return { ...memo, displayYear: currentYear };
+    }
+    return memo;
+  });
+})
+
 onMounted(async () => {
   await firstLoad();
-  await welcome();
   const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
       loadMore();
@@ -110,7 +141,6 @@ onMounted(async () => {
     immediate: true // 立即触发，确保初始 setup
   });
 });
-
 const setupObserver = () => {
   // 清除现有的观察者（如果有）
   if (observer && getMore.value) {
@@ -146,7 +176,6 @@ const firstLoad = async () => {
     key: 'memoList',
     method: 'POST',
     body: JSON.stringify({
-      user: route.params.id,
       page: state.page,
     })
   })
@@ -165,8 +194,7 @@ const loadMore = async () => {
       key: 'memoList',
       method: 'POST',
       body: JSON.stringify({
-        user: route.params.id,
-        page: state.page + 1,
+        page: state.page + 1, // 先不增加页码
       })
     });
     state.page += 1;
@@ -179,47 +207,15 @@ const loadMore = async () => {
       // 处理其他错误
       console.error('Failed to load more memos:', error);
     }
-    setTimeout(loadMore, 100);
+    setTimeout(loadMore, 1000);
   } finally {
     loadLock = false;
   }
 }
 
+
 </script>
 
 <style scoped></style>
 <style>
-#version-info {
-  text-align: left;
-  position: fixed;
-  left: 10px;
-  bottom: 10px;
-  margin: 20px;
-  padding: 0;
-  border-radius: 5px;
-  font-size: 12px;
-  color: rgba(128, 128, 128, 0.7);
-  z-index: 9999;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  max-height: 20px;
-}
-
-#version-info:hover {
-  color: white;
-  background-color: rgba(128, 128, 128, 0.7);
-  max-height: 100%;
-}
-
-.update-details {
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-#version-info:hover .update-details {
-  opacity: 1;
-  max-height: 100%;
-}
 </style>
