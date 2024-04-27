@@ -1,7 +1,7 @@
 import prisma from "~/lib/db";
 import { readBody } from "h3";
 import { sendEmail } from '~/utils/sendEmail';
-import RPCClient from '@alicloud/pop-core';
+import { aliTextJudge } from '~/utils/aliTextJudge';
 
 
 // 定义评论请求的数据类型
@@ -189,55 +189,4 @@ async function validateRecaptcha(reToken: string) {
         console.error("Failed to verify reCAPTCHA:", error);
         return { success: false, "error-codes": ["verification_failed"] };
     }
-}
-
-// 阿里云文本审核
-async function aliTextJudge(content: string, Service: string = "comment_detection") {
-    // 注意，此处实例化的client请尽可能重复使用，避免重复建立连接，提升检测性能。
-    let client = new RPCClient({
-        /**
-         * 阿里云账号AccessKey拥有所有API的访问权限，建议您使用RAM用户进行API访问或日常运维。
-         * 强烈建议不要把AccessKey ID和AccessKey Secret保存到工程代码里，否则可能导致AccessKey泄露，威胁您账号下所有资源的安全。
-         * 常见获取环境变量方式: 
-         * 获取RAM用户AccessKey ID: process.env['ALIBABA_CLOUD_ACCESS_KEY_ID']
-         * 获取RAM用户AccessKey Secret: process.env['ALIBABA_CLOUD_ACCESS_KEY_SECRET']
-         */
-        accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID || 'default',
-        accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET || 'default',
-        // 接入区域和地址请根据实际情况修改
-        endpoint: "https://green-cip.cn-shanghai.aliyuncs.com",
-        apiVersion: '2022-03-02',
-        // 设置http代理
-        // httpProxy: "http://xx.xx.xx.xx:xxxx",
-        // 设置https代理
-        // httpsProxy: "https://username:password@xxx.xxx.xxx.xxx:9999",
-    });
-    // 通过以下代码创建API请求并设置参数。
-    const params = {
-        // 文本检测service: 内容安全控制台文本增强版规则配置的serviceCode，示例: chat_detection
-        "Service": Service,
-        "ServiceParameters": JSON.stringify({
-            //待检测文本内容。
-            "content": content,
-        }),
-    };
-
-    const requestOption = {
-        method: 'POST',
-        formatParams: false,
-    };
-
-    let response: any;
-    try {
-        response = await client.request('TextModeration', params, requestOption);
-        if (response.Code === 500) {
-            client.endpoint = "https://green-cip.cn-beijing.aliyuncs.com";
-            response = await client.request('TextModeration', params, requestOption);
-        }
-    } catch (err) {
-        console.log(err);
-        // 确保在错误情况下也返回一个值，或者抛出一个错误
-        return err;
-    }
-    return response;
 }

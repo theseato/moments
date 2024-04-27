@@ -1,13 +1,14 @@
 <template>
-  <div class="memo flex flex-row gap-2 sm:gap-4 text-sm border-x-0 pt-2 p-2 sm:p-4 w-full" :class="{'bg-slate-100 dark:bg-neutral-700':props.memo.pinned}">
+  <div class="memo flex flex-row sm:gap-4 text-sm border-0 sm:p-4 w-full" :class="{'bg-slate-100 dark:bg-neutral-900':props.memo.pinned}">
     <div class="flex flex-col w-1/5">
-      <div v-if="!props.memo.pinned">
+      {{ props.memo.displayDay }}
+      <div v-if="(!props.memo.pinned) && props.memo.displayDay">
         <span style="font-size: 25px">{{dayjs(props.memo.createdAt).locale('zh-cn').format('DD')}}</span> <span>{{dayjs(props.memo.createdAt).locale('zh-cn').format('M')}}月</span>
       </div>
-      <div class="text-[#576b95] font-medium dark:text-white text-xs mt-2 mb-1 select-none" v-if="!props.memo.pinned">
+      <div class="text-[#576b95] font-medium dark:text-white text-xs mt-2 mb-1 select-none" v-if="(!props.memo.pinned) && props.memo.displayDay">
         {{props.memo.location?.split(/\s+/g).join(' · ')}}
       </div>
-      <div class="flex flex-row justify-between items-center" v-if="props.memo.pinned" style="width: 100%; height: 100%">
+      <div class="flex flex-row justify-between items-center" v-if="(props.memo.pinned) && props.memo.displayDay" style="width: 100%; height: 100%">
         <div style="width: 100%; height: 100%; display: flex; align-items: center;"><span style="font-size: 30px">置顶</span></div>
       </div>
     </div>

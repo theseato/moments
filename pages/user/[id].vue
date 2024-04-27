@@ -87,29 +87,43 @@ settingsUpdateEvent.on(async () => {
 
 
 const getMore = ref(null);
-const version = ref('');
 
 let observer: IntersectionObserver | null = null;
 
 const annotatedMemoList = computed(() => {
   if (!state.memoList.length) return [];
   let lastYear = null;
+  let lastDay = null;
   let started = false;
   return state.memoList.map((memo) => {
     if (!started && memo.pinned) {
       return memo;
     }
     const currentYear = dayjs(memo.createdAt).locale('zh-cn').format('YYYY');
+    const currentDay = dayjs(memo.createdAt).locale('zh-cn').format('YYYYMMDD');
     if (!started && !memo.pinned) {
       started = true;
       lastYear = currentYear;
-      return { ...memo, displayYear: currentYear };
+      lastDay = currentDay;
+      return { ...memo, displayYear: currentYear, displayDay: currentDay };
+    }else{
+      let returns = memo;
+      if (currentYear !== lastYear) {
+        lastYear = currentYear;
+        returns = {...returns, displayYear: currentYear};
+      }else{
+        returns = {...returns, displayYear: null};
+      }
+      if (currentDay !== lastDay) {
+        lastDay = currentDay;
+        console.log(currentDay, lastDay)
+        returns = {...returns, displayDay: currentDay};
+      }else{
+        returns = {...returns, displayDay: null};
+      }
+      return returns;
     }
-    if (currentYear !== lastYear) {
-      lastYear = currentYear;
-      return { ...memo, displayYear: currentYear };
-    }
-    return memo;
+
   });
 })
 
