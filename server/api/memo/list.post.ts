@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
         },
         comments: {
           orderBy: {
-            createdAt: "desc",
+            createdAt: "asc",
           },
           take: 5+1
         },
