@@ -1,7 +1,6 @@
 <template>
   <div class="memo flex flex-row sm:gap-4 text-sm border-0 sm:py-2 sm:px-4 w-full" :class="{'bg-slate-100 dark:bg-neutral-900':props.memo.pinned}">
     <div class="flex flex-col w-1/5">
-      {{ props.memo.displayDay }}
       <div v-if="(!props.memo.pinned) && props.memo.displayDay">
         <span style="font-size: 25px">{{dayjs(props.memo.createdAt).locale('zh-cn').format('DD')}}</span> <span>{{dayjs(props.memo.createdAt).locale('zh-cn').format('M')}}月</span>
       </div>
