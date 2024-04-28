@@ -108,8 +108,8 @@ onMounted(async () => {
   }, {
     immediate: true // 立即触发，确保初始 setup
   });
-  rShowMessage('本站点已经开放注册，<a href="/register">点我去注册</a>', 0, 'up', 0);
-  rShowMessage('需要登陆？<a href="/login">点我去登陆</a>', 0, 'up', 0);
+  rShowMessage('本站点已经开放注册，<a href="/register">点我去注册</a>', 1, 'up', 5000);
+  rShowMessage('需要登陆？<a href="/login">点我去登陆</a>', 1, 'up', 5000);
 
 });
 
