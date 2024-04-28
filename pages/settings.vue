@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { settingsUpdateEvent } from '~/lib/event'
 const token = useCookie('token')
+const userId = useCookie('userId')
 import { useStorage } from "@vueuse/core";
 import type { User } from '~/lib/types';
 import {toast} from "vue-sonner";
@@ -120,21 +121,25 @@ const uploadImgs = async (event: Event, id: string) => {
 }
 
 const saveSettings = async () => {
-  toast.promise(
-      $fetch('/api/user/settings/save', {
+  toast.promise($fetch('/api/user/settings/save', {
         method: 'POST',
         body: JSON.stringify(state)
       }), {
         loading: '保存中...',
         success: (data) => {
-          state.password = ''
-          settingsUpdateEvent.emit()
-          if (state.password) {
-            token.value = ''
-            navigateTo('/login')
-            return ('密码修改成功,请重新登录')
+          if(data.success){
+            state.password = ''
+            settingsUpdateEvent.emit()
+            if (state.password) {
+              token.value = ''
+              userId.value = '0'
+              navigateTo('/login')
+              return ('密码修改成功,请重新登录')
+            }else{
+              location.reload()
+              return '保存成功'
+            }
           } else {
-            location.reload()
             throw new Error(data.message)
           }
         },

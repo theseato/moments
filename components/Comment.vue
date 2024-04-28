@@ -79,7 +79,7 @@ const props = withDefaults(
 const refreshComment = async () => {
   emit('memo-update')
   showCommentInput.value = false
-  // 关闭评论框
+  PopoverRoot.close()
 
 }
 const openDeleteDialog = () => {
@@ -91,7 +91,7 @@ const openDeleteDialog = () => {
 // }
 
 const removeComment = async () => {
-  toast.promise( $fetch('/api/comment/remove', {
+  toast.promise($fetch('/api/comment/remove', {
         method: 'POST',
         body: JSON.stringify({
           commentId: props.comment.id

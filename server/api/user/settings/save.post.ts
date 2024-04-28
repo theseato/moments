@@ -53,7 +53,7 @@ export default defineEventHandler(async (event) => {
       id: userId,
     },
     data: {
-        username: data.nickname,
+        username: data.username,
         nickname: data.nickname,
         password: data.password,
         avatarUrl: data.avatarUrl,

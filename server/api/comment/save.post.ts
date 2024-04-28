@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
         return { success: false, message: "评论内容长度不能超过500个字符",};
     }
     if (username.length > 10) {
-        return { success: false, message: "用户名长度不能超过8个字符" };
+        return { success: false, message: "用户名长度不能超过10个字符" };
     }
     if (email && email.length > 30) {
         return { success: false, message: "邮箱长度不能超过30个字符" };

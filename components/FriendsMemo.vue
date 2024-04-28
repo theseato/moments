@@ -131,6 +131,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import {marked} from "marked";
 import {toast} from "vue-sonner";
+import {PopoverRoot} from "radix-vue";
 const token = useCookie('token')
 
 const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
@@ -252,6 +253,7 @@ const refreshComment = async () => {
   emit('memo-update', props.memo)
   showUserCommentArray.value = []
   showCommentInput.value = false
+  PopoverRoot.close()
 }
 
 
