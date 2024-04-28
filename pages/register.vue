@@ -54,11 +54,11 @@ onMounted(() => {
     })
 
     if (res.success) {
-      this.$rNotification.rStatusMessage.success('发送成功')
+      rStatusMessage.success('发送成功')
       // 平滑显示验证码输入框
       document.getElementById('vcode').hidden = false
     } else {
-      this.$rNotification.rStatusMessage.warning(res.message, '发送失败')
+      rStatusMessage.warning(res.message, '发送失败')
     }
     // 恢复按钮
     document.getElementById('sendMail').disabled = false

@@ -34,7 +34,7 @@ const staticWord = {
 
 export default defineEventHandler(async (event) => {
     // 从请求体中读取数据
-    const { memoId, content, replyTo, replyToId, username, email, website, reToken } =
+    let { memoId, content, replyTo, replyToId, username, email, website, reToken } =
         (await readBody(event)) as SaveCommentReq;
 
     if (content.length > 500) {
@@ -106,6 +106,21 @@ export default defineEventHandler(async (event) => {
             userId: true,
         },
     });
+    // 根据id获取nickname
+    const user = await prisma.user.findUnique({
+        where: {
+            id: event.context.userId,
+        },
+        select: {
+            nickname: true,
+            eMail: true,
+        },
+    });
+    if(user){
+        username = user.nickname;
+        email = user.eMail;
+    }
+
     // 创建评论
     await prisma.comment.create({
         data: {
