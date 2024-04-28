@@ -223,6 +223,7 @@ const loadMore = async () => {
 
 
 const welcome = async () => {
+
   try {
     const url = 'https://apis.map.qq.com/ws/location/v1/ip';
     const config = useRuntimeConfig();
