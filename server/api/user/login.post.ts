@@ -20,20 +20,28 @@ export default defineEventHandler(async (event) => {
   if (!username || !password) {
     return {
       success: false,
-      message: "用户名或密码不能为空",
+      message: "用户名（邮箱）或密码不能为空",
       token,
     };
   }
 
+  // 查找邮箱或者用户名
   const user = await prisma.user.findFirst({
     where: {
-      username
+      OR: [
+        {
+          username: username,
+        },
+        {
+          eMail: username,
+        },
+      ],
     },
   });
 
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return {
-      message: "用户名或密码错误",
+      message: "用户名（邮箱）或密码错误",
       success: false,
       token,
     };

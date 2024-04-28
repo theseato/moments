@@ -217,7 +217,7 @@ const loadMore = async () => {
     state.hasNext = hasNext;
   } catch (error: any) {
     if (error.response && error.response.status === 429) {
-      rStatusMessage.warning('请求过于频繁，请稍后再试');
+      toast.warning('请求过于频繁，请稍后再试');
     } else {
       // 处理其他错误
       console.error('Failed to load more memos:', error);

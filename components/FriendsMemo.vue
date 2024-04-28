@@ -130,6 +130,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import {marked} from "marked";
+import {toast} from "vue-sonner";
 const token = useCookie('token')
 
 const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
@@ -192,6 +193,9 @@ const gridCols = computed(() => {
 const like = async () => {
   showToolbar.value = false
   const contain = likeList.value.find((id) => id === props.memo.id)
+
+
+
   const res = await $fetch('/api/memo/like', {
     method: 'POST',
     body: JSON.stringify({
@@ -219,7 +223,7 @@ const pinned = async ()=>{
     })
   })
   if (res.success) {
-    rStatusMessage.success('操作成功')
+    toast.success('操作成功')
     emit('memo-update')
   }
 }
@@ -233,7 +237,7 @@ const removeMemo = async () => {
     })
   })
   if (res.success) {
-    rStatusMessage.success('删除成功')
+    toast.success('删除成功')
     emit('memo-update')
   }
 }

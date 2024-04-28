@@ -13,7 +13,7 @@ type SaveSettingsReq = {
 };
 
 export default defineEventHandler(async (event) => {
-  const { password, nickname, avatarUrl, slogan, coverUrl, ...rest } =
+  const {username,  password, nickname, avatarUrl, slogan, coverUrl, ...rest } =
     (await readBody(event)) as SaveSettingsReq;
 
   const updated = {} as SaveSettingsReq;
@@ -27,6 +27,24 @@ export default defineEventHandler(async (event) => {
   updated.slogan = slogan || "星垂平野阔，月涌大江流。";
   updated.coverUrl = coverUrl || '/cover.webp';
 
+  if(username){
+    const userExist = await prisma.user.findFirst({
+      where: {
+        username: username,
+        id: {
+            not: userId,
+        }
+      },
+    });
+    if (userExist) {
+      return {
+        success: false,
+        message: "用户名已存在",
+      };
+    }
+    updated.username = username;
+  }
+
   // 从updated中获取剩余的数据
   const data = { ...updated, ...rest };
 
@@ -35,8 +53,8 @@ export default defineEventHandler(async (event) => {
       id: userId,
     },
     data: {
-        // username: data.nickname,
-        // nickname: data.nickname,
+        username: data.nickname,
+        nickname: data.nickname,
         password: data.password,
         avatarUrl: data.avatarUrl,
         slogan: data.slogan,

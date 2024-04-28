@@ -32,6 +32,7 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {toast} from "vue-sonner";
 
 
 const state = reactive({
@@ -48,20 +49,24 @@ onMounted(() => {
   const sendMail = async () => {
     // 按钮禁用
     document.getElementById('sendMail').disabled = true
-    const res = await $fetch('/api/user/sendMail', {
-      method: 'POST',
-      body: JSON.stringify({ email: state.email })
-    })
-
-    if (res.success) {
-      rStatusMessage.success('发送成功')
-      // 平滑显示验证码输入框
-      document.getElementById('vcode').hidden = false
-    } else {
-      rStatusMessage.warning(res.message, '发送失败')
-    }
-    // 恢复按钮
-    document.getElementById('sendMail').disabled = false
+    toast.promise(
+        $fetch('/api/user/sendMail', {
+          method: 'POST',
+          body: JSON.stringify({ email: state.email })
+        }), {
+          loading: '发送中...',
+          success: (data) => {
+            document.getElementById('sendMail').disabled = false;
+            if (data.success) {
+              document.getElementById('vcode').hidden = false;
+              return '发送成功';
+            } else {
+              return '发送失败: ' + data.message;
+            }
+          },
+          error: (error) => `发送失败: ${error.message || '未知错误'}`, // 显示具体的错误信息
+        }
+    );
   }
 
   document.getElementById('sendMail').addEventListener('click', sendMail)
@@ -69,17 +74,43 @@ onMounted(() => {
 
 
 const register = async () => {
-  const res = await $fetch('/api/user/register', {
-    method: 'POST',
-    body: JSON.stringify(state)
-  })
 
-  if (res.success) {
-    rStatusMessage.success('注册成功')
-    await navigateTo('/login')
-  } else {
-    rStatusMessage.warning(res.message, '注册失败')
-  }
+  toast.promise(
+      $fetch('/api/user/sendMail', {
+        method: 'POST',
+        body: JSON.stringify({ email: state.email })
+      }), {
+        loading: '发送中...',
+        success: (data) => {
+          document.getElementById('sendMail').disabled = false;
+          if (data.success) {
+            document.getElementById('vcode').hidden = false;
+            return '发送成功';
+          } else {
+            return '发送失败: ' + data.message;
+          }
+        },
+        error: (error) => `发送失败: ${error.message || '未知错误'}`,
+      }
+  );
+
+  toast.promise(
+      $fetch('/api/user/register', {
+        method: 'POST',
+        body: JSON.stringify(state)
+      }), {
+        loading: '注册中...',
+        success: (data) => {
+          if (data.success) {
+            navigateTo('/login')
+            return '注册成功';
+          } else {
+            return '注册失败: ' + data.message;
+          }
+        },
+        error: (error) => `任务失败: ${error.message || '未知错误'}`,
+      }
+  );
 }
 </script>
 

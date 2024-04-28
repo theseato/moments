@@ -130,6 +130,7 @@ import { settingsUpdateEvent } from '~/lib/event'
 const token = useCookie('token')
 import { useStorage } from "@vueuse/core";
 import type { User } from '~/lib/types';
+import {toast} from "vue-sonner";
 
 const response = await $fetch('/api/user/settings/get?user=0');
 
@@ -187,7 +188,7 @@ const uploadImgs = async (event: Event, id: string) => {
         state.favicon = res.filename
       }
     } else {
-      rStatusMessage.warning(res.message, '上传失败')
+      toast.warning('上传失败' + res.message)
     }
   })
 }
@@ -199,7 +200,7 @@ const saveConfig = async () => {
   })
   if (success) {
     enableS3.value = state.enableS3
-      rStatusMessage.success('保存成功')
+    toast.success('保存成功')
       location.reload()
     settingsUpdateEvent.emit()
   }

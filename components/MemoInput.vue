@@ -200,6 +200,7 @@ import { useAnimate } from '@vueuse/core';
 import { Image, Music4, Settings, Trash2, LogOut,  Link, Youtube, CircleX, Check, FileSliders } from 'lucide-vue-next'
 import { ref } from 'vue';
 import jsonp from "jsonp";
+import {toast} from "vue-sonner";
 const location = ref('');
 
 const textareaRef = ref()
@@ -249,7 +250,7 @@ const clearExternalUrl = () => {
 }
 const addLink = async () => {
   if (externalFetchError.value && externalTitle.value === '') {
-    rStatusMessage.warning('请填写标题和图标')
+    toast.warning('请填写标题和图标')
     return
   }
   if (externalFetchError.value && externalTitle.value !== '') {
@@ -273,7 +274,7 @@ const addLink = async () => {
     linkOpen.value = false
     externalPending.value = false
   } else {
-    rStatusMessage.warning(res.value?.message, '获取失败')
+    toast.warning('获取失败: ' + res.value?.message)
     externalPending.value = false
     externalFetchError.value = true
   }
@@ -281,38 +282,44 @@ const addLink = async () => {
 
 const imgs = ref<string[]>([])
 const submitMemo = async () => {
-  const res = await $fetch('/api/memo/save', {
-    method: 'POST',
-    body: JSON.stringify({
-      id: id.value,
-      content: content.value,
-      imgUrls: imgs.value,
-      music163Url: music163IfrUrl.value,
-      bilibiliUrl: bilibiliIfrUrl.value,
-      location: location.value,
-      externalFavicon: externalFavicon.value,
-      externalTitle: externalTitle.value,
-      externalUrl: externalUrl.value
-    })
-  })
-  if (res.success) {
-    rStatusMessage.success('提交成功')
-    content.value = ''
-    id.value = -1
-    imgs.value = []
-    music163IfrUrl.value = ''
-    music163Url.value = ''
-    bilibiliIfrUrl.value = ''
-    bilibiliUrl.value = ''
-    location.value = ''
-    externalFavicon.value = ''
-    externalTitle.value = ''
-    externalUrl.value = ''
-    showEmoji.value = false
-    emit('memoAdded')
-  } else {
-    rStatusMessage.warning(res.message, '提交失败')
-  }
+  toast.promise( $fetch('/api/memo/save', {
+        method: 'POST',
+        body: JSON.stringify({
+          id: id.value,
+          content: content.value,
+          imgUrls: imgs.value,
+          music163Url: music163IfrUrl.value,
+          bilibiliUrl: bilibiliIfrUrl.value,
+          location: location.value,
+          externalFavicon: externalFavicon.value,
+          externalTitle: externalTitle.value,
+          externalUrl: externalUrl.value
+        })
+      }), {
+        loading: '提交中...',
+        success: (data) => {
+          if (data.success) {
+            content.value = ''
+            id.value = -1
+            imgs.value = []
+            music163IfrUrl.value = ''
+            music163Url.value = ''
+            bilibiliIfrUrl.value = ''
+            bilibiliUrl.value = ''
+            location.value = ''
+            externalFavicon.value = ''
+            externalTitle.value = ''
+            externalUrl.value = ''
+            showEmoji.value = false
+            emit('memoAdded')
+            return '提交成功';
+          } else {
+            throw new Error(data.message)
+          }
+        },
+        error: (error) => `提交失败: ${error || '未知错误'}`,
+      }
+  );
 }
 
 const token = useCookie('token')
@@ -334,7 +341,7 @@ const pasteImg = async (event: ClipboardEvent) => {
     if (res.success) {
       imgs.value = [...imgs.value, res.filename]
     } else {
-      rStatusMessage.warning(res.message, '上传失败')
+      toast.warning('上传失败' + res.message)
     }
   })
 }
@@ -350,14 +357,14 @@ const uploadImgs = async (event: Event) => {
       (event.target as HTMLInputElement).value = ''
       imgs.value = [...imgs.value, res.filename]
     } else {
-      rStatusMessage.warning(res.message, '上传失败')
+      toast.warning('上传失败' + res.message)
     }
   })
 }
 
 const importMusic = () => {
   if (music163Url.value === '') {
-    rStatusMessage.warning('请输入网易云音乐代码')
+    toast.warning('请输入网易云音乐代码')
     return
   }
   const match = music163Url.value.match(/src="(.*)&auto.*"/)
@@ -371,7 +378,7 @@ const importMusic = () => {
 
 const importBiliBili = () => {
   if (bilibiliUrl.value === '') {
-    rStatusMessage.warning('请输入B站视频代码')
+    toast.warning('请输入B站视频代码')
     return
   }
   const match = bilibiliUrl.value.match(/src="(.*?)"/)

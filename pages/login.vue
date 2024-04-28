@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {toast} from "vue-sonner";
 
 
 const state = reactive({
@@ -29,17 +30,23 @@ const state = reactive({
 })
 
 const login = async () => {
-  const res = await $fetch('/api/user/login', {
-    method: 'POST',
-    body: JSON.stringify(state)
-  })
-
-  if (res.success) {
-    rStatusMessage.success('登录成功')
-    await navigateTo('/')
-  } else {
-    rStatusMessage.warning(res.message, '登录失败')
-  }
+  toast.promise(
+      $fetch('/api/user/login', {
+        method: 'POST',
+        body: JSON.stringify(state)
+      }), {
+        loading: '登陆中...',
+        success: (data) => {
+          if (data.success) {
+            navigateTo('/')
+            return '登录成功';
+          } else {
+            throw new Error(data.message)
+          }
+        },
+        error: (error) => `操作失败: ${error || '未知错误'}`,
+      }
+  );
 }
 </script>
 

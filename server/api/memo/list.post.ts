@@ -46,50 +46,15 @@ export default defineEventHandler(async (event) => {
       },
     },
     where: {
-      pinned: false,
       userId: user ? user : undefined,
     },
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      { pinned: 'desc' },
+      { createdAt: 'desc' }
+    ],
     skip: (page - 1) * size,
     take: size,
   });
-  if (page === 1) {
-    const pinnedMemo = await prisma.memo.findFirst({
-      include: {
-        user: {
-          select: {
-            username: true,
-            nickname: true,
-            slogan: true,
-            id: true,
-            avatarUrl: true,
-            coverUrl: true,
-          },
-        },
-        comments: {
-          orderBy: {
-            createdAt: "asc",
-          },
-          take: 5+1
-        },
-        _count: {
-          select: {
-            comments: true,
-          },
-        },
-      },
-      where: {
-        pinned: true,
-        userId: user ? user : undefined,
-      },
-    });
-    if (pinnedMemo) {
-      // @ts-ignore
-      data = [pinnedMemo, ...data];
-    }
-  }
   data = data.map(memo => ({
     ...memo,
     comments: memo.comments.filter(comment => comment.content && comment.content.length < 100),

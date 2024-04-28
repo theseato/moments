@@ -64,6 +64,7 @@ import { settingsUpdateEvent } from '~/lib/event'
 const token = useCookie('token')
 import { useStorage } from "@vueuse/core";
 import type { User } from '~/lib/types';
+import {toast} from "vue-sonner";
 
 const response = await $fetch('/api/user/settings/get?user=0');
 
@@ -110,31 +111,36 @@ const uploadImgs = async (event: Event, id: string) => {
       } else if (id === 'avatarUrl') {
         state.avatarUrl = res.filename
       } else {
-        rStatusMessage.warning('未知图片类型', '上传失败')
+        toast.warning('上传失败: 未知图片类型')
       }
     } else {
-      rStatusMessage.warning(res.message, '上传失败')
+      toast.warning('上传失败: ' + res.message)
     }
   })
 }
 
 const saveSettings = async () => {
-  const { success } = await $fetch('/api/user/settings/save', {
-    method: 'POST',
-    body: JSON.stringify(state)
-  })
-  if (success) {
-    if (state.password) {
-      token.value = ''
-      rStatusMessage.success('密码修改成功,请重新登录')
-      navigateTo('/login')
-    } else {
-      rStatusMessage.success('保存成功')
-      location.reload()
-    }
-    state.password = ''
-    settingsUpdateEvent.emit()
-  }
+  toast.promise(
+      $fetch('/api/user/settings/save', {
+        method: 'POST',
+        body: JSON.stringify(state)
+      }), {
+        loading: '保存中...',
+        success: (data) => {
+          state.password = ''
+          settingsUpdateEvent.emit()
+          if (state.password) {
+            token.value = ''
+            navigateTo('/login')
+            return ('密码修改成功,请重新登录')
+          } else {
+            location.reload()
+            throw new Error(data.message)
+          }
+        },
+        error: (error) => `保存失败: ${error || '未知错误'}`,
+      }
+  );
 }
 </script>
 

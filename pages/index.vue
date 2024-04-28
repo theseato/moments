@@ -50,6 +50,8 @@
       ·V0.2.8 2024-04-26 更新多用户权限控制
       <br/>
       ·V0.3.0 2024-04-26 正式开放多用户，欢迎注册尝试
+      <br/>
+      ·V0.3.1 2024-04-28 修复弹窗样式，更新变更用户名逻辑
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -108,9 +110,9 @@ onMounted(async () => {
   }, {
     immediate: true // 立即触发，确保初始 setup
   });
-  rShowMessage('本站点已经开放注册，<a href="/register">点我去注册</a>', 1, 'up', 5000);
-  rShowMessage('需要登陆？<a href="/login">点我去登陆</a>', 1, 'up', 5000);
-
+  toast.message('站点通知', {
+    description: '本站点已经开放注册！需要注册/登陆？请点击右下角菜单！',
+  })
 });
 
 const setupObserver = () => {
@@ -144,16 +146,37 @@ const state = reactive({
 
 const firstLoad = async () => {
   state.page = 1
-  const { data, hasNext } = await $fetch('/api/memo/list', {
-    key: 'memoList',
-    method: 'POST',
-    body: JSON.stringify({
-      page: state.page,
-    })
-  })
-  state.memoList = data as any as Memo[]
-  state.hasNext = hasNext || false
-  // await loadMore()
+  toast.promise(
+      $fetch('/api/memo/list', {
+        key: 'memoList',
+        method: 'POST',
+        body: JSON.stringify({
+          page: state.page,
+        })
+      }), {
+        loading: '加载中...',
+        success: (data) => {
+          console.log(data);
+          if (data.success) {
+            state.memoList = data.data as any as Memo[]
+            state.hasNext = data.hasNext || false
+            return '加载成功';
+          } else {
+            return '加载失败: ' + data.message;
+          }
+        },
+        error: (error) => {
+          if (error.response && error.response.status === 429) {
+            return '请求过于频繁，请稍后再试';
+          } else {
+            return `加载失败: ${error.message || '未知错误'}`;
+          }
+        },
+        finally() {
+          loadLock = false; // 确保加载锁被重置
+        },
+      }
+  );
 }
 
 let loadLock = false;
@@ -161,28 +184,41 @@ let loadLock = false;
 const loadMore = async () => {
   if(loadLock) return;
   loadLock = true;
-  try {
-    const { data, hasNext } = await $fetch('/api/memo/list', {
-      key: 'memoList',
-      method: 'POST',
-      body: JSON.stringify({
-        page: state.page + 1, // 先不增加页码
-      })
-    });
-    state.page += 1;
-    state.memoList.push(...data as any as Memo[]);
-    state.hasNext = hasNext;
-  } catch (error: any) {
-    if (error.response && error.response.status === 429) {
-      rStatusMessage.warning('请求过于频繁，请稍后再试');
-    } else {
-      // 处理其他错误
-      console.error('Failed to load more memos:', error);
-    }
-    setTimeout(loadMore, 1000);
-  } finally {
-    loadLock = false;
-  }
+
+  toast.promise(
+      $fetch('/api/memo/list', {
+        key: 'memoList',
+        method: 'POST',
+        body: JSON.stringify({
+          page: state.page + 1 // 先不增加页码
+        })
+      }), {
+        loading: '加载中...',
+        success: (data) => {
+          console.log(data);
+          if (data.success) {
+            state.page += 1; // 成功后增加页码
+            if (Array.isArray(data.data)) { // 确保数据是数组
+              state.memoList.push(...data.data);
+            }
+            state.hasNext = data.hasNext;
+            return '加载成功';
+          } else {
+            return '加载失败: ' + data.message;
+          }
+        },
+        error: (error) => {
+          if (error.response && error.response.status === 429) {
+            return '请求过于频繁，请稍后再试';
+          } else {
+            return `加载失败: ${error.message || '未知错误'}`;
+          }
+        },
+        finally() {
+          loadLock = false; // 确保加载锁被重置
+        },
+      }
+  );
 }
 
 
@@ -408,7 +444,7 @@ const welcome = async () => {
             ip = "您的IP地址为：<b><span>IPv6</span></b>";
           }
 
-          rStatusMessage.info(`欢迎来自<br><b><span>${pos}</span></b><br>的朋友<br>${posdesc}🍂<br>您的IP地址为：<b><span>${ip}</span></b><br>${timeChange} <br>`);
+          toast(`欢迎来自<br><b><span>${pos}</span></b><br>的朋友<br>${posdesc}🍂<br>您的IP地址为：<b><span>${ip}</span></b><br>${timeChange} <br>`);
         }
       }
     });

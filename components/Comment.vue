@@ -91,16 +91,24 @@ const openDeleteDialog = () => {
 // }
 
 const removeComment = async () => {
-  const res = await $fetch('/api/comment/remove', {
-    method: 'POST',
-    body: JSON.stringify({
-      commentId: props.comment.id
-    })
-  })
-  if (res.success) {
-    rStatusMessage.success('删除成功')
-    emit('memo-update')
-  }
+  toast.promise( $fetch('/api/comment/remove', {
+        method: 'POST',
+        body: JSON.stringify({
+          commentId: props.comment.id
+        })
+      }), {
+        loading: '删除中...',
+        success: (data) => {
+          if (data.success) {
+            emit('memo-update')
+            return '删除成功';
+          } else {
+            throw new Error(data.message)
+          }
+        },
+        error: (error) => `删除失败: ${error || '未知错误'}`,
+      }
+  );
 }
 
 </script>
