@@ -80,7 +80,8 @@ const refreshComment = async () => {
   emit('memo-update')
   showCommentInput.value = false
   PopoverRoot.close()
-
+  // 模拟点击页面其他地方
+  document.body.click()
 }
 const openDeleteDialog = () => {
   showCommentInput.value = false

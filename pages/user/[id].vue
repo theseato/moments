@@ -64,6 +64,7 @@ import { settingsUpdateEvent } from '~/lib/event'
 import {useAsyncData} from "#imports";
 import OnesMemo from "~/components/OnesMemo.vue";
 import dayjs from "dayjs";
+import {toast} from "vue-sonner";
 
 const colorMode = useColorMode()
 const token = useCookie('token')
@@ -186,46 +187,81 @@ const state = reactive({
 
 const firstLoad = async () => {
   state.page = 1
-  const { data, hasNext } = await $fetch('/api/memo/list', {
-    key: 'memoList',
-    method: 'POST',
-    body: JSON.stringify({
-      user: route.params.id,
-      page: state.page,
-    })
-  })
-  state.memoList = data as any as Memo[]
-  state.hasNext = hasNext || false
-  // await loadMore()
+  toast.promise($fetch('/api/memo/list', {
+        key: 'memoList',
+        method: 'POST',
+        body: JSON.stringify({
+          user: route.params.id,
+          page: state.page,
+        })
+      }), {
+        loading: '加载中...',
+        success: (data) => {
+          console.log(data);
+          if (data.success) {
+            state.memoList = data.data as any as Memo[]
+            state.hasNext = data.hasNext || false
+            return '加载成功';
+          } else {
+            return '加载失败: ' + data.message;
+          }
+        },
+        error: (error) => {
+          if (error.response && error.response.status === 429) {
+            return '请求过于频繁，请稍后再试';
+          } else {
+            return `加载失败: ${error.message || '未知错误'}`;
+          }
+        },
+        finally() {
+          loadLock = false; // 确保加载锁被重置
+        },
+      }
+  );
 }
+
 
 let loadLock = false;
 
 const loadMore = async () => {
   if(loadLock) return;
   loadLock = true;
-  try {
-    const { data, hasNext } = await $fetch('/api/memo/list', {
-      key: 'memoList',
-      method: 'POST',
-      body: JSON.stringify({
-        page: state.page + 1, // 先不增加页码
-      })
-    });
-    state.page += 1;
-    state.memoList.push(...data as any as Memo[]);
-    state.hasNext = hasNext;
-  } catch (error: any) {
-    if (error.response && error.response.status === 429) {
-      toast.warning('请求过于频繁，请稍后再试');
-    } else {
-      // 处理其他错误
-      console.error('Failed to load more memos:', error);
-    }
-    setTimeout(loadMore, 1000);
-  } finally {
-    loadLock = false;
-  }
+
+  toast.promise(
+      $fetch('/api/memo/list', {
+        key: 'memoList',
+        method: 'POST',
+        body: JSON.stringify({
+          user: route.params.id,
+          page: state.page + 1 // 先不增加页码
+        })
+      }), {
+        loading: '加载中...',
+        success: (data) => {
+          console.log(data);
+          if (data.success) {
+            state.page += 1; // 成功后增加页码
+            if (Array.isArray(data.data)) { // 确保数据是数组
+              state.memoList.push(...data.data);
+            }
+            state.hasNext = data.hasNext;
+            return '加载成功';
+          } else {
+            return '加载失败: ' + data.message;
+          }
+        },
+        error: (error) => {
+          if (error.response && error.response.status === 429) {
+            return '请求过于频繁，请稍后再试';
+          } else {
+            return `加载失败: ${error.message || '未知错误'}`;
+          }
+        },
+        finally() {
+          loadLock = false; // 确保加载锁被重置
+        },
+      }
+  );
 }
 
 

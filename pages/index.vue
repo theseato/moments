@@ -146,8 +146,7 @@ const state = reactive({
 
 const firstLoad = async () => {
   state.page = 1
-  toast.promise(
-      $fetch('/api/memo/list', {
+  toast.promise($fetch('/api/memo/list', {
         key: 'memoList',
         method: 'POST',
         body: JSON.stringify({

@@ -254,6 +254,7 @@ const refreshComment = async () => {
   showUserCommentArray.value = []
   showCommentInput.value = false
   PopoverRoot.close()
+  document.body.click()
 }
 
 
