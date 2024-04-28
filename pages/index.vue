@@ -432,16 +432,16 @@ const welcome = async () => {
           //根据本地时间切换欢迎语
           let timeChange;
           let date = new Date();
-          if (date.getHours() >= 5 && date.getHours() < 11) timeChange = "<span>🌤️ 早上好，一日之计在于晨</span>";
-          else if (date.getHours() >= 11 && date.getHours() < 13) timeChange = "<span>☀️ 中午好，记得午休喔~</span>";
-          else if (date.getHours() >= 13 && date.getHours() < 17) timeChange = "<span>🕞 下午好，饮茶先啦！</span>";
-          else if (date.getHours() >= 17 && date.getHours() < 19) timeChange = "<span>🚶‍♂️ 即将下班，记得按时吃饭~</span>";
-          else if (date.getHours() >= 19 && date.getHours() < 24) timeChange = "<span>🌙 晚上好，夜生活嗨起来！</span>";
+          if (date.getHours() >= 5 && date.getHours() < 11) timeChange = "️ 早上好，一日之计在于晨";
+          else if (date.getHours() >= 11 && date.getHours() < 13) timeChange = "☀️ 中午好，记得午休喔~";
+          else if (date.getHours() >= 13 && date.getHours() < 17) timeChange = "🕞 下午好，饮茶先啦！";
+          else if (date.getHours() >= 17 && date.getHours() < 19) timeChange = "🚶‍♂️ 即将下班，记得按时吃饭~";
+          else if (date.getHours() >= 19 && date.getHours() < 24) timeChange = "🌙 晚上好，夜生活嗨起来！";
           else timeChange = "夜深了，早点休息，少熬夜";
 
           // 如果ip是ipv6
           if (ip.indexOf(":") > -1) {
-            ip = "您的IP地址为：<b><span>IPv6</span></b>";
+            ip = "您的IP地址为：IPv6";
           }
 
           toast(`欢迎来自${pos}的朋友\n${posdesc}🍂\n您的IP地址为：\n${ip}\n${timeChange}`);
