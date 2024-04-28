@@ -1,5 +1,5 @@
 <template>
-  <div class="p-2 sm:p-4 pb-2 border-b dark:border-white">
+  <div class="p-2 sm:p-4 pb-2 border-b dark:border-[#C0BEBF]/10">
     <div class="flex flex-row my-2 ">
       <div class="flex flex-1 gap-2 ">       
         <Popover :open="linkOpen">

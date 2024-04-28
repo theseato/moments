@@ -30,17 +30,13 @@ export default defineEventHandler(async (event) => {
   // 从updated中获取剩余的数据
   const data = { ...updated, ...rest };
 
-  console.log(data);
-
-  // 将username，nickname，password，avatarUrl，slogan，coverUrl 更新到user表中，剩下到数据更新到config表中
-
   await prisma.user.update({
     where: {
       id: userId,
     },
     data: {
-        username: data.nickname,
-        nickname: data.nickname,
+        // username: data.nickname,
+        // nickname: data.nickname,
         password: data.password,
         avatarUrl: data.avatarUrl,
         slogan: data.slogan,

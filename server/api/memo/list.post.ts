@@ -95,6 +95,11 @@ export default defineEventHandler(async (event) => {
     comments: memo.comments.filter(comment => comment.content && comment.content.length < 100),
     hasMoreComments: memo._count.comments > 5 || memo.comments.some(comment => comment.content && comment.content.length >= 100),
   }));
+  // 截取前5条评论
+  data = data.map(memo => ({
+      ...memo,
+      comments: memo.comments.slice(0, 5),
+  }));
   const total = await prisma.memo.count({
     where: {
         userId: user ? user : undefined,

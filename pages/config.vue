@@ -38,6 +38,7 @@
     </div>
 
     <template v-if="state.enableS3">
+
       <div class="flex flex-col gap-2">
         <Label for="domain" class="font-bold">域名</Label>
         <Input type="text" id="domain" placeholder="S3 CDN域名" autocomplete="off" v-model="state.domain" />
@@ -73,8 +74,50 @@
         <Input type="text" id="thumbnailSuffix" placeholder="" autocomplete="off" v-model="state.thumbnailSuffix" />
       </div>
 
-
     </template>
+
+<!--    <div class="flex flex-col gap-2">-->
+<!--      <Label for="enableEmail" class="font-bold">启用邮箱</Label>-->
+<!--      <Switch id="enableEmail" v-model:checked="state.enableEmail" />-->
+<!--    </div>-->
+
+<!--    <template v-if="state.enableEmail">-->
+<!--      <div class="flex flex-col gap-2">-->
+<!--        <Label for="mailHost" class="font-bold">邮局服务器地址</Label>-->
+<!--        <Input type="text" id="mailHost" placeholder="邮局服务器地址" autocomplete="off" v-model="state.mailHost" />-->
+<!--      </div>-->
+
+<!--      <div class="flex flex-col gap-2">-->
+<!--        <Label for="email" class="font-bold">邮局服务器端口</Label>-->
+<!--        <Input type="password" id="mailPort" placeholder="邮局服务器端口" autocomplete="off" v-model="state.mailPort" />-->
+<!--      </div>-->
+
+<!--      <div class="flex flex-col gap-2">-->
+<!--        <Label for="mailSecure" class="font-bold">邮局安全连接</Label>-->
+<!--        <Switch id="mailSecure" v-model:checked="state.mailSecure" />-->
+<!--      </div>-->
+
+<!--      <div class="flex flex-col gap-2">-->
+<!--        <Label for="mailUser" class="font-bold">邮局用户名</Label>-->
+<!--        <Input type="text" id="mailUser" placeholder="邮局用户名，一般同邮局发件人" autocomplete="off" v-model="state.mailUser" />-->
+<!--      </div>-->
+
+<!--      <div class="flex flex-col gap-2">-->
+<!--        <Label for="mailPass" class="font-bold">邮局密码</Label>-->
+<!--        <Input type="password" id="mailPass" placeholder="邮局密码" autocomplete="off" v-model="state.mailPass" />-->
+<!--      </div>-->
+
+<!--      <div class="flex flex-col gap-2">-->
+<!--        <Label for="mailFrom" class="font-bold">邮局发件人</Label>-->
+<!--        <Input type="text" id="mailFrom" placeholder="邮局发件人，一般同邮局用户名" autocomplete="off" v-model="state.mailFrom" />-->
+<!--      </div>-->
+
+<!--      <div class="flex flex-col gap-2">-->
+<!--        <Label for="mailName" class="font-bold">邮局发件人名</Label>-->
+<!--        <Input type="text" id="mailName" placeholder="邮局发件人名" autocomplete="off" v-model="state.mailName" />-->
+<!--      </div>-->
+
+<!--    </template>-->
 
     <div class="flex flex-col gap-2 ">
       <Button @click="saveConfig">保存</Button>

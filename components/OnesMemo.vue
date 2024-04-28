@@ -8,7 +8,7 @@
       <div class="text-[#576b95] font-medium dark:text-white text-xs mt-2 mb-1 select-none" v-if="(!props.memo.pinned) && props.memo.displayDay">
         {{props.memo.location?.split(/\s+/g).join(' · ')}}
       </div>
-      <div class="flex flex-row justify-between items-center" v-if="(props.memo.pinned) && props.memo.displayDay" style="width: 100%; height: 100%">
+      <div class="flex flex-row justify-between items-center" v-if="props.memo.pinned" style="width: 100%; height: 100%">
         <div style="width: 100%; height: 100%; display: flex; align-items: center;"><span style="font-size: 30px">置顶</span></div>
       </div>
     </div>
