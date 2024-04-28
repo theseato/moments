@@ -27,7 +27,7 @@
   <div>
     <MemoInput v-if="token" @memo-added="firstLoad" />
 
-    <div class="content flex flex-col divide-y divide-gray-100/50 gap-2">
+    <div class="content flex flex-col divide-y divide-[#C0BEBF]/10 gap-2">
       <div v-if="state.memoList.length === 0 && !token" class="text-center">
         <div class="my-2 text-sm">什么也没有,赶紧去登录发表Moments吧!</div>
       </div>
