@@ -444,7 +444,7 @@ const welcome = async () => {
             ip = "您的IP地址为：<b><span>IPv6</span></b>";
           }
 
-          toast(`欢迎来自<br><b><span>${pos}</span></b><br>的朋友<br>${posdesc}🍂<br>您的IP地址为：<b><span>${ip}</span></b><br>${timeChange} <br>`);
+          toast(`欢迎来自${pos}的朋友\n${posdesc}🍂\n您的IP地址为：\n${ip}\n${timeChange}`);
         }
       }
     });
