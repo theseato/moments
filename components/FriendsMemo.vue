@@ -29,8 +29,7 @@
           <img loading="lazy"
                :class="imgs.length === 1 ? 'cursor-pointer rounded full-cover-image-single' : 'cursor-pointer rounded full-cover-image-mult'"
                v-lazy="getImgUrl(img)"
-               v-for="(img, index) in imgs" :key="index"
-               :style="imgs.length === 1 ? '' : 'object-fit: cover; object-position: center;'" />
+               v-for="(img, index) in imgs" :key="index" />
         </FancyBox>
       </div>
       <div class="text-[#576b95] font-medium dark:text-white text-xs mt-2 mb-1 select-none">{{props.memo.location?.split(/\s+/g).join(' · ')}}</div>

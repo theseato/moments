@@ -52,6 +52,8 @@
       ·V0.3.0 2024-04-26 正式开放多用户，欢迎注册尝试
       <br/>
       ·V0.3.1 2024-04-28 修复弹窗样式，更新变更用户名逻辑
+      <br/>
+      ·V0.3.2 2024-04-29 新增上传完的图片拖动排序功能
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -155,7 +157,6 @@ const firstLoad = async () => {
       }), {
         loading: '加载中...',
         success: (data) => {
-          console.log(data);
           if (data.success) {
             state.memoList = data.data as any as Memo[]
             state.hasNext = data.hasNext || false
@@ -194,7 +195,6 @@ const loadMore = async () => {
       }), {
         loading: '加载中...',
         success: (data) => {
-          console.log(data);
           if (data.success) {
             state.page += 1; // 成功后增加页码
             if (Array.isArray(data.data)) { // 确保数据是数组

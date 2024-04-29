@@ -46,25 +46,8 @@ export default defineEventHandler(async (event) => {
     };
     // 发送邮件
     await sendEmail(sendData);
-
     await redis.set(email, verificationCode, 'EX', 5 * 60);
-
-    console.log(email)
-    console.log(verificationCode)
-
-    // 定时五分钟后如果没有插入密码则删除
-    setTimeout(() => {
-        // 如果数据库中该行的code字段还是verificationCode则删除
-        prisma.user.deleteMany({
-            where: {
-                eMail: email,
-                code: verificationCode,
-            },
-        });
-    }, 5 * 60 * 1000);
-
     return { success: true, message: '验证码已发送至您的邮箱' };
-
 
 });
 
