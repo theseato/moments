@@ -8,18 +8,56 @@ type ListMemoReq = {
 export default defineEventHandler(async (event) => {
   let { user, page } = (await readBody(event)) as ListMemoReq;
   user = parseInt(user);
-     if (user) {
-        const userExist = await prisma.user.findUnique({
-        where: {
-            id: user,
-        },
-        });
-        if (!userExist) {
-        user = undefined;
-        }
+  if (user) {
+    const userExist = await prisma.user.findUnique({
+      where: {
+        id: user,
+      },
+    });
+    if (!userExist) {
+      user = undefined;
     }
+  }
 
   const size = 10;
+
+  let pinnedMemos = [];
+  if (!user) {
+    pinnedMemos = await prisma.memo.findMany({
+      include: {
+        user: {
+          select: {
+            username: true,
+            nickname: true,
+            slogan: true,
+            id: true,
+            avatarUrl: true,
+            coverUrl: true,
+          },
+        },
+        comments: {
+          orderBy: {
+            createdAt: "asc",
+          },
+          take: 5+1
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+      where: {
+        userId: {
+          in: [1,2]
+        },
+        pinned: true,
+      },
+      orderBy: [
+        { createdAt: 'desc' }
+      ],
+    });
+  }
 
   let data = await prisma.memo.findMany({
     include: {
@@ -47,14 +85,25 @@ export default defineEventHandler(async (event) => {
     },
     where: {
       userId: user ? user : undefined,
+      NOT: [
+        {
+          userId: {
+            in: [1,2]
+          },
+          pinned: true,
+        },
+      ],
     },
     orderBy: [
-      { pinned: 'desc' },
+      // { pinned: 'desc' },
       { createdAt: 'desc' }
     ],
     skip: (page - 1) * size,
     take: size,
   });
+
+  data = [...pinnedMemos, ...data];
+
   data = data.map(memo => ({
     ...memo,
     comments: memo.comments.filter(comment => comment.content && comment.content.length < 100),
@@ -62,14 +111,14 @@ export default defineEventHandler(async (event) => {
   }));
   // 截取前5条评论
   data = data.map(memo => ({
-      ...memo,
-      comments: memo.comments.slice(0, 5),
+    ...memo,
+    comments: memo.comments.slice(0, 5),
   }));
   const total = await prisma.memo.count({
     where: {
-        userId: user ? user : undefined,
-        },
-      });
+      userId: user ? user : undefined,
+    },
+  });
   const totalPage = Math.ceil(total / size);
   return {
     data,
