@@ -62,9 +62,6 @@ onMounted(async () => {
   }, {
     immediate: true // 立即触发，确保初始 setup
   });
-  toast.message('站点通知', {
-    description: '本站点已经开放注册！需要注册/登陆？请点击右下角菜单！',
-  })
 });
 
 const setupObserver = () => {
