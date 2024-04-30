@@ -55,7 +55,7 @@
       <br/>
       ·V0.3.2 2024-04-29 新增上传完的图片拖动排序功能
       <br/>
-      ·V0.3.2 2024-04-30 新增用户邮箱修改功能
+      ·V0.3.3 2024-04-30 新增用户邮箱修改功能
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
