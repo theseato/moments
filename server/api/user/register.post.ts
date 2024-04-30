@@ -60,14 +60,13 @@ export default defineEventHandler(async (event) => {
     }
 
     // 从数据库中读取验证码
-    const retrievedCode = await redis.get(email);
+    const retrievedCode = await redis.get('register'+email);
     if(retrievedCode === null){
         return {
             success: false,
             message: '验证码错误',
         };
     }
-    console.log('存储的retrievedCode是', retrievedCode);
     if (retrievedCode !== emailVerificationCode) {
         return {
             success: false,
@@ -96,11 +95,6 @@ export default defineEventHandler(async (event) => {
     if(user2){
         return { success: false, message: '用户名已经注册' };
     }
-
-    console.log('registering user');
-    console.log(username);
-    console.log(email);
-    console.log(password);
     // 创建用户
     await prisma.user.create({
         data: {

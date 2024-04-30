@@ -52,7 +52,10 @@ onMounted(() => {
     toast.promise(
         $fetch('/api/user/sendMail', {
           method: 'POST',
-          body: JSON.stringify({ email: state.email })
+          body: JSON.stringify({
+            email: state.email,
+            action: 'register'
+          })
         }), {
           loading: '发送中...',
           success: (data) => {

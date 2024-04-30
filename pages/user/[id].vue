@@ -117,7 +117,6 @@ const annotatedMemoList = computed(() => {
       }
       if (currentDay !== lastDay) {
         lastDay = currentDay;
-        console.log(currentDay, lastDay)
         returns = {...returns, displayDay: currentDay};
       }else{
         returns = {...returns, displayDay: null};
@@ -197,7 +196,6 @@ const firstLoad = async () => {
       }), {
         loading: '加载中...',
         success: (data) => {
-          console.log(data);
           if (data.success) {
             state.memoList = data.data as any as Memo[]
             state.hasNext = data.hasNext || false
@@ -238,7 +236,6 @@ const loadMore = async () => {
       }), {
         loading: '加载中...',
         success: (data) => {
-          console.log(data);
           if (data.success) {
             state.page += 1; // 成功后增加页码
             if (Array.isArray(data.data)) { // 确保数据是数组

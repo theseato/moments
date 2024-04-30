@@ -20,9 +20,6 @@ type SaveConfigsReq = {
 export default defineEventHandler(async (event) => {
     const data = (await readBody(event)) as SaveConfigsReq;
 
-    console.log(data)
-    // 将username，nickname，password，avatarUrl，slogan，coverUrl 更新到user表中，剩下到数据更新到config表中
-
     await prisma.config.update({
         where: {
             id: 1,

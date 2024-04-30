@@ -5,10 +5,19 @@ import redis from '~/services/redisService';
 
 type sendMailReq = {
     email: string;
+    action: string;
 };
 
 export default defineEventHandler(async (event) => {
-    const {email} = (await readBody(event)) as sendMailReq;
+    const {email, action} = (await readBody(event)) as sendMailReq;
+
+    // 判断参数是否正确
+    if(!['register','resetPassword','changeEmail'].includes(action)){
+        return {
+            success: false,
+            message: "参数错误",
+        };
+    }
 
     if (!email) {
         return {
@@ -21,12 +30,13 @@ export default defineEventHandler(async (event) => {
             message: "邮箱格式不正确",
         };
     }
-    if(await redis.get(email)){
-        return { success: false, message: '上一条验证码还未过期，请五分钟后再试' };
-    }
 
     // 生成验证码
     const verificationCode = generateVerificationCode();
+
+    if(await redis.get(action+email)){
+        return { success: false, message: '上一条验证码还未过期，请五分钟后再试' };
+    }
 
     // 从数据库中读取title
     const title = await prisma.config.findUnique({
@@ -46,8 +56,8 @@ export default defineEventHandler(async (event) => {
     };
     // 发送邮件
     await sendEmail(sendData);
-    await redis.set(email, verificationCode, 'EX', 5 * 60);
-    return { success: true, message: '验证码已发送至您的邮箱' };
+    await redis.set(action+email, verificationCode, 'EX', 5 * 60);
+    return { success: true, message: '验证码已发送至您的邮箱，验证码五分钟内有效，请注意查收' };
 
 });
 

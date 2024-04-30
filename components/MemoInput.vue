@@ -443,7 +443,6 @@ const getTmpLocation = () => {
       const queryString = new URLSearchParams(params).toString();
       const jsonpUrl = `${url}?${queryString}`;
       jsonp(jsonpUrl, null, (err, data) => {
-        console.log('data:', data);
         if (err) {
           return '获取位置失败';
         } else {
@@ -459,7 +458,6 @@ const getTmpLocation = () => {
             if (ipLocation.result.ad_info.district !== undefined && ipLocation.result.ad_info.district !== '') {
               pos += '-' + ipLocation.result.ad_info.district;
             }
-            console.log(ipLocation.result.address_reference)
             if (ipLocation.result.address_reference !== undefined && ipLocation.result.address_reference !== '') {
               if (ipLocation.result.address_reference.famous_area !== undefined && ipLocation.result.address_reference.famous_area !== '') {
                 pos += ' ' + ipLocation.result.address_reference.famous_area.title;
@@ -483,7 +481,6 @@ const getTmpLocation = () => {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
               }
             }
-            console.log(pos)
             resolve(pos);
           }
         }

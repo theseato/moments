@@ -9,6 +9,35 @@
     </div>
 
     <div class="flex flex-col gap-2">
+      <Label for="username" class="font-bold">邮箱</Label>
+      <div class="flex flex-row gap-2">
+        <Input type="text" id="eMail" placeholder="邮箱" autocomplete="off" v-model="state.eMail" disabled="disabled"/>
+        <Button @click="changeEmailButtonFunction"
+                :disabled="changeEmailButtonDisabled"
+                type="button"
+        >{{ changeEmailButtonTitle }}</Button>
+      </div>
+      <template v-if='changeEmail'>
+        <div class="flex flex-col gap-2">
+          <Label for="newEmail" class="font-bold">新邮箱</Label>
+          <div class="flex flex-row gap-2">
+            <Input type="text" id="newEmail" placeholder="新邮箱" autocomplete="off" v-model="state.newEMail" />
+            <Button id="sendMail"
+                    @click="sendMail"
+                    :disabled="changeEmailButtonDisabled"
+                    type="button"
+            >发送验证码</Button>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <Label for="newEmail" class="font-bold">邮箱验证码</Label>
+          <Input type="text" id="newEmail" placeholder="邮箱验证码" autocomplete="off" v-model="state.eMailVerificationCode" />
+        </div>
+      </template>
+
+    </div>
+
+    <div class="flex flex-col gap-2">
       <Label for="password" class="font-bold">密码</Label>
       <Input type="password" id="password" placeholder="留空则不修改密码" autocomplete="off" v-model="state.password" />
     </div>
@@ -69,15 +98,18 @@ import {toast} from "vue-sonner";
 
 const response = await $fetch('/api/user/settings/get?user=0');
 
+const changeEmail = ref(false)
+const changeEmailButtonDisabled = ref(false)
+const changeEmailButtonTitle = computed(() => changeEmail.value ? '取消变更' : '更改邮箱')
+
 useHead({
   title: '设置-'+(response.data.title || 'Randall的小屋'),
 })
 
-const enableS3 = useStorage("enableS3", false);
-
 
 const state = reactive({
   username: '',
+  eMail: '',
   password: '',
   nickname: '',
   slogan: '',
@@ -85,7 +117,48 @@ const state = reactive({
   coverUrl: '',
   css: '',
   js: '',
+  newEMail: '',
+  eMailVerificationCode: ''
 })
+
+const changeEmailButtonFunction = () => {
+  changeEmail.value = !changeEmail.value
+  if(!changeEmail.value){
+    state.newEMail = ''
+    state.eMailVerificationCode = ''
+  }
+}
+
+const sendMail = async () => {
+  if(!state.newEMail){
+    toast.warning('请填写新邮箱')
+    return
+  }
+  if(state.newEMail === state.eMail){
+    toast.warning('新邮箱不能和旧邮箱一样')
+    return
+  }
+  changeEmailButtonDisabled.value = true
+  toast.promise( $fetch('/api/user/sendMail', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: state.newEMail,
+          action: 'changeEmail'
+        })
+      }), {
+        loading: '发送中...',
+        success: (data) => {
+          changeEmailButtonDisabled.value = false
+          if (data.success) {
+            return '发送成功';
+          } else {
+            return '发送失败: ' + data.message;
+          }
+        },
+        error: (error) => `发送失败: ${error.message || '未知错误'}`, // 显示具体的错误信息
+      }
+  );
+}
 
 const { data: res } = await useFetch<{ data: typeof state }>('/api/user/settings/full',{key:'settings'})
 const data = res.value?.data
@@ -93,6 +166,7 @@ state.coverUrl = data?.coverUrl || '/cover.webp'
 state.avatarUrl = data?.avatarUrl || '/avatar.webp'
 state.username = data?.username || ''
 state.nickname = data?.nickname || ''
+state.eMail = data?.eMail || ''
 state.slogan = data?.slogan || ''
 state.css = data?.css || ''
 state.js = data?.js || ''
