@@ -135,19 +135,19 @@ export default defineEventHandler(async (event) => {
             author: event.context.userId !== undefined? (event.context.userId === memo?.userId? 1: 2): 0,
         },
     });
-    let flag = true;
+
+    let comment = null;
+
     if(replyToId !== undefined && replyToId !== 0){
-        const comment = await prisma.comment.findUnique({
+        comment = await prisma.comment.findUnique({
             where: {
                 id: replyToId,
             }
         });
         if(comment !== null && comment.email !== null && comment.email !== ''){
-            if(comment.email === process.env.NOTIFY_MAIL){
-                flag = false;
-            }
+            console.log('1'+comment.email)
             // 邮箱通知被回复者
-            const result = sendEmail({
+            sendEmail({
                 email: comment.email,
                 subject: '新回复',
                 message: `您在moments中的评论有新回复！
@@ -157,7 +157,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // 非管理员
-    if(event.context.userId == undefined && flag){
+    if(event.context.userId == undefined){
         // 找到文章所有者的邮箱
         const user = await prisma.user.findUnique({
             where: {
@@ -177,14 +177,18 @@ export default defineEventHandler(async (event) => {
         }
 
         // 邮箱通知管理员
-        const result = sendEmail({
-            email: user.eMail || process.env.NOTIFY_MAIL || '',
-            subject: '新评论',
-            message: `您的moments有新评论！
-            用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
-        });
-    }
+        if(email === user?.eMail || user?.eMail === comment?.email){
 
+        }else{
+            console.log('2'+user?.eMail)
+            sendEmail({
+                email: user.eMail || process.env.NOTIFY_MAIL || '',
+                subject: '新评论',
+                message: `您的moments有新评论！
+            用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+            });
+        }
+    }
     // 返回成功响应
     return {
         success: true,
