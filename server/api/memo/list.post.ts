@@ -2,11 +2,12 @@ import prisma from "~/lib/db";
 
 type ListMemoReq = {
   user: any;
+  tagname: any;
   page: number;
 };
 
 export default defineEventHandler(async (event) => {
-  let { user, page } = (await readBody(event)) as ListMemoReq;
+  let { user, page, tagname } = (await readBody(event)) as ListMemoReq;
   user = parseInt(user);
   if (user) {
     const userExist = await prisma.user.findUnique({
@@ -85,6 +86,9 @@ export default defineEventHandler(async (event) => {
       where: {
         userId: 1,
         pinned: true,
+        content: {
+          contains: tagname? '#'+tagname: '',
+        }
       },
       orderBy: [
         { createdAt: 'desc' }
@@ -123,6 +127,9 @@ export default defineEventHandler(async (event) => {
             pinned: true,
           },
         ],
+        content: {
+          contains: tagname? '#'+tagname: '',
+        }
       },
       orderBy: [
         { createdAt: 'desc' }
