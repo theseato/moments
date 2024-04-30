@@ -20,10 +20,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const size = 10;
-
-  let pinnedMemos = [];
-  if (!user) {
-    pinnedMemos = await prisma.memo.findMany({
+  let data = [];
+  if(user){
+    data = await prisma.memo.findMany({
       include: {
         user: {
           select: {
@@ -48,61 +47,90 @@ export default defineEventHandler(async (event) => {
         },
       },
       where: {
-        userId: {
-          in: [1,2]
+        userId: user,
+      },
+      orderBy: [
+        { pinned: 'desc' },
+        { createdAt: 'desc' }
+      ],
+      skip: (page - 1) * size,
+      take: size,
+    });
+  }else{
+    // 第一个查询
+    const data1 = await prisma.memo.findMany({
+      include: {
+        user: {
+          select: {
+            username: true,
+            nickname: true,
+            slogan: true,
+            id: true,
+            avatarUrl: true,
+            coverUrl: true,
+          },
         },
+        comments: {
+          orderBy: {
+            createdAt: "asc",
+          },
+          take: 5+1
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+      where: {
+        userId: 1,
         pinned: true,
       },
       orderBy: [
         { createdAt: 'desc' }
       ],
     });
-  }
 
-  let data = await prisma.memo.findMany({
-    include: {
-      user: {
-        select: {
-          username: true,
-          nickname: true,
-          slogan: true,
-          id: true,
-          avatarUrl: true,
-          coverUrl: true,
-        },
-      },
-      comments: {
-        orderBy: {
-          createdAt: "asc",
-        },
-        take: 5+1
-      },
-      _count: {
-        select: {
-          comments: true,
-        },
-      },
-    },
-    where: {
-      userId: user ? user : undefined,
-      NOT: [
-        {
-          userId: {
-            in: [1,2]
+// 第二个查询
+    const data2 = await prisma.memo.findMany({
+      include: {
+        user: {
+          select: {
+            username: true,
+            nickname: true,
+            slogan: true,
+            id: true,
+            avatarUrl: true,
+            coverUrl: true,
           },
-          pinned: true,
         },
+        comments: {
+          orderBy: {
+            createdAt: "asc",
+          },
+          take: 5+1
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
+      },
+      where: {
+        NOT: [
+          {
+            userId: 1,
+            pinned: true,
+          },
+        ],
+      },
+      orderBy: [
+        { createdAt: 'desc' }
       ],
-    },
-    orderBy: [
-      // { pinned: 'desc' },
-      { createdAt: 'desc' }
-    ],
-    skip: (page - 1) * size,
-    take: size,
-  });
+    });
 
-  data = [...pinnedMemos, ...data];
+    data = data1.concat(data2).slice((page - 1) * size, page * size);
+  }
 
   data = data.map(memo => ({
     ...memo,
