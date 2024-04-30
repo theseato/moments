@@ -21,7 +21,7 @@
     </div>
   </div>
   <div id="version-info">
-    当前版本: <span id="version">{{ version }}</span>
+    当前版本: <span id="version">0.3.4</span>
     <div class="update-details">
       更新日志:
       <br/>
@@ -56,6 +56,8 @@
       ·V0.3.2 2024-04-29 新增上传完的图片拖动排序功能
       <br/>
       ·V0.3.3 2024-04-30 新增用户邮箱修改功能
+      <br/>
+      ·V0.3.4 2024-05-01 新增“#”标签/话题功能，统一菜单栏位置，<br />更新置顶显示方式，修复消息回复框不关闭的问题
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -69,24 +71,9 @@ import {toast} from "vue-sonner";
 
 const getMore = ref(null);
 const token = useCookie('token')
-const version = ref('');
-
 let observer: IntersectionObserver | null = null;
 
-function setLatestVersion() {
-  const element = document.querySelector('.update-details');
-  if (element) {
-    const updatesText = element.innerText;
-    const updates = updatesText.match(/V\d+\.\d+\.\d+/g); // 匹配所有版本号格式
-    if (updates && updates.length) {
-      version.value = updates.pop(); // 获取最后一个元素，即最新版本号
-    }
-  } else {
-  }
-}
-
 onMounted(async () => {
-  setLatestVersion();
   await firstLoad();
   await welcome();
   const observer = new IntersectionObserver((entries) => {

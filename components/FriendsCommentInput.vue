@@ -83,7 +83,6 @@ const saveComment = async (e) => {
             if (data.success) {
               content.value = '';
               emit('commentAdded');
-              document.body.click()
               return '评论成功';
             } else {
               return '评论失败: ' + data.message;
@@ -126,7 +125,6 @@ const saveComment = async (e) => {
                 if (data.success) {
                   content.value = '';
                   emit('commentAdded');
-                  document.body.click()
                   return '评论成功';
                 } else {
                   throw new Error(data.message)

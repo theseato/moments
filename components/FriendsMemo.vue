@@ -252,8 +252,6 @@ const refreshComment = async () => {
   emit('memo-update', props.memo)
   showUserCommentArray.value = []
   showCommentInput.value = false
-  PopoverRoot.close()
-  document.body.click()
 }
 
 

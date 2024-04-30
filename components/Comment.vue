@@ -1,6 +1,8 @@
 <template>
 
-      <PopoverRoot>
+      <PopoverRoot
+          :open="showCommentInput"
+      >
         <PopoverTrigger>
           <div class="relative select-none" style="text-align: left">
 
@@ -14,7 +16,7 @@
          class="border text-xs border-[#D0B880] rounded mx-0.5 px-0.5 text-[#D0B880]">同站道友</b></span>
           <span v-if="comment.replyTo" class="text-nowrap mx-1">回复<span class="text-[#576b95] ml-1">{{ comment.replyTo }}</span> </span>
           <span class="mr-0.5">:</span>
-          <span :title="`点击回复${comment.username}`" class="inline w-full break-all cursor-pointer">{{ comment.content }}</span>
+          <span :title="`点击回复${comment.username}`" @click="showCommentInput = !showCommentInput" class="inline w-full break-all cursor-pointer">{{ comment.content }}</span>
           <AlertDialog v-if="belongToMe ">
             <AlertDialogTrigger asChild>
               <Trash2 :size=14 class="align-text-top ml-2 cursor-pointer inline-block text-gray-300" @click.stop="openDeleteDialog" />            </AlertDialogTrigger>
@@ -51,6 +53,9 @@
               <FriendsCommentInput @commentAdded="refreshComment" :memoId="comment.memoId" :commentId="comment.id"
                                    :reply="comment.username" :replyId="comment.id" />
             </div>
+            <PopoverClose className="PopoverClose" aria-label="Close">
+              1231321321321321
+            </PopoverClose>
             <PopoverArrow class="fill-white" />
           </PopoverContent>
         </PopoverPortal>
@@ -79,9 +84,6 @@ const props = withDefaults(
 const refreshComment = async () => {
   emit('memo-update')
   showCommentInput.value = false
-  PopoverRoot.close()
-  // 模拟点击页面其他地方
-  document.body.click()
 }
 const openDeleteDialog = () => {
   showCommentInput.value = false

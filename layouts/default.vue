@@ -24,23 +24,67 @@
             class="min-w-[150px] outline-none bg-white rounded-md p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade"
             :side-offset="5"
         >
+          <DropdownMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+
           <DropdownMenuItem
-              value="New Tab"
+              class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
+              @click="navigateTo('/')"
+          >
+            首页
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+
+          <DropdownMenuItem
+              v-if="!userId"
               class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
               @click="navigateTo('/login')"
           >
             登陆
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+          <DropdownMenuSeparator v-if="!userId" class="h-[1px] bg-green6 m-[5px]" />
 
           <DropdownMenuItem
-              value="New Tab"
+              v-if="!userId"
               class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
               @click="navigateTo('/register')"
           >
             注册
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator v-if="!userId" class="h-[1px] bg-green6 m-[5px]" />
+
+          <DropdownMenuItem
+              v-if="userId=='1'"
+              class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
+              @click="navigateTo('/config')"
+          >
+            系统设置
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator v-if="userId=='1'" class="h-[1px] bg-green6 m-[5px]" />
+
+
+          <DropdownMenuItem
+              v-if="userId"
+              class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
+              @click="navigateTo('/settings')"
+          >
+            个人设置
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+
+          <DropdownMenuItem
+              v-if="userId"
+              class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
+              @click="logout"
+          >
+            登出
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator v-if="userId" class="h-[1px] bg-green6 m-[5px]" />
 
           <DropdownMenuArrow class="fill-white" />
         </DropdownMenuContent>
@@ -76,11 +120,11 @@ const toggleState = ref(false)
 const checkboxOne = ref(false)
 const checkboxTwo = ref(false)
 const person = ref('pedro')
+const userId = useCookie('userId')
 
 
 onMounted(async () => {
   const userinfo = useState<User>('userinfo')
-  const userId = useCookie('userId');
   const url = window.location.pathname
   let findId = userId.value
   if(url.startsWith('/user/')) {
@@ -111,5 +155,14 @@ onMounted(async () => {
     title: userinfo.value.title || 'Randall的小屋',
   })
 });
+
+const token = useCookie('token')
+const userIdOut = useCookie('userId')
+const logout = () => {
+  token.value = ''
+  userIdOut.value = '0'
+
+  navigateTo('/', { replace: true })
+}
 
 </script>

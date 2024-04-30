@@ -97,45 +97,6 @@
         </Popover>
       </div>
 
-
-      <div class="flex mx-auto gap-2">
-        <TooltipProvider v-if="shouConfigButton">
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <a href="/config">
-                <Settings :stroke-width="1.5" class="cursor-pointer w-[20px] h-[20px]" />
-              </a>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>系统设置</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <a href="/settings">
-                <FileSliders :stroke-width="1.5" class="cursor-pointer w-[20px] h-[20px]" />
-              </a>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>个人设置</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <LogOut :stroke-width="1.5" class="cursor-pointer w-[20px] h-[20px]" @click="logout" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>退出</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-
-
     </div>
     <div class="relative">
       <Textarea ref="textareaRef" @paste="pasteImg" autocomplete="new-text" v-model="content" rows="4" @keyup.ctrl.enter="submitMemo()"
@@ -342,16 +303,6 @@ const submitMemo = async () => {
       }
   );
 }
-
-const token = useCookie('token')
-const userIdOut = useCookie('userId')
-const logout = () => {
-  token.value = ''
-  userIdOut.value = '0'
-
-  navigateTo('/', { replace: true })
-}
-
 
 const pasteImg = async (event: ClipboardEvent) => {
   var items = event.clipboardData?.files

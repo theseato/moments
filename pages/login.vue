@@ -38,7 +38,8 @@ const login = async () => {
         loading: '登陆中...',
         success: (data) => {
           if (data.success) {
-            navigateTo('/')
+            navigateTo('/',{ replace: true });
+            location.reload();
             return '登录成功';
           } else {
             throw new Error(data.message)
