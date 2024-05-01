@@ -31,6 +31,13 @@ const staticWord = {
 export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as SaveMemoReq;
 
+    if (!body.content) {
+        return {
+        success: false,
+        message: "内容不能为空",
+        };
+    }
+
   const memo = await prisma.memo.findUnique({
     where: {
       id: body.id ?? -1,

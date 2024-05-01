@@ -152,6 +152,9 @@ export default defineEventHandler(async (event) => {
   const total = await prisma.memo.count({
     where: {
       userId: user ? user : undefined,
+      content: {
+        contains: tagname? '#'+tagname: '',
+      }
     },
   });
   const totalPage = Math.ceil(total / size);

@@ -264,6 +264,10 @@ const drop = (event, dropIndex) => {
 
 const imgs = ref<string[]>([])
 const submitMemo = async () => {
+  if (content.value === '') {
+    toast.warning('请输入内容')
+    return
+  }
   toast.promise( $fetch('/api/memo/save', {
         method: 'POST',
         body: JSON.stringify({
