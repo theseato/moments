@@ -97,63 +97,7 @@
         <template v-if="props.memo.comments.length > 0">
           <div class="px-4 py-2 flex flex-col gap-1">
             <div class="relative flex flex-col gap-2 text-sm" v-for="(comment, index) in props.memo.comments" :key="index">
-              <PopoverRoot
-                  :open="tmpOpenReply == comment.id"
-              >
-                <PopoverTrigger>
-                  <div class="relative select-none" style="text-align: left">
-
-                    <div class="dark:text-[#9F9F9F] ">
-                      <span class="text-[#576b95] text-nowrap"><a class="cursor-pointer" v-if="comment.website" target="_blank" :href="comment.website">{{
-                          comment.username ?? '匿名' }}</a>
-                    <span v-else>{{ comment.username ?? '匿名' }}</span>
-                    <b v-if="comment.author==1"
-                       class="border text-xs border-[#C64A4A] rounded mx-0.5 px-0.5 text-[#C64A4A]">本文作者</b>
-                  <b v-if="comment.author==2"
-                     class="border text-xs border-[#D0B880] rounded mx-0.5 px-0.5 text-[#D0B880]">同站道友</b></span>
-                      <span v-if="comment.replyTo" class="text-nowrap mx-1">回复<span class="text-[#576b95] ml-1">{{ comment.replyTo }}</span> </span>
-                      <span class="mr-0.5">:</span>
-                      <span :title="`点击回复${comment.username}`" @click="tmpOpenReply == comment.id?tmpOpenReply = 0:tmpOpenReply = comment.id" class="inline w-full break-all cursor-pointer">{{ comment.content }}</span>
-                      <AlertDialog v-if="userId === props.memo.userId">
-                        <AlertDialogTrigger asChild>
-                          <Trash2 :size=14 class="align-text-top ml-2 cursor-pointer inline-block text-gray-300" @click.stop="openDeleteDialog" />            </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>确定删除评论吗?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              <div><span class="font-bold">评论内容</span>:</div>
-                              <div>{{ comment.content }}</div>
-                              <div class="my-2 text-red-400">无法恢复,你确定删除吗?</div>
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>取消</AlertDialogCancel>
-                            <AlertDialogAction @click="removeComment">确定</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </div>
-                </PopoverTrigger>
-                <PopoverPortal
-                >
-                  <PopoverContent
-                      side="bottom"
-                      :side-offset="5"
-                      class="rounded p-5 mx-auto bg-white shadow-[0_10px_38px_-10px_hsla(206,22%,7%,.35),0_10px_20px_-15px_hsla(206,22%,7%,.2)] focus:shadow-[0_10px_38px_-10px_hsla(206,22%,7%,.35),0_10px_20px_-15px_hsla(206,22%,7%,.2),0_0_0_2px_theme(colors.green7)] will-change-[transform,opacity] data-[state=open]:data-[side=top]:animate-slideDownAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade"
-                      style="width: 100%"
-                  >
-                    <div class="flex flex-col gap-2.5">
-                      <p class="text-mauve12 text-[15px] leading-[19px] font-semibold mb-2.5">
-                        回复 {{ comment.username }}
-                      </p>
-                      <FriendsCommentInput @commentAdded="refreshComment" :memoId="comment.memoId" :commentId="comment.id"
-                                           :reply="comment.username" :replyId="comment.id" />
-                    </div>
-                    <PopoverArrow class="fill-white" />
-                  </PopoverContent>
-                </PopoverPortal>
-              </PopoverRoot>
+              <Comment :comment="comment" :belongToMe="userId === props.memo.userId" @memo-update="refreshComment" />
             </div>
             <div v-if="props.memo.hasMoreComments" class="text-[#576b95] cursor-pointer"
               @click="navigateTo(`/detail/${props.memo.id}`)">查看更多...</div>
@@ -186,9 +130,9 @@ import {
 } from '@/components/ui/alert-dialog'
 import {marked} from "marked";
 import {toast} from "vue-sonner";
-import {PopoverArrow, PopoverPortal, PopoverRoot} from "radix-vue";
+import {PopoverRoot} from "radix-vue";
 const token = useCookie('token')
-const tmpOpenReply = ref(0)
+
 const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
 let userId = ref(0)
 
@@ -235,6 +179,7 @@ let hh = ref(0)
 const { height } = useElementSize(el)
 const likeList = useStorage<Array<number>>('likeList', [])
 
+
 onMounted(async () => {
   if (token) {
     userId = useCookie('userId')
@@ -245,16 +190,6 @@ const gridCols = computed(() => {
   const imgLen = (props.memo.imgs || '').split(',').length;
   return imgLen >= 3 ? 3 : imgLen
 })
-
-const closeOtherReply = (commentId: any) => {
-  // 关闭其他的回复框
-  showUserCommentArray.value = showUserCommentArray.value.map((val, index) => {
-    if (index === commentId) {
-      return !val
-    }
-    return false
-  })
-}
 
 const like = async () => {
   showToolbar.value = false
@@ -275,7 +210,7 @@ const like = async () => {
     } else {
       likeList.value.push(props.memo.id)
     }
-    refreshComment()
+    emit('memo-update')
   }
 }
 
@@ -290,7 +225,7 @@ const pinned = async ()=>{
   })
   if (res.success) {
     toast.success('操作成功')
-    refreshComment
+    emit('memo-update')
   }
 }
 
@@ -304,7 +239,7 @@ const removeMemo = async () => {
   })
   if (res.success) {
     toast.success('删除成功')
-    refreshComment()
+    emit('memo-update')
   }
 }
 
@@ -318,17 +253,7 @@ const refreshComment = async () => {
   emit('memo-update', props.memo)
   showUserCommentArray.value = []
   showCommentInput.value = false
-  tmpOpenReply.value = 0
 }
-
-onClickOutside(toolbarRef, () => {
-  showToolbar.value = false;
-})
-
-
-onClickOutside(tmpOpenReply, () => {
-  tmpOpenReply.value = 0;
-})
 
 
 const showMore = () => {
@@ -348,32 +273,6 @@ watchOnce(height, () => {
     el.value.classList.add('line-clamp-4')
   }
 })
-
-const openDeleteDialog = () => {
-  showCommentInput.value = false
-}
-
-
-const removeComment = async () => {
-  toast.promise($fetch('/api/comment/remove', {
-        method: 'POST',
-        body: JSON.stringify({
-          commentId: props.comment.id
-        })
-      }), {
-        loading: '删除中...',
-        success: (data) => {
-          if (data.success) {
-            emit('memo-update')
-            return '删除成功';
-          } else {
-            throw new Error(data.message)
-          }
-        },
-        error: (error) => `删除失败: ${error || '未知错误'}`,
-      }
-  );
-}
 
 </script>
 

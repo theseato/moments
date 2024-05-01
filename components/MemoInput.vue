@@ -1,7 +1,7 @@
 <template>
   <div class="p-2 sm:p-4 pb-2 border-b dark:border-[#C0BEBF]/10">
     <div class="flex flex-row my-2 ">
-      <div class="flex flex-1 gap-2 ">       
+      <div class="flex flex-1 gap-2 ">
         <Popover :open="linkOpen">
           <PopoverTrigger as="div">
             <TooltipProvider>
@@ -100,27 +100,27 @@
     </div>
     <div class="relative">
       <Textarea ref="textareaRef" @paste="pasteImg" autocomplete="new-text" v-model="content" rows="4" @keyup.ctrl.enter="submitMemo()"
-        placeholder="今天发点什么呢?" class=" dark:text-[#C0BEBF]"></Textarea>
+                placeholder="今天发点什么呢?" class=" dark:text-[#C0BEBF]"></Textarea>
       <div class="absolute right-2 bottom-1 cursor-pointer text-xl" @click="toggleShowEmoji" ref="showEmojiRef">😊</div>
     </div>
 
     <Emoji v-if="showEmoji" class="mt-2" @emoji-selected="emojiSelected" />
 
     <iframe class="rounded" frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86
-      :src="music163IfrUrl" v-if="music163IfrUrl"></iframe>
+            :src="music163IfrUrl" v-if="music163IfrUrl"></iframe>
 
     <iframe class="w-full h-[250px] my-2" v-if="bilibiliIfrUrl" :src="bilibiliIfrUrl" scrolling="no" border="0"
-      frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+            frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
     <div class="flex flex-row gap-2 my-2 bg-[#f7f7f7] dark:bg-[#212121] items-center p-2 border rounded"
-      v-if="externalFavicon && externalTitle">
+         v-if="externalFavicon && externalTitle">
       <div class="flex-1 flex flex-row gap-2 items-center"><img class="w-8 h-8" :src="externalFavicon" alt="">
         <div class="text-sm text-[#576b95] cursor-pointer" v-if="!externalTitleEditing" title="点击编辑标题"
-          @click="externalTitleEditing = true">{{ externalTitle }}</div>
+             @click="externalTitleEditing = true">{{ externalTitle }}</div>
         <Input placeholder="请输入链接标题" v-model="externalTitle" v-if="externalTitleEditing" />
       </div>
       <Check class="w-5 h-5 mr-2 cursor-pointer" color="green" v-if="externalTitleEditing"
-        @click="externalTitleEditing = false" />
+             @click="externalTitleEditing = false" />
       <CircleX class="w-5 h-5 cursor-pointer" color="red" @click="clearExternalUrl" />
     </div>
 
