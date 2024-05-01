@@ -1,11 +1,11 @@
 <template>
-  <div class="p-2 rounded text-sm ">
-    <div class="relative">
-      <Textarea @keyup.ctrl.enter="saveComment" ref="textareaRef" autocomplete="new-text" rows="3" v-model="content" class="dark:bg-slate-500 border-separate" :placeholder="placeholder" />
+  <div class="p-2 rounded text-sm " >
+    <div class="relative" >
+      <Textarea @keyup.ctrl.enter="saveComment" ref="textareaRef" autocomplete="new-text" rows="3" v-model="content" class="dark:bg-slate-500 border-separate" :placeholder="placeholder"  />
     </div>
-    <div class="flex flex-row items-center justify-end mt-2 gap-2">
-      <Input placeholder="昵称,必填,登陆后更改无效" type="text"  v-model="info.username" class="input-username dark:bg-slate-500 text-xs sm:text-sm  py-0.5"></Input>
-      <Input placeholder="邮箱,可空,登陆后更改无效" type="text" v-model="info.email" class="input-email sm:block dark:bg-slate-500 text-xs sm:text-sm py-0.5"></Input>
+    <div class="flex flex-row items-center justify-end mt-2 gap-2" >
+      <Input placeholder="昵称,必填,登陆后更改无效" type="text"  v-model="info.username" class="input-username dark:bg-slate-500 text-xs sm:text-sm  py-0.5" ></Input>
+      <Input placeholder="邮箱,可空,登陆后更改无效" type="text" v-model="info.email" class="input-email sm:block dark:bg-slate-500 text-xs sm:text-sm py-0.5" ></Input>
       <Button size="sm" @click="saveComment" :disabled="pending">发表评论</Button>
     </div>
   </div>
@@ -51,6 +51,7 @@ const emojiSelected = (emoji: string) => {
 const pending = ref(false)
 
 const saveComment = async (e) => {
+  // e.stopPropagation()
   e.preventDefault();
   const config = useRuntimeConfig();
   if(config.public.RECAPTCHA_SITE_KEY === undefined || config.public.RECAPTCHA_SITE_KEY === '' || config.public.RECAPTCHA_SITE_KEY === 'undefined' || config.public.RECAPTCHA_SITE_KEY === 'null'){

@@ -1,5 +1,5 @@
 <template>
-  <div ref="popoverRef" class="relative select-none" style="text-align: left">
+  <div class="relative select-none" style="text-align: left">
       <PopoverRoot
           :open="showCommentInput"
       >
@@ -46,7 +46,7 @@
               class="rounded p-5 mx-auto bg-white shadow-[0_10px_38px_-10px_hsla(206,22%,7%,.35),0_10px_20px_-15px_hsla(206,22%,7%,.2)] focus:shadow-[0_10px_38px_-10px_hsla(206,22%,7%,.35),0_10px_20px_-15px_hsla(206,22%,7%,.2),0_0_0_2px_theme(colors.green7)] will-change-[transform,opacity] data-[state=open]:data-[side=top]:animate-slideDownAndFade data-[state=open]:data-[side=right]:animate-slideLeftAndFade data-[state=open]:data-[side=bottom]:animate-slideUpAndFade data-[state=open]:data-[side=left]:animate-slideRightAndFade"
               style="width: 100%"
           >
-            <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-2.5" ref="popoverRef">
               <p class="text-mauve12 text-[15px] leading-[19px] font-semibold mb-2.5">
                 回复 {{ comment.username }}
               </p>
@@ -88,15 +88,20 @@ const openDeleteDialog = () => {
 }
 
 const popoverRef = ref(null);
-
+let stopOutsideClickListener: any = null;
 // 使用 popoverRef 作为侦听点击外部的元素
-watch(showCommentInput, (newValue, oldValue) => {
-  if (newValue && !oldValue) {
-    // 只有在 showCommentInput 由 false 变为 true 时设置监听器
-    const stop = onClickOutside(popoverRef, () => {
+watchEffect(() => {
+  if (showCommentInput.value) {
+    // 当弹窗展开时，激活外部点击监听
+    stopOutsideClickListener = onClickOutside(popoverRef, () => {
       showCommentInput.value = false;
-      stop(); // 注销监听器，防止重复注册
     });
+  } else {
+    // 当弹窗关闭时，移除监听器
+    if (stopOutsideClickListener) {
+      stopOutsideClickListener();
+      stopOutsideClickListener = null;
+    }
   }
 });
 
