@@ -318,11 +318,18 @@ const refreshComment = async () => {
   emit('memo-update', props.memo)
   showUserCommentArray.value = []
   showCommentInput.value = false
+  tmpOpenReply.value = 0
 }
 
+onClickOutside(toolbarRef, () => {
+  showToolbar.value = false;
+})
 
 
-onClickOutside(toolbarRef, () => showToolbar.value = false)
+onClickOutside(tmpOpenReply, () => {
+  tmpOpenReply.value = 0;
+})
+
 
 const showMore = () => {
   showAll.value = true
@@ -346,12 +353,6 @@ const openDeleteDialog = () => {
   showCommentInput.value = false
 }
 
-const openReply = () => {
-  // 关闭其他所有的回复框
-  emit('open-one-reply', props.comment.id)
-
-  showCommentInput.value = !showCommentInput.value
-}
 
 const removeComment = async () => {
   toast.promise($fetch('/api/comment/remove', {
