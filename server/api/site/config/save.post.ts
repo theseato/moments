@@ -1,5 +1,6 @@
 import prisma from "~/lib/db";
 import bcrypt from "bcrypt";
+import {context} from "esbuild";
 
 type SaveConfigsReq = {
     enableS3: boolean,
@@ -36,6 +37,13 @@ type SaveConfigsReq = {
 
 export default defineEventHandler(async (event) => {
     const data = (await readBody(event)) as SaveConfigsReq;
+
+    if(event.context.userId !== 1){
+        throw createError({
+            statusCode: 401,
+            statusMessage: "Unauthorized",
+        });
+    }
 
     await prisma.config.update({
         where: {
