@@ -2,15 +2,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
-  runtimeConfig: {
-    public: {
-      RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,
-      TENCENT_MAP_KEY: process.env.TENCENT_MAP_KEY
-    },
-    private: {
-      RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY
-    }
-  },
   modules: [
     "@nuxtjs/tailwindcss",
     "shadcn-nuxt",
@@ -40,7 +31,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       script: [
-        { src: `https://recaptcha.net/recaptcha/api.js?render=${process.env.RECAPTCHA_SITE_KEY}`, type: 'text/javascript', async: true, defer: true },
+        // { src: `https://recaptcha.net/recaptcha/api.js?render=6LeHIsQpAAAAAJMJVw9NaFZUJsBwA6-22Jz59Emc`, type: 'text/javascript', async: true, defer: true },
       ]
     }
   },

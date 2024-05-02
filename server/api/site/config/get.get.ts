@@ -8,9 +8,19 @@ export default defineEventHandler(async (event) => {
     });
 
     if(!data){
-        throw new Error("User not found");
+        throw new Error("Info not found");
+    }
+    if(event.context.userId == 1){
+        return {
+            success: true,data
+        };
     }
     return {
-        success: true,data
-    };
+        success: true, data: {
+            enableRecaptcha: data.enableRecaptcha,
+            recaptchaSiteKey: data.recaptchaSiteKey,
+            enableTencentMap: data.enableTencentMap,
+            tencentMapKey: data.tencentMapKey,
+        }
+    }
 });

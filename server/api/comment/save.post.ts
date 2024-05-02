@@ -17,6 +17,20 @@ type SaveCommentReq = {
     reToken: string;
 };
 
+const siteConfig = await prisma.config.findUnique({
+    where: {
+        id: 1,
+    },
+});
+
+let siteUrl = siteConfig?.siteUrl;
+if(siteUrl === undefined || siteUrl === '' || siteUrl === 'undefined' || siteUrl === 'null'){
+    siteUrl = '';
+}
+if(siteUrl.endsWith('/')){
+    siteUrl = siteUrl.slice(0, -1);
+}
+
 const staticWord = {
     'ad': '广告引流',
     'political_content': '涉政内容',
@@ -56,10 +70,7 @@ export default defineEventHandler(async (event) => {
         return { success: false, message: "网址格式不正确" };
     }
 
-    if(process.env.RECAPTCHA_SITE_KEY === undefined || process.env.RECAPTCHA_SITE_KEY === '' || process.env.RECAPTCHA_SITE_KEY === 'undefined' || process.env.RECAPTCHA_SITE_KEY === 'null' ||
-        process.env.RECAPTCHA_SECRET_KEY === undefined || process.env.RECAPTCHA_SECRET_KEY === '' || process.env.RECAPTCHA_SECRET_KEY === 'undefined' || process.env.RECAPTCHA_SECRET_KEY === 'null'){
-
-    }else{
+    if(siteConfig?.enableRecaptcha && siteConfig?.recaptchaSiteKey !== '' && siteConfig?.recaptchaSecretKey !== ''){
         // 验证 reCAPTCHA 响应
         const recaptchaResult = await validateRecaptcha(reToken);
         if (!recaptchaResult.success || recaptchaResult.score < 0.5) {
@@ -71,11 +82,8 @@ export default defineEventHandler(async (event) => {
     }
 
     // 文本内容检查
-    if(process.env.ALIYUN_ACCESS_KEY_ID === undefined || process.env.ALIYUN_ACCESS_KEY_ID === '' || process.env.ALIYUN_ACCESS_KEY_ID === 'undefined' || process.env.ALIYUN_ACCESS_KEY_ID === 'null' ||
-        process.env.ALIYUN_ACCESS_KEY_SECRET === undefined || process.env.ALIYUN_ACCESS_KEY_SECRET === '' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'undefined' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'null'){
-
-    }else{
-        const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection');
+    if(siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== ''){
+        const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection', siteConfig?.aliyunAccessKeyId, siteConfig?.aliyunAccessKeySecret);
         if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
             let labelsList = aliJudgeResponse1.Data.labels.split(',');
 
@@ -85,7 +93,7 @@ export default defineEventHandler(async (event) => {
             };
         }
 
-        const aliJudgeResponse2 = await aliTextJudge(username, 'nickname_detection');
+        const aliJudgeResponse2 = await aliTextJudge(username, 'nickname_detection', siteConfig?.aliyunAccessKeyId, siteConfig?.aliyunAccessKeySecret);
         if (aliJudgeResponse2.Data && aliJudgeResponse2.Data.labels && aliJudgeResponse2.Data.labels !== '') {
             let labelsList = aliJudgeResponse2.Data.labels.split(',');
 
@@ -135,58 +143,50 @@ export default defineEventHandler(async (event) => {
             author: event.context.userId !== undefined? (event.context.userId === memo?.userId? 1: 2): 0,
         },
     });
+    if(siteConfig && siteConfig?.enableEmail){
+        let comment = null;
 
-    let comment = null;
-
-    if(replyToId !== undefined && replyToId !== 0){
-        comment = await prisma.comment.findUnique({
-            where: {
-                id: replyToId,
+        if(replyToId !== undefined && replyToId !== 0){
+            comment = await prisma.comment.findUnique({
+                where: {
+                    id: replyToId,
+                }
+            });
+            if(comment !== null && comment.email !== null && comment.email !== ''){
+                console.log('1'+comment.email)
+                // 邮箱通知被回复者
+                sendEmail({
+                    email: comment.email,
+                    subject: '新回复',
+                    message: `您在moments中的评论有新回复！
+                用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+                });
             }
-        });
-        if(comment !== null && comment.email !== null && comment.email !== ''){
-            console.log('1'+comment.email)
-            // 邮箱通知被回复者
-            sendEmail({
-                email: comment.email,
-                subject: '新回复',
-                message: `您在moments中的评论有新回复！
-                用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}，点击查看: ${process.env.SITE_URL}/detail/${memoId}`,
+        }
+
+        // 非管理员
+        if(event.context.userId == undefined){
+            // 找到文章所有者的邮箱
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: memo?.userId,
+                },
+                select: {
+                    eMail: true,
+                },
             });
-        }
-    }
 
-    // 非管理员
-    if(event.context.userId == undefined){
-        // 找到文章所有者的邮箱
-        const user = await prisma.user.findUnique({
-            where: {
-                id: memo?.userId,
-            },
-            select: {
-                eMail: true,
-            },
-        });
-        // 判断process.env.SITE_URL是否以/结尾，如果是则去掉
-        let siteUrl = process.env.SITE_URL;
-        if(siteUrl === undefined || siteUrl === '' || siteUrl === 'undefined' || siteUrl === 'null'){
-            siteUrl = '';
-        }
-        if(siteUrl.endsWith('/')){
-            siteUrl = siteUrl.slice(0, -1);
-        }
+            // 邮箱通知管理员
+            if(email === user?.eMail || user?.eMail === comment?.email){
 
-        // 邮箱通知管理员
-        if(email === user?.eMail || user?.eMail === comment?.email){
-
-        }else{
-            console.log('2'+user?.eMail)
-            sendEmail({
-                email: user.eMail || process.env.NOTIFY_MAIL || '',
-                subject: '新评论',
-                message: `您的moments有新评论！
+            }else{
+                sendEmail({
+                    email: user.eMail || process.env.NOTIFY_MAIL || '',
+                    subject: '新评论',
+                    message: `您的moments有新评论！
             用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
-            });
+                });
+            }
         }
     }
     // 返回成功响应
@@ -203,7 +203,7 @@ async function validateRecaptcha(reToken: string) {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${reToken}`
+            body: `secret=${siteConfig.recaptchaSecretKey}&response=${reToken}`
         });
         return await response.json();
     } catch (error) {

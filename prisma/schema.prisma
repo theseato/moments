@@ -84,4 +84,21 @@ model Config {
     css             String?
     js              String?
     beianNo         String?
+    siteUrl         String?
+    enableRecaptcha  Boolean  @default(false)
+    recaptchaSiteKey String?
+    recaptchaSecretKey   String?
+    enableTencentMap    Boolean @default(false)
+    tencentMapKey    String?
+    enableAliyunDective Boolean @default(false)
+    aliyunAccessKeyId   String?
+    aliyunAccessKeySecret   String?
+    enableEmail    Boolean @default(false)
+    mailHost    String?
+    mailPort    Int @default(587)
+    mailSecure  Boolean @default(false)
+    mailUser    String?
+    mailPass    String?
+    mailFrom    String?
+    mailName    String?
 }

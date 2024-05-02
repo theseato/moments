@@ -16,18 +16,16 @@ const staticWord = {
 }
 
 // 阿里云文本审核
-export async function aliTextJudge(content: string, Service: string = "comment_detection") {
+export async function aliTextJudge(content: string, Service: string = "comment_detection", aliyunAccessKeyId: string, aliyunAccessKeySecret: string) {
     // 注意，此处实例化的client请尽可能重复使用，避免重复建立连接，提升检测性能。
     let client = new RPCClient({
         /**
          * 阿里云账号AccessKey拥有所有API的访问权限，建议您使用RAM用户进行API访问或日常运维。
          * 强烈建议不要把AccessKey ID和AccessKey Secret保存到工程代码里，否则可能导致AccessKey泄露，威胁您账号下所有资源的安全。
          * 常见获取环境变量方式:
-         * 获取RAM用户AccessKey ID: process.env['ALIBABA_CLOUD_ACCESS_KEY_ID']
-         * 获取RAM用户AccessKey Secret: process.env['ALIBABA_CLOUD_ACCESS_KEY_SECRET']
          */
-        accessKeyId: process.env.ALIYUN_ACCESS_KEY_ID || 'default',
-        accessKeySecret: process.env.ALIYUN_ACCESS_KEY_SECRET || 'default',
+        accessKeyId: aliyunAccessKeyId || 'default',
+        accessKeySecret: aliyunAccessKeySecret || 'default',
         // 接入区域和地址请根据实际情况修改
         endpoint: "https://green-cip.cn-shanghai.aliyuncs.com",
         apiVersion: '2022-03-02',

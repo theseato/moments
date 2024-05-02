@@ -21,6 +21,8 @@ import {toast} from "vue-sonner";
 
 const token = useCookie('token')
 
+const recaptchaSiteKey = ref('')
+
 const textareaRef = ref()
 const content = ref('')
 const placeholder = ref('发表评论')
@@ -53,50 +55,10 @@ const pending = ref(false)
 const saveComment = async (e) => {
   // e.stopPropagation()
   e.preventDefault();
-  const config = useRuntimeConfig();
-  if(config.public.RECAPTCHA_SITE_KEY === undefined || config.public.RECAPTCHA_SITE_KEY === '' || config.public.RECAPTCHA_SITE_KEY === 'undefined' || config.public.RECAPTCHA_SITE_KEY === 'null'){
-    if (!content.value) {
-      toast.warning('先填写评论');
-      return;
-    }
-    if (!info.value.username) {
-      toast.warning('用户名必填');
-      return;
-    }
-    pending.value = true;
-
-    toast.promise( $fetch('/api/comment/save', {
-      method: 'POST',
-      body: JSON.stringify({
-        content: content.value,
-        memoId: props.memoId,
-        replyTo: props.reply,
-        replyToId: props.replyId,
-        author:false,
-        email:info.value.email,
-        website:info.value.website,
-        username:info.value.username,
-        reToken:'',
-        })
-    }), {
-          loading: '审核评论中...',
-          success: (data) => {
-            if (data.success) {
-              content.value = '';
-              emit('commentAdded');
-              return '评论成功';
-            } else {
-              return '评论失败: ' + data.message;
-            }
-          },
-          error: (error) => `评论失败: ${error.message || '网络错误'}`,
-        }
-    );
-
-    pending.value = false;
-  }else{
+  const siteConfig = await $fetch('/api/site/config/get')
+  if(siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableRecaptcha){
     grecaptcha.ready(function() {
-      grecaptcha.execute(config.public.RECAPTCHA_SITE_KEY, {action: 'submit'}).then(async function(token: string) {
+      grecaptcha.execute(siteConfig.data.recaptchaSiteKey, {action: 'submit'}).then(async function(token: string) {
         if (!content.value) {
           toast.warning('先填写评论');
           return;
@@ -108,18 +70,18 @@ const saveComment = async (e) => {
         pending.value = true;
 
         toast.promise( $fetch('/api/comment/save', {
-          method: 'POST',
-          body: JSON.stringify({
-            content: content.value,
-            memoId: props.memoId,
-            replyTo: props.reply,
-            replyToId: props.replyId,
-            author:false,
-            email:info.value.email,
-            website:info.value.website,
-            username:info.value.username,
-            reToken:token,
-          })
+              method: 'POST',
+              body: JSON.stringify({
+                content: content.value,
+                memoId: props.memoId,
+                replyTo: props.reply,
+                replyToId: props.replyId,
+                author:false,
+                email:info.value.email,
+                website:info.value.website,
+                username:info.value.username,
+                reToken:token,
+              })
             }), {
               loading: '审核评论中...',
               success: (data) => {
@@ -137,6 +99,46 @@ const saveComment = async (e) => {
         pending.value = false;
       });
     });
+  }else{
+    if (!content.value) {
+      toast.warning('先填写评论');
+      return;
+    }
+    if (!info.value.username) {
+      toast.warning('用户名必填');
+      return;
+    }
+    pending.value = true;
+
+    toast.promise( $fetch('/api/comment/save', {
+          method: 'POST',
+          body: JSON.stringify({
+            content: content.value,
+            memoId: props.memoId,
+            replyTo: props.reply,
+            replyToId: props.replyId,
+            author:false,
+            email:info.value.email,
+            website:info.value.website,
+            username:info.value.username,
+            reToken:'',
+          })
+        }), {
+          loading: '审核评论中...',
+          success: (data) => {
+            if (data.success) {
+              content.value = '';
+              emit('commentAdded');
+              return '评论成功';
+            } else {
+              return '评论失败: ' + data.message;
+            }
+          },
+          error: (error) => `评论失败: ${error.message || '网络错误'}`,
+        }
+    );
+
+    pending.value = false;
   }
 }
 

@@ -14,7 +14,7 @@ const needLoginUrl = [
 ];
 
 const needAdminUrl = [
-    "/api/site/config/get",
+    // "/api/site/config/get",
     "/api/site/config/save",
 ];
 

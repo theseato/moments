@@ -48,6 +48,22 @@ export type User = {
   css:string;
   js:string;
   beianNo:string;
+  enableEmail:boolean;
+  mailHost:string;
+  mailPort:number;
+  mailSecure:boolean;
+  mailUser:string;
+  mailPass:string;
+  mailFrom:string;
+  mailName:string;
+  enableRecaptcha:boolean;
+  recaptchaSiteKey:string;
+  recaptchaSecretKey:string;
+  enableTencentMap:boolean;
+  tencentMapKey:string;
+  enableAliyunDective:boolean;
+  aliyunAccessKeyId:string;
+  aliyunAccessKeySecret:string;
 }
 
 export type config = {

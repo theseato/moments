@@ -9,41 +9,20 @@
 - 支持原生全部功能
 - 自动获取位置信息
 - markdown支持
-- 验证码支持
+- 无感验证码支持
 - 消息推送（邮件）
 - 多用户
+- 上传完的图片可以拖动排序
 
 新功能预告:
 
-[ ] 后台管理
+[]后台管理
+~~[]评论按住快捷键可复制~~
 
-[ ] 评论按住快捷键可复制
 
+## 使用方法
 
-## 源码编译启动
-
-首先设置环境变量:
-
-```
-# 设置 sqlite 数据库位置
-export DATABASE_URL="file:/root/moments/data/db.sqlite" 
-# 设置本地上传的文件目录
-export UPLOAD_DIR="/root/moments/data/upload"
-```
-> 或者写进环境变量中
-
-执行命令
-
-```
-# 安装依赖
-npm install
-# 脚本迁移
-npx prisma migrate dev
-# 执行构建
-npm run build
-# 预览
-npm run preview
-```
+详见[Wikis](https://github.com/RandallAnjie/moments/wiki/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
 
 ## 其他教程
 

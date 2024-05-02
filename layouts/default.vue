@@ -154,6 +154,19 @@ onMounted(async () => {
     ],
     title: userinfo.value.title || 'Randall的小屋',
   })
+  const siteConfig = await $fetch('/api/site/config/get')
+  if(siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableRecaptcha){
+    // 加载远程js文件 https://recaptcha.net/recaptcha/api.js?render={{ recaptchaSiteKey }}
+    if (!document.getElementById('recaptcha-script')) {
+      const script = document.createElement('script');
+      script.id = 'recaptcha-script';
+      script.type = 'text/javascript';
+      script.src = `https://recaptcha.net/recaptcha/api.js?render=${siteConfig.data.recaptchaSiteKey}`;
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }
 });
 
 const token = useCookie('token')

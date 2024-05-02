@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import prisma from "~/lib/db";
 
 type SendEmailOptions = {
     email: string;
@@ -7,28 +8,39 @@ type SendEmailOptions = {
 };
 
 export async function sendEmail(options: SendEmailOptions) {
-    const transporter = nodemailer.createTransport({
-        host: process.env.MAIL_HOST,
-        port: parseInt(process.env.MAIL_PORT || '587'),
-        secure: process.env.MAIL_SECURE === "true",
-        auth: {
-            user: process.env.MAIL_FROM,
-            pass: process.env.MAIL_PASSWORD,
+
+    const siteConfig = await prisma.config.findUnique({
+        where: {
+            id: 1,
         },
     });
 
-    const mailOptions = {
-        from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM}>`,
-        to: options.email,
-        subject: options.subject,
-        text: options.message,
-        html: options.message,
-    };
+    if(siteConfig?.enableEmail){
+        const transporter = nodemailer.createTransport({
+            host: siteConfig?.mailHost,
+            port: siteConfig?.mailPort || 587,
+            secure: siteConfig?.mailSecure || false,
+            auth: {
+                user: siteConfig?.mailUser,
+                pass: siteConfig?.mailPass,
+            },
+        });
 
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        return { success: true, messageId: info.messageId };
-    } catch (error: any) {
-        return { success: false, error: error.message };
+        const mailOptions = {
+            from: `"${siteConfig?.mailFrom}" <${siteConfig?.mailUser}>`,
+            to: options.email,
+            subject: options.subject,
+            text: options.message,
+            html: options.message,
+        };
+
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            return { success: true, messageId: info.messageId };
+        } catch (error: any) {
+            return { success: false, error: error.message };
+        }
+    }else{
+        return { success: false, error: "Email service is not enabled" };
     }
 }

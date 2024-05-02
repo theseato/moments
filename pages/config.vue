@@ -4,7 +4,12 @@
 
     <div class="flex flex-col gap-2 qus-box">
       <Label for="title" class="font-bold">网站标题</Label>
-      <Input type="text" id="title" placeholder="网站标题" autocomplete="off" v-model="state.title" />
+      <Input type="text" id="title" placeholder="网站标题，如：Randall小屋" autocomplete="off" v-model="state.title" />
+    </div>
+
+    <div class="flex flex-col gap-2 qus-box">
+      <Label for="siteUrl" class="font-bold">网站URL</Label>
+      <Input type="text" id="siteUrl" placeholder="网站URL，如：https://moments.randallanjie.com" autocomplete="off" v-model="state.siteUrl" />
     </div>
 
     <div class="flex flex-col gap-2 qus-box">
@@ -91,7 +96,7 @@
 
         <div class="flex flex-col gap-2 qus-box">
           <Label for="email" class="font-bold">邮局服务器端口</Label>
-          <Input type="password" id="mailPort" placeholder="邮局服务器端口" autocomplete="off" v-model="state.mailPort" />
+          <Input type="number" id="mailPort" placeholder="邮局服务器端口" autocomplete="off" v-model="state.mailPort" />
         </div>
 
         <div class="flex flex-col gap-2 qus-box">
@@ -106,7 +111,7 @@
 
         <div class="flex flex-col gap-2 qus-box">
           <Label for="mailPass" class="font-bold">邮局密码</Label>
-          <Input type="password" id="mailPass" placeholder="邮局密码" autocomplete="off" v-model="state.mailPass" />
+          <Input type="text" id="mailPass" placeholder="邮局密码" autocomplete="off" v-model="state.mailPass" />
         </div>
 
         <div class="flex flex-col gap-2 qus-box">
@@ -120,6 +125,58 @@
         </div>
       </div>
 
+    </template>
+
+    <div class="flex flex-col gap-2 qus-box">
+      <Label for="enableRecaptcha" class="font-bold">启用 reCaptcha 验证</Label>
+      <Switch id="enableRecaptcha" v-model:checked="state.enableRecaptcha" />
+    </div>
+
+    <template v-if="state.enableRecaptcha">
+      <div class="config-container">
+        <div class="flex flex-col gap-2 qus-box">
+          <Label for="recaptchaSiteKey" class="font-bold">reCaptcha Site Key</Label>
+          <Input type="text" id="recaptchaSiteKey" placeholder="reCaptcha Site Key" autocomplete="off" v-model="state.recaptchaSiteKey" />
+        </div>
+
+        <div class="flex flex-col gap-2 qus-box">
+          <Label for="recaptchaSecretKey" class="font-bold">reCaptcha Secret Key</Label>
+          <Input type="text" id="recaptchaSecretKey" placeholder="reCaptcha Secret Key" autocomplete="off" v-model="state.recaptchaSecretKey" />
+        </div>
+      </div>
+    </template>
+
+    <div class="flex flex-col gap-2 qus-box">
+      <Label for="enableTencentMap" class="font-bold">启用腾讯地图</Label>
+      <Switch id="enableTencentMap" v-model:checked="state.enableTencentMap" />
+    </div>
+
+    <template v-if="state.enableTencentMap">
+      <div class="config-container">
+        <div class="flex flex-col gap-2 qus-box">
+          <Label for="tencentMapKey" class="font-bold">腾讯地图Key</Label>
+          <Input type="text" id="tencentMapKey" placeholder="腾讯地图Key" autocomplete="off" v-model="state.tencentMapKey" />
+        </div>
+      </div>
+    </template>
+
+    <div class="flex flex-col gap-2 qus-box">
+      <Label for="enableAliyunDective" class="font-bold">启用阿里云文本检测</Label>
+      <Switch id="enableAliyunDective" v-model:checked="state.enableAliyunDective" />
+    </div>
+
+    <template v-if="state.enableAliyunDective">
+      <div class="config-container">
+        <div class="flex flex-col gap-2 qus-box">
+          <Label for="aliyunAccessKeyId" class="font-bold">阿里云AccessKeyId</Label>
+          <Input type="text" id="aliyunAccessKeyId" placeholder="阿里云AccessKeyId" autocomplete="off" v-model="state.aliyunAccessKeyId" />
+        </div>
+
+        <div class="flex flex-col gap-2 qus-box">
+          <Label for="aliyunAccessKeySecret" class="font-bold">阿里云AccessKeySecret</Label>
+          <Input type="text" id="aliyunAccessKeySecret" placeholder="阿里云AccessKeySecret" autocomplete="off" v-model="state.aliyunAccessKeySecret" />
+        </div>
+      </div>
     </template>
 
     <div class="flex flex-col gap-2 qus-box ">
@@ -161,13 +218,25 @@ const state = reactive({
 
   enableEmail: false,
   mailHost: '',
-  mailPort: '',
+  mailPort: 587,
   mailSecure: false,
   mailUser: '',
   mailPass: '',
   mailFrom: '',
   mailName: '',
 
+  siteUrl: '',
+
+  enableRecaptcha: false,
+  recaptchaSiteKey: '',
+  recaptchaSecretKey: '',
+
+  enableTencentMap: false,
+  tencentMapKey: '',
+
+  enableAliyunDective: false,
+  aliyunAccessKeyId: '',
+  aliyunAccessKeySecret: '',
 })
 
 const { data: res } = await useFetch<{ data: typeof state }>('/api/site/config/get',{key:'settings'})
@@ -185,7 +254,25 @@ state.thumbnailSuffix = data?.thumbnailSuffix || ''
 state.css = data?.css || ''
 state.js = data?.js || ''
 state.beianNo = data?.beianNo || ''
+state.enableEmail = data?.enableEmail || false
+state.mailHost = data?.mailHost || ''
+state.mailPort = data?.mailPort || 587
+state.mailSecure = data?.mailSecure || false
+state.mailUser = data?.mailUser || ''
+state.mailPass = data?.mailPass || ''
+state.mailFrom = data?.mailFrom || ''
+state.mailName = data?.mailName || ''
+state.siteUrl = data?.siteUrl || ''
+state.enableRecaptcha = data?.enableRecaptcha || false
+state.recaptchaSiteKey = data?.recaptchaSiteKey || ''
+state.recaptchaSecretKey = data?.recaptchaSecretKey || ''
+state.enableTencentMap = data?.enableTencentMap || false
+state.tencentMapKey = data?.tencentMapKey || ''
+state.enableAliyunDective = data?.enableAliyunDective || false
+state.aliyunAccessKeyId = data?.aliyunAccessKeyId || ''
+state.aliyunAccessKeySecret = data?.aliyunAccessKeySecret || ''
 enableS3.value = state.enableS3
+
 
 
 const uploadImgs = async (event: Event, id: string) => {

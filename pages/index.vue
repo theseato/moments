@@ -21,7 +21,7 @@
     </div>
   </div>
   <div id="version-info">
-    当前版本: <span id="version">0.3.4</span>
+    当前版本: <span id="version">V0.3.5</span>
     <div class="update-details">
       更新日志:
       <br/>
@@ -58,6 +58,8 @@
       ·V0.3.3 2024-04-30 新增用户邮箱修改功能
       <br/>
       ·V0.3.4 2024-05-01 新增“#”标签/话题功能，统一菜单栏位置，<br />更新置顶显示方式，修复消息回复框不关闭的问题
+      <br/>
+      ·V0.3.5 2024-05-03 将后台配置更新到页面设置中，更方便更新修改管理
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -213,10 +215,17 @@ const loadMore = async () => {
 const welcome = async () => {
 
   try {
+    let tencentMapKey = '';
+    const siteConfig = await $fetch('/api/site/config/get')
+    console.log(siteConfig);
+    if (siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableTencentMap) {
+      tencentMapKey = siteConfig.data.tencentMapKey;
+    }else{
+      return;
+    }
     const url = 'https://apis.map.qq.com/ws/location/v1/ip';
-    const config = useRuntimeConfig();
     const params = {
-      key: config.public.TENCENT_MAP_KEY,
+      key: tencentMapKey,
       output: 'jsonp'
     };
     const queryString = new URLSearchParams(params).toString();

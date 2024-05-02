@@ -28,6 +28,12 @@ const staticWord = {
   'C_customized': '违反本站规定',
 }
 
+const siteConfig = await prisma.config.findUnique({
+  where: {
+    id: 1,
+  },
+});
+
 export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as SaveMemoReq;
 
@@ -51,11 +57,8 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if(process.env.ALIYUN_ACCESS_KEY_ID === undefined || process.env.ALIYUN_ACCESS_KEY_ID === '' || process.env.ALIYUN_ACCESS_KEY_ID === 'undefined' || process.env.ALIYUN_ACCESS_KEY_ID === 'null' ||
-      process.env.ALIYUN_ACCESS_KEY_SECRET === undefined || process.env.ALIYUN_ACCESS_KEY_SECRET === '' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'undefined' || process.env.ALIYUN_ACCESS_KEY_SECRET === 'null'){
-
-  }else{
-    const aliJudgeResponse1 = await aliTextJudge(body.content, 'comment_detection');
+  if(siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== ''){
+    const aliJudgeResponse1 = await aliTextJudge(body.content, 'comment_detection', siteConfig?.aliyunAccessKeyId, siteConfig?.aliyunAccessKeySecret);
     if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
       let labelsList = aliJudgeResponse1.Data.labels.split(',');
 
