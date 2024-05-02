@@ -34,9 +34,9 @@ export default defineEventHandler(async (event) => {
     // 生成验证码
     const verificationCode = generateVerificationCode();
 
-    // if(await redis.get(action+email)){
-    //     return { success: false, message: '上一条验证码还未过期，请五分钟后再试' };
-    // }
+    if(await redis.get(action+email)){
+        return { success: false, message: '上一条验证码还未过期，请五分钟后再试' };
+    }
 
     // 从数据库中读取title
     const title = await prisma.config.findUnique({
@@ -53,9 +53,14 @@ export default defineEventHandler(async (event) => {
         subject: title.title==='undefined'?'验证码':title.title+'验证码',
         message: `您的验证码是：${verificationCode}，五分钟内有效，五分钟内请勿重新尝试发送。`,
     };
-    await sendEmail(sendData);
-    await redis.set(action+email, verificationCode, 'EX', 5 * 60);
-    return { success: true, message: '验证码已发送至您的邮箱，验证码五分钟内有效，请注意查收' };
+    const returns = await sendEmail(sendData);
+    if(returns.success){
+        await redis.set(action+email, verificationCode, 'EX', 5 * 60);
+        return { success: true, message: '验证码已发送至您的邮箱，验证码五分钟内有效，请注意查收' };
+    }else{
+        return { success: false, message: '验证码发送失败，请检查邮箱是否正确，或当前邮件服务异常稍后再试' };
+    }
+
 
 });
 
