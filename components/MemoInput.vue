@@ -386,14 +386,14 @@ memoUpdateEvent.on((event: Memo) => {
 })
 
 
-const getTmpLocation = () => {
-  return new Promise((resolve, reject) => {
+const getTmpLocation = async () => {
+  return new Promise(async (resolve, reject) => {
     try {
       let tencentMapKey = '';
       const siteConfig = await $fetch('/api/site/config/get')
       if (siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableTencentMap) {
         tencentMapKey = siteConfig.data.tencentMapKey;
-      }else{
+      } else {
         return;
       }
       const url = 'https://apis.map.qq.com/ws/location/v1/ip';
@@ -408,7 +408,7 @@ const getTmpLocation = () => {
           return '获取位置失败';
         } else {
           const ipLocation = data;
-          if (ipLocation.status === 0){
+          if (ipLocation.status === 0) {
             let pos = ipLocation.result.ad_info.nation;
             if (ipLocation.result.ad_info.province !== undefined && ipLocation.result.ad_info.province !== '') {
               pos += '-' + ipLocation.result.ad_info.province;
@@ -422,23 +422,23 @@ const getTmpLocation = () => {
             if (ipLocation.result.address_reference !== undefined && ipLocation.result.address_reference !== '') {
               if (ipLocation.result.address_reference.famous_area !== undefined && ipLocation.result.address_reference.famous_area !== '') {
                 pos += ' ' + ipLocation.result.address_reference.famous_area.title;
-              }else if (ipLocation.result.address_reference.business_area !== undefined && ipLocation.result.address_reference.business_area !== ''){
+              } else if (ipLocation.result.address_reference.business_area !== undefined && ipLocation.result.address_reference.business_area !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.town !== undefined && ipLocation.result.address_reference.town !== ''){
+              } else if (ipLocation.result.address_reference.town !== undefined && ipLocation.result.address_reference.town !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.landmark_l1 !== undefined && ipLocation.result.address_reference.landmark_l1 !== ''){
+              } else if (ipLocation.result.address_reference.landmark_l1 !== undefined && ipLocation.result.address_reference.landmark_l1 !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.landmark_l2 !== undefined && ipLocation.result.address_reference.landmark_l2 !== ''){
+              } else if (ipLocation.result.address_reference.landmark_l2 !== undefined && ipLocation.result.address_reference.landmark_l2 !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.street !== undefined && ipLocation.result.address_reference.street !== ''){
+              } else if (ipLocation.result.address_reference.street !== undefined && ipLocation.result.address_reference.street !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.street_number !== undefined && ipLocation.result.address_reference.street_number !== ''){
+              } else if (ipLocation.result.address_reference.street_number !== undefined && ipLocation.result.address_reference.street_number !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.crossroad !== undefined && ipLocation.result.address_reference.crossroad !== ''){
+              } else if (ipLocation.result.address_reference.crossroad !== undefined && ipLocation.result.address_reference.crossroad !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.water !== undefined && ipLocation.result.address_reference.water !== ''){
+              } else if (ipLocation.result.address_reference.water !== undefined && ipLocation.result.address_reference.water !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
-              }else if (ipLocation.result.address_reference.ocean !== undefined && ipLocation.result.address_reference.ocean !== ''){
+              } else if (ipLocation.result.address_reference.ocean !== undefined && ipLocation.result.address_reference.ocean !== '') {
                 pos += ' ' + ipLocation.result.address_reference.town.title;
               }
             }
