@@ -389,10 +389,16 @@ memoUpdateEvent.on((event: Memo) => {
 const getTmpLocation = () => {
   return new Promise((resolve, reject) => {
     try {
+      let tencentMapKey = '';
+      const siteConfig = await $fetch('/api/site/config/get')
+      if (siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableTencentMap) {
+        tencentMapKey = siteConfig.data.tencentMapKey;
+      }else{
+        return;
+      }
       const url = 'https://apis.map.qq.com/ws/location/v1/ip';
-      const config = useRuntimeConfig();
       const params = {
-        key: config.public.TENCENT_MAP_KEY,
+        key: tencentMapKey,
         output: 'jsonp'
       };
       const queryString = new URLSearchParams(params).toString();

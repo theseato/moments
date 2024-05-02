@@ -217,7 +217,6 @@ const welcome = async () => {
   try {
     let tencentMapKey = '';
     const siteConfig = await $fetch('/api/site/config/get')
-    console.log(siteConfig);
     if (siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableTencentMap) {
       tencentMapKey = siteConfig.data.tencentMapKey;
     }else{
