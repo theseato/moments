@@ -174,7 +174,10 @@ const userIdOut = useCookie('userId')
 const logout = () => {
   token.value = ''
   userIdOut.value = '0'
-
+  $fetch('/api/user/logout',
+  {
+    method: 'POST',
+  })
   navigateTo('/', { replace: true })
 }
 
