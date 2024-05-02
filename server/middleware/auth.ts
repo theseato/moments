@@ -66,16 +66,16 @@ export default defineEventHandler(async (event) => {
     if(!tokenInRedis){
       throw createError({
         statusCode: 401,
-        statusMessage: "Unauthorized",
+        statusMessage: "Unauthorized1",
       });
     }else{
       // 检查是否跟id匹配
       const result = jwt.verify(token, jwtKey);
       const payload = result as JwtPayload;
-      if(payload.userId !== parseInt(tokenInRedis)){
+      if(payload.userId !== parseInt(JSON.parse(tokenInRedis).id)){
         throw createError({
           statusCode: 401,
-          statusMessage: "Unauthorized",
+          statusMessage: "Unauthorized2",
         });
       }
     }
