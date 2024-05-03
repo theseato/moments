@@ -36,8 +36,6 @@ export default defineEventHandler(async (event) => {
 
   if(siteConfig.s3Domain == 'minio'){
 
-    console.log(siteConfig.s3Endpoint);
-
     const endPoint = siteConfig.s3Endpoint.split(":")[0].replace("//", "");
     const port = parseInt(siteConfig.s3Endpoint.split(":")[-1]);
     const useSSL = siteConfig.s3Endpoint.startsWith("https");
@@ -52,10 +50,7 @@ export default defineEventHandler(async (event) => {
 
     const key =
         "moments/" + dayjs(new Date()).format("YYYY/MM/DD/") + short.generate();
-    let url = '';
-    await minioClient.presignedPutObject( siteConfig.s3Bucket, key, 600).then((presignedUrl) => {
-      url = presignedUrl;
-    });
+    const url = await minioClient.presignedPutObject(siteConfig.s3Bucket, key, 600);
     let imgUrl = `${siteConfig.s3Endpoint}/${key}`;
     return {
       success: true,
