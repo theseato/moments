@@ -14,8 +14,13 @@ export const useUpload = async (file: File, cb: UploadCallBack) => {
     return
   }
 
-  const enableS3 = useStorage("enableS3", false);
-  if (enableS3.value) {
+  const siteConfig = await $fetch("/api/site/config/get");
+  if (!siteConfig.success) {
+    toast.error("获取配置失败");
+    return;
+  }
+  console.log(siteConfig);
+  if (siteConfig.data.enableS3) {
     const res = await $fetch("/api/files/s3Presigned", {
       method: "POST",
       body: JSON.stringify({

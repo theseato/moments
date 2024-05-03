@@ -3,26 +3,28 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dayjs from "dayjs";
 import prisma from "~/lib/db";
 import short from "short-uuid";
+import * as Minio from "minio";
+
 
 export default defineEventHandler(async (event) => {
   const { fileType } = (await readBody(event)) as { fileType: string };
 
 
-  const user = await prisma.user.findUnique({
+  const siteConfig = await prisma.config.findUnique({
     where: {
-      id: event.context.userId,
+      id: 1,
     },
   });
 
   if (
     !fileType ||
-    !user ||
-    !user.enableS3 ||
-    !user.accessKey ||
-    !user.secretKey ||
-    !user.bucket ||
-    !user.region ||
-    !user.endpoint
+    !siteConfig ||
+    !siteConfig.enableS3 ||
+    !siteConfig.s3AccessKey ||
+    !siteConfig.s3SecretKey ||
+    !siteConfig.s3Bucket ||
+    !siteConfig.s3Region ||
+    !siteConfig.s3Endpoint
   ) {
     return {
       success: false,
@@ -32,28 +34,62 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  const client = new S3Client({
-    region: user.region,
-    endpoint: user.endpoint,
-    credentials: {
-      accessKeyId: user.accessKey,
-      secretAccessKey: user.secretKey,
-    },
-  });
+  if(siteConfig.s3Domain == 'minio'){
 
-  const key =
-    "moments/" + dayjs(new Date()).format("YYYY/MM/DD/") + short.generate();
-  const command = new PutObjectCommand({
-    Bucket: user.bucket,
-    Key: key,
-    ContentType: fileType,
-  });
-  const url = await getSignedUrl(client, command, { expiresIn: 600 });
-  let imgUrl = `${user.domain}/${key}`;
-  return {
-    success: true,
-    url,
-    imgUrl,
-    message: "",
-  };
+    console.log(siteConfig.s3Endpoint);
+
+    const endPoint = siteConfig.s3Endpoint.split(":")[0].replace("//", "");
+    const port = parseInt(siteConfig.s3Endpoint.split(":")[-1]);
+    const useSSL = siteConfig.s3Endpoint.startsWith("https");
+
+    const minioClient = new Minio.Client({
+      endPoint: endPoint,
+      port: port,
+      useSSL: useSSL,
+      accessKey: siteConfig.s3AccessKey,
+      secretKey: siteConfig.s3SecretKey,
+    });
+
+    const key =
+        "moments/" + dayjs(new Date()).format("YYYY/MM/DD/") + short.generate();
+    let url = '';
+    await minioClient.presignedPutObject( siteConfig.s3Bucket, key, 600).then((presignedUrl) => {
+      url = presignedUrl;
+    });
+    let imgUrl = `${siteConfig.s3Endpoint}/${key}`;
+    return {
+      success: true,
+      url,
+      imgUrl,
+      message: "",
+    };
+
+
+  }else{
+    const client = new S3Client({
+      region: siteConfig.s3Region,
+      endpoint: siteConfig.s3Endpoint,
+      credentials: {
+        accessKeyId: siteConfig.s3AccessKey,
+        secretAccessKey: siteConfig.s3SecretKey,
+      },
+    });
+
+    const key =
+        "moments/" + dayjs(new Date()).format("YYYY/MM/DD/") + short.generate();
+    const command = new PutObjectCommand({
+      Bucket: siteConfig.s3Bucket,
+      Key: key,
+      ContentType: fileType,
+    });
+    const url = await getSignedUrl(client, command, { expiresIn: 600 });
+    let imgUrl = `${siteConfig.s3Domain}/${key}`;
+    return {
+      success: true,
+      url,
+      imgUrl,
+      message: "",
+    };
+  }
+
 });

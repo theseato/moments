@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
     }
     return {
         success: true, data: {
+            enableS3: data.enableS3,
             enableRecaptcha: data.enableRecaptcha,
             recaptchaSiteKey: data.recaptchaSiteKey,
             enableTencentMap: data.enableTencentMap,
