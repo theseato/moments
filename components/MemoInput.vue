@@ -177,6 +177,8 @@
                     <ComboboxInput
                         :modelValue="inputs"
                         @input="handleInput"
+                        @compositionstart="composing = true"
+                        @compositionend="composing = false;handleInput()"
                         class="!bg-transparent outline-none text-grass11 h-full selection:bg-grass5 placeholder-mauve8"
                         placeholder="请输入需要查询的用户"
                     />
@@ -264,7 +266,7 @@ const state = reactive({
   // page: 1,
   // hasNext: false
 })
-
+let composing = false;
 const find = () => {
   if(inputs.value === '') {
     state.options = [];
@@ -284,6 +286,9 @@ const find = () => {
 }
 
 const handleInput=() =>{
+  if(composing) {
+    return;
+  }
   inputs.value = event.target.value;
   find();
 }
