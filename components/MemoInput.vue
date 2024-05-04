@@ -96,7 +96,7 @@
           </PopoverContent>
         </Popover>
       </div>
-      <div v-if="shouConfigButton" class="flex flex-row gap-2">
+      <div class="flex flex-row gap-2">
         <Button
             @click="submitMemo"
             :disabled="(!content) && imgs.length === 0"
