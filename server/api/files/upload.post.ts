@@ -20,11 +20,11 @@ export default defineEventHandler(async (event) => {
       filename: "",
     };
   }
-  const filetype = file.type.split("/")[1];
+  let filetype = file.type.split("/")[1];
 
-  let filename = short.generate() + "." + filetype;
+  let filename = short.generate();
   
-  const filepath = `${process.env.UPLOAD_DIR}/${filename}`;
+  const filepath = `${process.env.UPLOAD_DIR}/${filename}.${filetype}`;
   try{
     await fs.writeFile(filepath, file.data);
   }catch(e){
@@ -33,13 +33,13 @@ export default defineEventHandler(async (event) => {
   }
 
     if (filetype === "heif" || filetype === "heic") {
-        exec(`heif-convert ${filepath} ${short.generate()}.jpg`, (error: any, stdout: any, stderr: any) => {
+
+        exec(`heif-convert ${filepath} ${process.env.UPLOAD_DIR}/${filename}.jpg`, (error: any, stdout: any, stderr: any) => {
         if (error) {
             console.error(`exec error: ${error}`);
             return;
-        }else{
-          filename = short.generate() + '.jpg';
         }
+        filetype = "jpg";
         console.log(`stdout: ${stdout}`);
         console.error(`stderr: ${stderr}`);
         });
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
 
   return {
     success: true,
-    filename: "/upload/" + filename,
+    filename: "/upload/" + filename + "." + filetype,
     message: "上传文件成功!",
   };
 });
