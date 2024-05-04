@@ -189,7 +189,7 @@ export default defineEventHandler(async (event) => {
                 eMail: true,
             },
         });
-        if(user && user.eMail && user.eMail !== '' && notificationList.indexOf(user.eMail) === -1{
+        if(user && user.eMail && user.eMail !== '' && notificationList.indexOf(user.eMail) === -1){
             sendEmail({
                 email: user.eMail || process.env.NOTIFY_MAIL || '',
                 subject: '新评论',
