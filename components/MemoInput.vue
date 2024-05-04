@@ -277,7 +277,6 @@ const find = () => {
     body: JSON.stringify({ find: inputs.value })
   }).then((res) => {
     if (res.success) {
-      console.log(res.data)
       state.options = res.data;
     } else {
       state.options = [];

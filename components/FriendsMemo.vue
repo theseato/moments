@@ -182,7 +182,6 @@ for(let i=0;i<props.memo.atpeople?.split(',').length;i++){
     }
   })
 }
-console.log(atpeoplenickname.value)
 
 const emit = defineEmits(['memo-update'])
 

@@ -19,7 +19,6 @@ export const useUpload = async (file: File, cb: UploadCallBack) => {
     toast.error("获取配置失败");
     return;
   }
-  console.log(siteConfig);
   if (siteConfig.data.enableS3) {
     const res = await $fetch("/api/files/s3Presigned", {
       method: "POST",
