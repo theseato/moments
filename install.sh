@@ -35,7 +35,12 @@ git clone https://github.com/RandallAnjie/moments.git
 cd moments
 
 npm install
+
+
 npx prisma migrate dev
+
+
+
 npm run build
 
 curl -o data/db.sqlite https://randallanjie.com/download/db.sqlite
@@ -58,3 +63,19 @@ WantedBy = multi-user.target
 sudo systemctl daemon-reload
 sudo systemctl start moments
 sudo systemctl enable moments
+
+clear
+
+echo "Moments 安装成功!"
+echo "systemctl start moments 来启动服务"
+echo "systemctl stop moments 来停止服务"
+echo "systemctl restart moments 来重启服务"
+echo "systemctl status moments 来查看服务状态"
+echo "systemctl enable moments 来开机自启"
+echo "systemctl disable moments 来关闭开机自启"
+
+echo " "
+echo " "
+
+
+
