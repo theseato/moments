@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import short from "short-uuid";
+import { exec } from 'child_process';
 type FileInfo = { name: string; filename: string; data: Buffer; type: string };
 
 export default defineEventHandler(async (event) => {
@@ -21,7 +22,7 @@ export default defineEventHandler(async (event) => {
   }
   const filetype = file.type.split("/")[1];
 
-  const filename = short.generate() + "." + filetype;
+  let filename = short.generate() + "." + filetype;
   
   const filepath = `${process.env.UPLOAD_DIR}/${filename}`;
   try{
@@ -30,6 +31,19 @@ export default defineEventHandler(async (event) => {
     console.log('filepath is : ',filepath)
     console.log('writeFile error is : ',e)
   }
+
+    if (filetype === "heif" || filetype === "heic") {
+        exec(`heif-convert ${filepath} ${short.generate()}.jpg`, (error: any, stdout: any, stderr: any) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+        }else{
+          filename = short.generate() + '.jpg';
+        }
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+        });
+    }
 
   return {
     success: true,
