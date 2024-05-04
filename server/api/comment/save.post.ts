@@ -112,6 +112,7 @@ export default defineEventHandler(async (event) => {
         },
         select: {
             userId: true,
+            atpeople: true,
         },
     });
     // 根据id获取nickname
@@ -144,6 +145,7 @@ export default defineEventHandler(async (event) => {
         },
     });
     if(siteConfig && siteConfig?.enableEmail){
+        let notificationList: string = [];
         let comment = null;
 
         if(replyToId !== undefined && replyToId !== 0){
@@ -152,41 +154,47 @@ export default defineEventHandler(async (event) => {
                     id: replyToId,
                 }
             });
-            if(comment !== null && comment.email !== null && comment.email !== ''){
-                console.log('1'+comment.email)
+            if(comment !== null && comment.email !== null && comment.email !== '' && notificationList.indexOf(comment.email) === -1){
+                notificationList.push(comment);
                 // 邮箱通知被回复者
                 sendEmail({
                     email: comment.email,
                     subject: '新回复',
-                    message: `您在moments中的评论有新回复！
-                用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+                    message: `您在moments中的评论有新回复！用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
                 });
             }
         }
 
-        // 非管理员
-        if(event.context.userId == undefined){
-            // 找到文章所有者的邮箱
-            const user = await prisma.user.findUnique({
+        const atpeople = memo?.atpeople?.split(',');
+        for (const item of atpeople) {
+            const userat = await prisma.user.findUnique({
                 where: {
-                    id: memo?.userId,
-                },
-                select: {
-                    eMail: true,
+                    id: item,
                 },
             });
-
-            // 邮箱通知管理员
-            if(email === user?.eMail || user?.eMail === comment?.email){
-
-            }else{
+            if(userat && userat.eMail && userat.eMail !== '' && userat.eMail !== user?.eMail){
                 sendEmail({
-                    email: user.eMail || process.env.NOTIFY_MAIL || '',
-                    subject: '新评论',
-                    message: `您的moments有新评论！
-            用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+                    email: userat.eMail,
+                    subject: '新提及',
+                    message: `有一条新提及您的动态！用户名为:  ${username} 的用户在提及了您的动态中发表了评论，点击查看: ${siteUrl}/detail/${memoId}`,
                 });
             }
+        }
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: memo?.userId,
+            },
+            select: {
+                eMail: true,
+            },
+        });
+        if(user && user.eMail && user.eMail !== '' && notificationList.indexOf(user.eMail) === -1{
+            sendEmail({
+                email: user.eMail || process.env.NOTIFY_MAIL || '',
+                subject: '新评论',
+                message: `您的moments有新评论！用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+            });
         }
     }
     // 返回成功响应

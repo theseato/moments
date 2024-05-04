@@ -96,15 +96,17 @@
           </PopoverContent>
         </Popover>
       </div>
-
+      <div v-if="shouConfigButton" class="flex flex-row gap-2">
+        <Button
+            @click="submitMemo"
+            :disabled="(!content) && imgs.length === 0"
+        >提交</Button>
+      </div>
     </div>
     <div class="relative">
       <Textarea ref="textareaRef" @paste="pasteImg" autocomplete="new-text" v-model="content" rows="4" @keyup.ctrl.enter="submitMemo()"
                 placeholder="今天发点什么呢?" class=" dark:text-[#C0BEBF]"></Textarea>
-      <div class="absolute right-2 bottom-1 cursor-pointer text-xl" @click="toggleShowEmoji" ref="showEmojiRef">😊</div>
     </div>
-
-    <Emoji v-if="showEmoji" class="mt-2" @emoji-selected="emojiSelected" />
 
     <iframe class="rounded" frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86
             :src="music163IfrUrl" v-if="music163IfrUrl"></iframe>
@@ -150,7 +152,74 @@
           </PopoverContent>
         </Popover>
       </div>
-      <Button @click="submitMemo">提交</Button>
+      <div class="text-sm flex flex-row gap-1 flex-1 items-center">
+        <Popover>
+          <PopoverTrigger>
+            <div class="text-[#576b95] text-sm cursor-pointer">{{ fmtAite }}</div>
+          </PopoverTrigger>
+          <PopoverContent class="w-80">
+            <div class="flex flex-row gap-2 text-sm">
+              <TagsInputRoot
+                  v-model="atpeople"
+                  class="flex gap-2 items-center border p-2 rounded-lg w-full max-w-[480px] flex-wrap border-blackA7"
+              >
+                <TagsInputItem v-for="item in atpeopleNickname" :key="item" :value="item" class=" flex shadow-md items-center justify-center gap-2 bg-green8 aria-[current=true]:bg-green9 rounded p-1">
+                  <TagsInputItemText class="text-sm pl-1" />
+                  <TagsInputItemDelete
+                      class="p-0.5 rounded bg-transparent hover:bg-blackA4"
+                      @click="atpeopleNickname.splice(atpeopleNickname.indexOf(item), 1); atpeople.splice(atpeople.indexOf(atpeopleNickname.indexOf(item)), 1)"
+                  >
+                    X
+                  </TagsInputItemDelete>
+                </TagsInputItem>
+                <ComboboxRoot v-model="v" class="relative">
+                  <ComboboxAnchor class="min-w-[160px] inline-flex items-center justify-between rounded px-[15px] text-[13px] leading-none h-[35px] gap-[5px] text-grass11 shadow-[0_2px_10px] shadow-black/10 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-grass9 outline-none">
+                    <ComboboxInput
+                        :modelValue="inputs"
+                        @input="handleInput"
+                        class="!bg-transparent outline-none text-grass11 h-full selection:bg-grass5 placeholder-mauve8"
+                        placeholder="请输入需要查询的用户"
+                    />
+                  </ComboboxAnchor>
+
+                  <ComboboxContent class="absolute z-10 w-full mt-2 min-w-[200px] bg-white dark:bg-black overflow-hidden rounded shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade">
+                    <ComboboxViewport class="p-[5px]">
+                      <ComboboxEmpty class="text-mauve8 text-xs font-medium text-center py-2" />
+
+                      <ComboboxGroup>
+
+                        <ComboboxItem
+                            v-for="(option, index) in state.options" :key="index"
+                            class="text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] pr-[35px] pl-[25px] relative select-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-grass9 data-[highlighted]:text-grass1"
+                            :value="option"
+                            @click="
+                            if(atpeople.indexOf(option.id) === -1){
+                              atpeopleNickname.push(option.nickname);
+                              atpeople.push(option.id); inputs = ''
+                            }"
+                        >
+                          <ComboboxItemIndicator
+                              class="absolute left-0 w-[25px] inline-flex items-center justify-center"
+                          >
+                          </ComboboxItemIndicator>
+                          <img :src="option.avatarUrl" class="w-[20px] h-[20px] rounded-full" />
+                          <span>
+                            {{ option.nickname }}
+                          </span>
+                          <span style="color: #999; font-size: 12px;margin-left: 5px">
+                            id：{{ option.id }}
+                          </span>
+                        </ComboboxItem>
+                        <ComboboxSeparator class="h-[1px] bg-grass6 m-[5px]" />
+                      </ComboboxGroup>
+                    </ComboboxViewport>
+                  </ComboboxContent>
+                </ComboboxRoot>
+              </TagsInputRoot>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
   </div>
 </template>
@@ -166,7 +235,58 @@ import { Image, Music4, Settings, Trash2, LogOut,  Link, Youtube, CircleX, Check
 import { ref } from 'vue';
 import jsonp from "jsonp";
 import {toast} from "vue-sonner";
+import {
+  TagsInputInput,
+  TagsInputItem,
+  TagsInputItemDelete,
+  TagsInputItemText,
+  TagsInputRoot,
+  ComboboxAnchor,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxItemIndicator,
+  ComboboxLabel,
+  ComboboxRoot,
+  ComboboxSeparator,
+  ComboboxTrigger,
+  ComboboxViewport
+} from "radix-vue";
 const location = ref('');
+const inputs = ref('');
+
+const v = ref('')
+
+const state = reactive({
+  options: Array<any>(),
+  // page: 1,
+  // hasNext: false
+})
+
+const find = () => {
+  if(inputs.value === '') {
+    state.options = [];
+    return;
+  }
+  $fetch('/api/user/list', {
+    method: 'POST',
+    body: JSON.stringify({ find: inputs.value })
+  }).then((res) => {
+    if (res.success) {
+      console.log(res.data)
+      state.options = res.data;
+    } else {
+      state.options = [];
+    }
+  });
+}
+
+const handleInput=() =>{
+  inputs.value = event.target.value;
+  find();
+}
 
 const textareaRef = ref()
 const showEmojiRef = ref<HTMLElement>()
@@ -181,8 +301,16 @@ const fmtLocation = computed(() => {
   if (location.value) {
     return location.value.split(' ').join(' · ')
   }
-  return '自定义位置?'
+  return '所在位置'
 })
+
+const fmtAite = computed(() => {
+  if(atpeopleNickname.value.length > 0) {
+    return '提醒: ' + atpeopleNickname.value.join('、')
+  }
+  return '提醒谁看'
+})
+
 const content = ref('')
 const id = ref(-1)
 const music163Url = ref('')
@@ -245,6 +373,8 @@ const addLink = async () => {
   }
 }
 
+
+
 const dragStart = (event, index) => {
   event.dataTransfer.setData('text/plain', index);
 }
@@ -263,17 +393,21 @@ const drop = (event, dropIndex) => {
 
 
 const imgs = ref<string[]>([])
+const atpeople = ref<number[]>([])
+const atpeopleNickname = ref<string[]>([])
+
 const submitMemo = async () => {
   if (content.value === '') {
     toast.warning('请输入内容')
     return
   }
-  toast.promise( $fetch('/api/memo/save', {
+  toast.promise($fetch('/api/memo/save', {
         method: 'POST',
         body: JSON.stringify({
           id: id.value,
           content: content.value,
           imgUrls: imgs.value,
+          atpeople: atpeople.value,
           music163Url: music163IfrUrl.value,
           bilibiliUrl: bilibiliIfrUrl.value,
           location: location.value,
@@ -288,6 +422,8 @@ const submitMemo = async () => {
             content.value = ''
             id.value = -1
             imgs.value = []
+            atpeople.value = []
+            atpeopleNickname.value = []
             music163IfrUrl.value = ''
             music163Url.value = ''
             bilibiliIfrUrl.value = ''
@@ -379,6 +515,16 @@ memoUpdateEvent.on((event: Memo) => {
   if (event.imgs) {
     imgs.value = event.imgs?.split(',')
   }
+  if(event.atpeople) {
+    atpeople.value = event.atpeople.split(',').map(Number)
+    for (let i = 0; i < atpeople.value.length; i++) {
+      $fetch('/api/user/settings/get?user='+atpeople.value[i]).then((res) => {
+        if (res.success) {
+          atpeopleNickname.value.push(res.data.nickname)
+        }
+      })
+    }
+  }
   location.value = event.location || ''
   externalFavicon.value = event.externalFavicon || ''
   externalTitle.value = event.externalTitle || ''
@@ -394,7 +540,7 @@ const getTmpLocation = async () => {
       if (siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableTencentMap) {
         tencentMapKey = siteConfig.data.tencentMapKey;
       } else {
-        return;
+        reject('当前站点未开启地图服务，请手动输入位置或者联系管理员开启地图服务');
       }
       const url = 'https://apis.map.qq.com/ws/location/v1/ip';
       const params = {
@@ -455,11 +601,19 @@ const getTmpLocation = async () => {
 
 async function updateLocation() {
   try {
-    const loc = await getTmpLocation();
-    location.value = loc;
+    toast.promise(getTmpLocation(), {
+      loading: '获取位置中...',
+      success: (data) => {
+        location.value = data;
+        return '获取位置成功';
+      },
+      error: (error) => {
+        location.value = '';
+        return error;
+      }
+    });
   } catch (error) {
     console.error(error);
-    location.value = '获取位置失败';
   }
 }
 

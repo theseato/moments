@@ -21,7 +21,7 @@
     </div>
   </div>
   <div id="version-info">
-    当前版本: <span id="version">V0.3.5</span>
+    当前版本: <span id="version">V0.3.6</span>
     <div class="update-details">
       更新日志:
       <br/>
@@ -60,6 +60,8 @@
       ·V0.3.4 2024-05-01 新增“#”标签/话题功能，统一菜单栏位置，<br />更新置顶显示方式，修复消息回复框不关闭的问题
       <br/>
       ·V0.3.5 2024-05-03 将后台配置更新到页面设置中，更方便更新修改管理
+      <br/>
+      ·V0.3.6 2024-05-04 新增@功能，被艾特用户拥有跟作者相同的事件通知
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>

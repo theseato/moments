@@ -26,7 +26,6 @@ export default defineEventHandler(async (event) => {
       avatarUrl: true,
       slogan: true,
       coverUrl: true,
-      eMail: true,
     },
   });
   const configData = await prisma.config.findUnique({

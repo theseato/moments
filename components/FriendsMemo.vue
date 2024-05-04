@@ -32,7 +32,13 @@
                v-for="(img, index) in imgs" :key="index" />
         </FancyBox>
       </div>
-      <div class="text-[#576b95] font-medium dark:text-white text-xs mt-2 mb-1 select-none">{{props.memo.location?.split(/\s+/g).join(' · ')}}</div>
+      <div class="text-[#57BE6B] font-medium dark:text-white text-xs mt-3 select-none" v-if="memo.userId === userId">
+        {{(props.memo.atpeople?('提到了'+atpeoplenickname):'')}}
+      </div>
+      <div class="text-[#57BE6B] font-medium dark:text-white text-xs mt-3 select-none" v-if="memo.userId !== userId">
+        {{(props.memo.atpeople?(props.memo.atpeople?.split(',').indexOf(''+userId)===-1?'':'提到了我'):'')}}
+      </div>
+      <div class="text-[#576b95] font-medium dark:text-white text-xs mt-1 mb-1 select-none">{{props.memo.location?.split(/\s+/g).join(' · ')}}</div>
       <div class="toolbar relative flex flex-row justify-between select-none my-1">
         <div class="flex-1 text-gray text-xs text-[#9DA4B0] ">{{
           dayjs(props.memo.createdAt).locale('zh-cn').fromNow().replaceAll(/\s+/g,
@@ -134,6 +140,9 @@ import {PopoverRoot} from "radix-vue";
 const token = useCookie('token')
 
 const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
+
+const atpeoplenickname = ref('')
+
 let userId = ref(0)
 
 const gridStyle = computed(() => {
@@ -166,6 +175,14 @@ const props = withDefaults(
   }>(), {}
 )
 
+for(let i=0;i<props.memo.atpeople?.split(',').length;i++){
+  $fetch('/api/user/settings/get?user='+props.memo.atpeople?.split(',')[i]).then(res => {
+    if (res.success) {
+      atpeoplenickname.value += ' ' + res.data.nickname
+    }
+  })
+}
+console.log(atpeoplenickname.value)
 
 const emit = defineEmits(['memo-update'])
 

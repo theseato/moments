@@ -1,10 +1,12 @@
 import prisma from "~/lib/db";
 import { aliTextJudge } from '~/utils/aliTextJudge';
+import {sendEmail} from "~/utils/sendEmail";
 
 type SaveMemoReq = {
   id?: number;
   content: string;
   imgUrls?: string[];
+  atpeople?: number[];
   music163Url?: string;
   bilibiliUrl?: string;
   location?: string;
@@ -33,6 +35,8 @@ const siteConfig = await prisma.config.findUnique({
     id: 1,
   },
 });
+
+let siteUrl = siteConfig?.siteUrl;
 
 export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as SaveMemoReq;
@@ -69,8 +73,14 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  let atpeople = body.atpeople;
+    if (atpeople) {
+        atpeople = atpeople.filter((item) => item !== event.context.userId);
+    }
+
   const updated = {
     imgs: body.imgUrls?.join(","),
+    atpeople: atpeople?.join(","),
     music163Url: body.music163Url,
     bilibiliUrl: body.bilibiliUrl,
     location: body.location,
@@ -79,7 +89,7 @@ export default defineEventHandler(async (event) => {
     externalFavicon: body.externalFavicon,
     content: body.content,
   };
-  await prisma.memo.upsert({
+  const result = await prisma.memo.upsert({
     where: {
       id: body.id ?? -1,
     },
@@ -91,6 +101,30 @@ export default defineEventHandler(async (event) => {
       ...updated,
     },
   });
+
+    if (atpeople && atpeople.length > 0) {
+        const user = await prisma.user.findUnique({
+        where: {
+            id: event.context.userId,
+        },
+        });
+        for (const item of atpeople) {
+          const userat = await prisma.user.findUnique({
+            where: {
+              id: item,
+            },
+          });
+          if(userat && userat.eMail && userat.eMail !== '' && userat.eMail !== user?.eMail){
+            sendEmail({
+              email: userat.eMail,
+              subject: '新提及',
+              message: `有一条新提及您的动态！
+                用户名为:  ${user?.nickname} 的用户在动态中提及了您，点击查看: ${siteUrl}/detail/${result.id}`,
+            });
+          }
+        }
+    }
+
   return {
     success: true,
   };
