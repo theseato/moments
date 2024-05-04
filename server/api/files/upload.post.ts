@@ -32,18 +32,17 @@ export default defineEventHandler(async (event) => {
     console.log('writeFile error is : ',e)
   }
 
-    if (filetype === "heif" || filetype === "heic") {
-
-        exec(`heif-convert ${filepath} ${process.env.UPLOAD_DIR}/${filename}.jpg`, (error: any, stdout: any, stderr: any) => {
-        if (error) {
-            console.error(`exec error: ${error}`);
-            return;
-        }
+    if (filetype == "heif" || filetype == "heic") {
         filetype = "jpg";
-        console.log(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
+        exec(`heif-convert ${filepath} ${process.env.UPLOAD_DIR}/${filename}.jpg`, (error: any, stdout: any, stderr: any) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                return;
+            }
         });
     }
+
+    console.log('filetype is : ',filetype)
 
   return {
     success: true,
