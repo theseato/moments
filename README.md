@@ -23,6 +23,10 @@
 ~~[]评论按住快捷键可复制~~
 
 
+## 搭建教程
+
+[https://blog.randallanjie.com/archives/1714872362028](https://blog.randallanjie.com/archives/1714872362028)
+
 ## 使用方法
 
 详见[Wikis](https://github.com/RandallAnjie/moments/wiki/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
