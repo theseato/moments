@@ -86,6 +86,26 @@
 
           <DropdownMenuSeparator v-if="userId" class="h-[1px] bg-green6 m-[5px]" />
 
+          <DropdownMenuItem
+              v-if="colorMode.value === 'dark'"
+              class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
+              @click="colorMode.value = 'light'"
+          >
+            切换白天模式
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator v-if="colorMode.value === 'dark'" class="h-[1px] bg-green6 m-[5px]" />
+
+          <DropdownMenuItem
+              v-if="colorMode.value === 'light'"
+              class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
+              @click="colorMode.value = 'dark'"
+          >
+            切换黑夜模式
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator v-if="colorMode.value === 'light'" class="h-[1px] bg-green6 m-[5px]" />
+
           <DropdownMenuArrow class="fill-white" />
         </DropdownMenuContent>
       </DropdownMenuPortal>
@@ -121,7 +141,7 @@ const checkboxOne = ref(false)
 const checkboxTwo = ref(false)
 const person = ref('pedro')
 const userId = useCookie('userId')
-
+const colorMode = useColorMode()
 
 onMounted(async () => {
   const userinfo = useState<User>('userinfo')

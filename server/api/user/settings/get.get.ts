@@ -17,17 +17,33 @@ export default defineEventHandler(async (event) => {
 
   userId = userId ? userId : 1;
 
-  const userData = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      nickname: true,
-      avatarUrl: true,
-      slogan: true,
-      coverUrl: true,
-    },
-  });
+  let userData = null
+  if(event.context.userId !== userId) {
+    userData = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        nickname: true,
+        avatarUrl: true,
+        slogan: true,
+        coverUrl: true,
+      },
+    });
+  }else{
+    userData = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        nickname: true,
+        avatarUrl: true,
+        slogan: true,
+        coverUrl: true,
+        eMail: true,
+      },
+    });
+  }
   const configData = await prisma.config.findUnique({
     where: {
       id: 1,

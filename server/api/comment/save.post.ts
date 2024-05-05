@@ -164,20 +164,22 @@ export default defineEventHandler(async (event) => {
                 });
             }
         }
-
-        const atpeople = memo?.atpeople?.split(',');
-        for (const item of atpeople) {
-            const userat = await prisma.user.findUnique({
-                where: {
-                    id: item,
-                },
-            });
-            if(userat && userat.eMail && userat.eMail !== '' && userat.eMail !== user?.eMail){
-                sendEmail({
-                    email: userat.eMail,
-                    subject: '新提及',
-                    message: `有一条新提及您的动态！用户名为:  ${username} 的用户在提及了您的动态中发表了评论，点击查看: ${siteUrl}/detail/${memoId}`,
+        if(memo?.atpeople && memo?.atpeople !== ''){
+            const atpeople = memo?.atpeople?.split(',');
+            for (const item of atpeople) {
+                console.log('item is : ',item)
+                const userat = await prisma.user.findUnique({
+                    where: {
+                        id: parseInt(item),
+                    },
                 });
+                if(userat && userat.eMail && userat.eMail !== '' && notificationList.indexOf(userat.eMail) === -1){
+                    sendEmail({
+                        email: userat.eMail,
+                        subject: '新提及',
+                        message: `有一条新提及您的动态！用户名为:  ${username} 的用户在提及了您的动态中发表了评论，点击查看: ${siteUrl}/detail/${memoId}`,
+                    });
+                }
             }
         }
 

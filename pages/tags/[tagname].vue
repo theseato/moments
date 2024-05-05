@@ -26,6 +26,9 @@ import { type User, type Memo } from '~/lib/types';
 import { onMounted, onUnmounted, watch, ref } from 'vue';
 import jsonp from 'jsonp';
 import {toast} from "vue-sonner";
+import HeaderImg from "~/components/HeaderImg.vue";
+import MemoInput from "~/components/MemoInput.vue";
+import FriendsMemo from "~/components/FriendsMemo.vue";
 
 const getMore = ref(null);
 const token = useCookie('token')

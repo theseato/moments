@@ -11,18 +11,6 @@
       </div>
     </div>
 
-    <div class="absolute right-2 top-2 bg-slate-100 rounded p-1 flex flex-row gap-2">
-      <div title="返回" v-if="showBack()" @click="navigateTo('/')">
-        <ArrowLeft color="#9FC84A" :size="20" class="cursor-pointer" />
-      </div>
-
-      <div title="亮色" v-if="colorMode.value === 'dark'" @click="colorMode.value = 'light'">
-        <Sun color="#FDE047" :size="20" class="cursor-pointer" />
-      </div>
-      <div title="暗色" v-else>
-        <MoonStar color="#FDE047" :size="20" class="cursor-pointer" @click="colorMode.value = 'dark'" />
-      </div>
-    </div>
   </div>
   <div>
     <MemoInput v-if="token" @memo-added="firstLoad" />
@@ -66,7 +54,6 @@ import OnesMemo from "~/components/OnesMemo.vue";
 import dayjs from "dayjs";
 import {toast} from "vue-sonner";
 
-const colorMode = useColorMode()
 const token = useCookie('token')
 const route = useRoute()
 const showBack = () => {
