@@ -7,7 +7,7 @@
         <div class="username text-[#576b95] cursor-default mb-1 dark:text-white" @click="navigateTo(`/user/${props.memo.userId}`)">{{ props.memo.user.nickname }}</div>
         <Pin :size=14 v-if="props.memo.pinned && props.memo.userId == 1" />
       </div>
-      <div class="memo-content text-sm friend-md words-container" ref="el" v-html="marked(props.memo.content.replaceAll(/(\n+)(?!\n*- |\n*1\. )/g, (match) => {return '<br />\n'.repeat(match.length);}).replaceAll(/#(\S+)/g, '[#$1](/tags/$1)'))"> </div>
+      <div class="memo-content text-sm friend-md words-container" ref="el" v-html="marked(props.memo.content.replaceAll(/(\n+)(?!\n*- |\n*1\. )/g, (match) => {return '<br />\n\n'.repeat(match.length);}).replaceAll(/#(\S+)/g, '[#$1](/tags/$1)'))"> </div>
       <div class="text-[#576b95] cursor-pointer" v-if="hh > 96 && !showAll" @click="showMore">全文</div>
       <div class="text-[#576b95] cursor-pointer " v-if="showAll" @click="showLess">收起</div>
       <div class="flex flex-row gap-2 my-2 bg-[#f7f7f7] dark:bg-[#212121] items-center p-2 border rounded"
