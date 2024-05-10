@@ -7,7 +7,7 @@
         <div class="username text-[#576b95] cursor-default mb-1 dark:text-white" @click="navigateTo(`/user/${props.memo.userId}`)">{{ props.memo.user.nickname }}</div>
         <Pin :size=14 v-if="props.memo.pinned && props.memo.userId == 1" />
       </div>
-      <div class="memo-content text-sm friend-md words-container" ref="el" v-html="marked(props.memo.content.replaceAll(/(\n+)(?!\n*- |\n*1\. )/g, (match) => {return '<br />\n\n'.repeat(match.length);}).replaceAll(/#(\S+)/g, '[#$1](/tags/$1)'))"> </div>
+      <div class="memo-content text-sm friend-md words-container" ref="el" v-html="replaceNewLinesExceptInCodeBlocks(props.memo.content)"> </div>
       <div class="text-[#576b95] cursor-pointer" v-if="hh > 96 && !showAll" @click="showMore">全文</div>
       <div class="text-[#576b95] cursor-pointer " v-if="showAll" @click="showLess">收起</div>
       <div class="flex flex-row gap-2 my-2 bg-[#f7f7f7] dark:bg-[#212121] items-center p-2 border rounded"
@@ -272,6 +272,30 @@ const showMore = () => {
 const showLess = () => {
   showAll.value = false
   el.value.classList.add('line-clamp-4')
+}
+
+const replaceNewLinesExceptInCodeBlocks = (text: string) =>{
+  const segments = text.split('```');
+  let result = '';
+
+  for (let i = 0; i < segments.length; i++) {
+    if (i % 2 === 0) { // Outside of code blocks
+      // Replace sequences of new lines, except when followed directly by "-", "1. ", or ">"
+      segments[i] = segments[i].replace(/(\n)(?!(\n*- |\n*1\. |\n*>))/g, '\n<br />\n\n')
+          .replace(/(\n{2,})(- |\d\. )/g, (match, p1, p2) => '\n<br />\n\n'.repeat(p1.length - 1) + p2);
+      // Replace hashtags with markdown links
+      segments[i] = segments[i].replaceAll(/#(\S+)/g, '[#$1](/tags/$1)');
+    }
+    // Reassemble the text with code blocks
+    if (i < segments.length - 1) {
+      result += segments[i] + '```';
+    } else {
+      result += segments[i];
+    }
+  }
+
+  // Convert Markdown to HTML (assuming marked is available and imported)
+  return marked(result);
 }
 
 
