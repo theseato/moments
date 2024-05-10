@@ -469,15 +469,17 @@ const welcome = async () => {
   font-size: 12px;
   color: rgba(128, 128, 128, 0.7);
   z-index: 9999;
-  transition: all 0.3s ease;
+  transition: max-height 0.3s ease;
   overflow: hidden;
   max-height: 20px;
+  max-width: 100px;
 }
 
 #version-info:hover {
   color: white;
   background-color: rgba(128, 128, 128, 0.7);
   max-height: 100%;
+  max-width: 80%;
 }
 
 .update-details {

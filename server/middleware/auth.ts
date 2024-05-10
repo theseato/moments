@@ -23,7 +23,6 @@ export default defineEventHandler(async (event) => {
   const token = getCookie(event, "token");
   const url = getRequestURL(event);
 
-
   if (token && url.pathname === "/login") {
     await sendRedirect(event, "/", 302);
     return;

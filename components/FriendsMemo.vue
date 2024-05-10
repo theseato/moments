@@ -7,7 +7,7 @@
         <div class="username text-[#576b95] cursor-default mb-1 dark:text-white" @click="navigateTo(`/user/${props.memo.userId}`)">{{ props.memo.user.nickname }}</div>
         <Pin :size=14 v-if="props.memo.pinned && props.memo.userId == 1" />
       </div>
-      <div class="memo-content text-sm friend-md" ref="el" v-html="marked(props.memo.content.replace(/#(\S+)/g, '[#$1](/tags/$1)'))"> </div>
+      <div class="memo-content text-sm friend-md words-container" ref="el" v-html="marked(props.memo.content.replaceAll(/(\n+)(?!\n*- |\n*1\. )/g, (match) => {return '<br />\n'.repeat(match.length);}).replaceAll(/#(\S+)/g, '[#$1](/tags/$1)'))"> </div>
       <div class="text-[#576b95] cursor-pointer" v-if="hh > 96 && !showAll" @click="showMore">全文</div>
       <div class="text-[#576b95] cursor-pointer " v-if="showAll" @click="showLess">收起</div>
       <div class="flex flex-row gap-2 my-2 bg-[#f7f7f7] dark:bg-[#212121] items-center p-2 border rounded"
@@ -15,13 +15,6 @@
         <img class="w-8 h-8" :src="props.memo.externalFavicon" alt="">
         <a :href="props.memo.externalUrl" target="_blank" class="text-[#576b95]">{{ props.memo.externalTitle }}</a>
       </div>
-
-      <iframe class="rounded" frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86
-        :src="props.memo.music163Url" v-if="props.memo.music163Url"></iframe>
-
-      <iframe class="w-full h-[250px] my-2" v-if="props.memo.bilibiliUrl" :src="props.memo.bilibiliUrl" scrolling="no"
-        border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-
 
       <div v-if="imgs.length">
         <FancyBox class="grid my-1 gap-0.5" :style="gridStyle"
@@ -85,7 +78,7 @@
               <HeartCrack :size=14 v-else />
               <div>{{ likeList.findIndex((id) => id === props.memo.id) >= 0 ? '取消' : '赞' }}</div>
             </div>
-            
+
             <div class="flex flex-row gap-2 cursor-pointer items-center"
               @click="showCommentInput = !showCommentInput; showUserCommentArray = []; showToolbar = false">
               <MessageSquareMore :size=14 />
@@ -308,6 +301,22 @@ watchOnce(height, () => {
   height: auto;      /* 高度自动调整以保持横宽比 */
   width: auto;
   border: transparent 1px solid;
+}
+
+.words-container a{
+  color: #3C4F7E;
+  text-decoration: none;
+}
+
+.words-container ul {
+  list-style-type: circle;
+  padding-left: 20px;
+  margin-left: 0;
+}
+.words-container ol {
+  list-style-type: roman;
+  padding-left: 20px;
+  margin-left: 0;
 }
 
 </style>

@@ -3,7 +3,7 @@
   <div class="p-2 sm:p-4 flex justify-center min-h-[500px w-full]">
     <div class="p-8 rounded shadow-md max-w-sm w-full">
       <div class="mb-4">
-        <Label for="username" class="block text-gray-700 mb-2">用户名</Label>
+        <Label for="username" class="block text-gray-700 mb-2">用户名/邮箱</Label>
         <Input v-model="state.username" autocomplete="off" type="text" id="username" />
       </div>
       <div class="mb-6">

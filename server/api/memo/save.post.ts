@@ -7,8 +7,6 @@ type SaveMemoReq = {
   content: string;
   imgUrls?: string[];
   atpeople?: number[];
-  music163Url?: string;
-  bilibiliUrl?: string;
   location?: string;
   externalUrl?: string;
   externalTitle?: string;
@@ -81,8 +79,6 @@ export default defineEventHandler(async (event) => {
   const updated = {
     imgs: body.imgUrls?.join(","),
     atpeople: atpeople?.join(","),
-    music163Url: body.music163Url,
-    bilibiliUrl: body.bilibiliUrl,
     location: body.location,
     externalUrl: body.externalUrl,
     externalTitle: body.externalTitle,
