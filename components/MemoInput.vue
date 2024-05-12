@@ -129,10 +129,11 @@
                   <ComboboxRoot v-model="v" class="relative">
                     <ComboboxAnchor class="min-w-[160px] inline-flex items-center justify-between rounded px-[15px] text-[13px] leading-none h-[35px] gap-[5px] text-grass11 shadow-[0_2px_10px] shadow-black/10 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-grass9 outline-none">
                       <ComboboxInput
-                          :modelValue="inputs"
+                          :modelValue="inputs0"
                           @input="handleInput(0)"
                           @compositionstart="composing=true"
                           @compositionend="composing = false;handleInput(0)"
+                          @keydown.enter.prevent
                           class="!bg-transparent outline-none text-grass11 h-full selection:bg-grass5 placeholder-mauve8"
                           placeholder="请输入需要查询的用户"
                       />
@@ -148,7 +149,7 @@
                               v-for="(option, index) in state.options" :key="index"
                               class="text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] pr-[35px] pl-[25px] relative select-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-grass9 data-[highlighted]:text-grass1"
                               :value="option"
-                              @click="if(atpeople.indexOf(option.id) === -1){atpeopleNickname.push(option.nickname);atpeople.push(option.id); inputs = '';judgeAtSafty();}"
+                              @click="if(atpeople.indexOf(option.id) === -1){atpeopleNickname.push(option.nickname);atpeople.push(option.id); inputs0 = '';judgeAtSafty();}"
                           >
                             <ComboboxItemIndicator
                                 class="absolute left-0 w-[25px] inline-flex items-center justify-center"
@@ -201,10 +202,11 @@
                   <ComboboxRoot v-model="v" class="relative">
                     <ComboboxAnchor class="min-w-[160px] inline-flex items-center justify-between rounded px-[15px] text-[13px] leading-none h-[35px] gap-[5px] text-grass11 shadow-[0_2px_10px] shadow-black/10 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-grass9 outline-none">
                       <ComboboxInput
-                          :modelValue="inputs"
+                          :modelValue="inputs1"
                           @input="handleInput(1)"
                           @compositionstart="composing = true"
                           @compositionend="composing = false;handleInput(1)"
+                          @keydown.enter.prevent
                           class="!bg-transparent outline-none text-grass11 h-full selection:bg-grass5 placeholder-mauve8"
                           placeholder="请输入需要查询的用户"
                       />
@@ -220,7 +222,7 @@
                               v-for="(option, index) in state.options" :key="index"
                               class="text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] pr-[35px] pl-[25px] relative select-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-grass9 data-[highlighted]:text-grass1"
                               :value="option"
-                              @click="if(avpeople.indexOf(option.id) === -1){avpeopleNickname.push(option.nickname);avpeople.push(option.id); inputs = '';judgeAtSafty();}"
+                              @click="if(avpeople.indexOf(option.id) === -1){avpeopleNickname.push(option.nickname);avpeople.push(option.id); inputs1 = '';judgeAtSafty();}"
                           >
                             <ComboboxItemIndicator
                                 class="absolute left-0 w-[25px] inline-flex items-center justify-center"
@@ -282,7 +284,8 @@ import {
   ComboboxViewport
 } from "radix-vue";
 const location = ref('');
-const inputs = ref('');
+const inputs0 = ref('');
+const inputs1 = ref('');
 
 const v = ref('')
 
@@ -297,6 +300,7 @@ const handleInput=(withMe :number) =>{
   if(composing) {
     return;
   }
+  const inputs = withMe === 0 ? inputs0 : inputs1;
   inputs.value = event.target.value;
   if(inputs.value === '') {
     state.options = [];
