@@ -7,6 +7,7 @@ type SaveMemoReq = {
   content: string;
   imgUrls?: string[];
   atpeople?: number[];
+  avpeople?: number[];
   location?: string;
   externalUrl?: string;
   externalTitle?: string;
@@ -75,10 +76,26 @@ export default defineEventHandler(async (event) => {
     if (atpeople) {
         atpeople = atpeople.filter((item) => item !== event.context.userId);
     }
+    let avpeople = body.avpeople;
+  let avpeopleString :any = [];
+  if (avpeople && avpeople.length > 0) {
+    if (!avpeople.includes(event.context.userId)) {
+      avpeople.push(event.context.userId);
+    }
+    if (atpeople) {
+        atpeople.forEach((item) => {
+            if (!avpeople.includes(item)) {
+            avpeople.push(item);
+            }
+        });
+    }
+    avpeopleString = avpeople.map((item) => "#" + item + "$");
+  }
 
   const updated = {
     imgs: body.imgUrls?.join(","),
     atpeople: atpeople?.join(","),
+    availableForProple: avpeopleString?.join(","),
     location: body.location,
     externalUrl: body.externalUrl,
     externalTitle: body.externalTitle,

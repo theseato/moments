@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   const params = new URLSearchParams(url.search);
 
   // 获取用户 ID，如果没有提供则默认为 1
-  let userId = parseInt(params.get('user'));
+  let userId = parseInt(params.get('user')||"1");
 
   if (!userId || userId < 1) {
     userId = event.context.userId;

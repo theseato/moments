@@ -2,37 +2,53 @@ import prisma from "~/lib/db";
 
 type ListMemoReq = {
   find: any;
-  // page: number;
+  withMe: number;
 };
 
 export default defineEventHandler(async (event) => {
-  let { find } = (await readBody(event)) as ListMemoReq;
+  let { find, withMe } = (await readBody(event)) as ListMemoReq;
 
   // const size = 10;
-  let data = [];
-  data = await prisma.user.findMany({
-    where:{
-      nickname: {
-        contains: find,
+  let data :any = [];
+  if(withMe == 0){
+    data = await prisma.user.findMany({
+      where:{
+        nickname: {
+          contains: find,
+        },
+        id:{
+          not:event.context.userId
+        }
       },
-      id:{
-        not:event.context.userId
-      }
-    },
-    select:{
+      select:{
         id: true,
         nickname: true,
         avatarUrl: true,
-    },
-  });
+      },
+    });
+  }else if(withMe == 1){
+    data = await prisma.user.findMany({
+      where:{
+        nickname: {
+          contains: find,
+        },
+      },
+      select:{
+        id: true,
+        nickname: true,
+        avatarUrl: true,
+      },
+    });
+  }
 
-  const total = await prisma.user.count({
-    where:{
-      nickname: {
-        contains: find,
-      }
-    }
-  });
+
+  // const total = await prisma.user.count({
+  //   where:{
+  //     nickname: {
+  //       contains: find,
+  //     }
+  //   }
+  // });
   // const totalPage = Math.ceil(total / size);
   return {
     data,

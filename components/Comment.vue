@@ -19,7 +19,8 @@
           <span :title="`点击回复${comment.username}`" @click="showCommentInput = !showCommentInput" class="inline w-full break-all cursor-pointer">{{ comment.content }}</span>
           <AlertDialog v-if="belongToMe ">
             <AlertDialogTrigger asChild>
-              <Trash2 :size=14 class="align-text-top ml-2 cursor-pointer inline-block text-gray-300" @click.stop="openDeleteDialog" />            </AlertDialogTrigger>
+              <Trash2 :size=16 class="align-text-top ml-2 cursor-pointer inline-block text-gray-300" @click.stop="openDeleteDialog" />
+            </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>确定删除评论吗?</AlertDialogTitle>

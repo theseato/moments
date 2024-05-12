@@ -40,6 +40,7 @@ model Memo {
   externalFavicon String    @default("/favicon.png")
   pinned          Boolean   @default(false)
   atpeople        String?
+  availableForProple    String?
 }
 
 model User {
