@@ -24,7 +24,7 @@ const siteConfig = await prisma.config.findUnique({
 });
 
 let siteUrl = siteConfig?.siteUrl;
-if(siteUrl === undefined || siteUrl === '' || siteUrl === 'undefined' || siteUrl === 'null'){
+if(siteUrl === undefined || siteUrl === null || siteUrl === '' || siteUrl === 'undefined' || siteUrl === 'null'){
     siteUrl = '';
 }
 if(siteUrl.endsWith('/')){
@@ -70,7 +70,8 @@ export default defineEventHandler(async (event) => {
         return { success: false, message: "网址格式不正确" };
     }
 
-    if(siteConfig?.enableRecaptcha && siteConfig?.recaptchaSiteKey !== '' && siteConfig?.recaptchaSecretKey !== ''){
+
+    if(siteConfig !== null && siteConfig?.enableRecaptcha && siteConfig?.recaptchaSiteKey !== '' && siteConfig?.recaptchaSecretKey !== ''){
         // 验证 reCAPTCHA 响应
         const recaptchaResult = await validateRecaptcha(reToken);
         if (!recaptchaResult.success || recaptchaResult.score < 0.5) {
@@ -82,8 +83,8 @@ export default defineEventHandler(async (event) => {
     }
 
     // 文本内容检查
-    if(siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== ''){
-        const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection', siteConfig?.aliyunAccessKeyId, siteConfig?.aliyunAccessKeySecret);
+    if(siteConfig !== null && siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== ''){
+        const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection', siteConfig?.aliyunAccessKeyId||"", siteConfig?.aliyunAccessKeySecret||"");
         if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
             let labelsList = aliJudgeResponse1.Data.labels.split(',');
 
@@ -93,7 +94,7 @@ export default defineEventHandler(async (event) => {
             };
         }
 
-        const aliJudgeResponse2 = await aliTextJudge(username, 'nickname_detection', siteConfig?.aliyunAccessKeyId, siteConfig?.aliyunAccessKeySecret);
+        const aliJudgeResponse2 = await aliTextJudge(username, 'nickname_detection', siteConfig?.aliyunAccessKeyId||"", siteConfig?.aliyunAccessKeySecret||"");
         if (aliJudgeResponse2.Data && aliJudgeResponse2.Data.labels && aliJudgeResponse2.Data.labels !== '') {
             let labelsList = aliJudgeResponse2.Data.labels.split(',');
 
@@ -127,8 +128,8 @@ export default defineEventHandler(async (event) => {
             },
         });
         if(user){
-            username = user.nickname;
-            email = user.eMail;
+            username = user.nickname || username;
+            email = user.eMail || email;
         }
     }
 
@@ -145,7 +146,7 @@ export default defineEventHandler(async (event) => {
         },
     });
     if(siteConfig && siteConfig?.enableEmail){
-        let notificationList: string = [];
+        let notificationList: any[] = [];
         let comment = null;
 
         if(replyToId !== undefined && replyToId !== 0){
@@ -213,7 +214,7 @@ async function validateRecaptcha(reToken: string) {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: `secret=${siteConfig.recaptchaSecretKey}&response=${reToken}`
+            body: `secret=${siteConfig?.recaptchaSecretKey || ''}&response=${reToken}`
         });
         return await response.json();
     } catch (error) {

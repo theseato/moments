@@ -92,9 +92,8 @@
               </div>
               <div class="text-[#576b95] text-sm cursor-pointer">{{ fmtLocation }}</div>
             </PopoverTrigger>
-            <PopoverContent class="w-80">
+            <PopoverContent class="w-auto">
               <div class="flex flex-row gap-2 text-sm">
-                <Input v-model="location" placeholder="空格分割" />
                 <Button variant="outline" @click="updateLocation">自动获取</Button>
                 <Button variant="outline" @click="location = ''">清空</Button>
               </div>
@@ -130,10 +129,11 @@
                   <ComboboxRoot v-model="v" class="relative">
                     <ComboboxAnchor class="min-w-[160px] inline-flex items-center justify-between rounded px-[15px] text-[13px] leading-none h-[35px] gap-[5px] text-grass11 shadow-[0_2px_10px] shadow-black/10 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-grass9 outline-none">
                       <ComboboxInput
-                          :modelValue="inputs"
-                          @input="handleInput"
-                          @compositionstart="composing = true"
-                          @compositionend="composing = false;handleInput()"
+                          :modelValue="inputs0"
+                          @input="handleInput(0)"
+                          @compositionstart="composing=true"
+                          @compositionend="composing = false;handleInput(0)"
+                          @keydown.enter.prevent
                           class="!bg-transparent outline-none text-grass11 h-full selection:bg-grass5 placeholder-mauve8"
                           placeholder="请输入需要查询的用户"
                       />
@@ -149,7 +149,80 @@
                               v-for="(option, index) in state.options" :key="index"
                               class="text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] pr-[35px] pl-[25px] relative select-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-grass9 data-[highlighted]:text-grass1"
                               :value="option"
-                              @click="if(atpeople.indexOf(option.id) === -1){atpeopleNickname.push(option.nickname);atpeople.push(option.id); inputs = ''}"
+                              @click="if(atpeople.indexOf(option.id) === -1){atpeopleNickname.push(option.nickname);atpeople.push(option.id); inputs0 = '';judgeAtSafty();}"
+                          >
+                            <ComboboxItemIndicator
+                                class="absolute left-0 w-[25px] inline-flex items-center justify-center"
+                            >
+                            </ComboboxItemIndicator>
+                            <img :src="option.avatarUrl" class="w-[20px] h-[20px] rounded-full" />
+                            <span>
+                            {{ option.nickname }}
+                          </span>
+                            <span style="color: #999; font-size: 12px;margin-left: 5px">
+                            id：{{ option.id }}
+                          </span>
+                          </ComboboxItem>
+                          <ComboboxSeparator class="h-[1px] bg-grass6 m-[5px]" />
+                        </ComboboxGroup>
+                      </ComboboxViewport>
+                    </ComboboxContent>
+                  </ComboboxRoot>
+                </TagsInputRoot>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+      <div class="flex flex-row justify-between items-center gap-2 memo-info-list">
+        <div class="text-sm flex flex-row gap-1 flex-1 items-center">
+          <Popover>
+            <PopoverTrigger style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+              <div style="display: flex; align-items: center;">
+                <svg t="1715415328668" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4310" width="32" height="32"><path d="M652.8 534.4C723.2 489.6 768 409.6 768 320c0-140.8-115.2-256-256-256S256 179.2 256 320c0 89.6 44.8 169.6 115.2 214.4C192 592 64 761.6 64 960h64c0-211.2 172.8-384 384-384s384 172.8 384 384h64c0-198.4-128-368-307.2-425.6zM512 512c-105.6 0-192-86.4-192-192s86.4-192 192-192 192 86.4 192 192-86.4 192-192 192z" fill="#333333" p-id="4311"></path></svg>
+                <div class="text-sm cursor-pointer">谁可以看</div>
+              </div>
+              <div class="text-[#576b95] text-sm cursor-pointer">{{ fmtAvailable }}</div>
+            </PopoverTrigger>
+            <PopoverContent class="w-80">
+              <div class="flex flex-row gap-2 text-sm">
+                <TagsInputRoot
+                    v-model="avpeople"
+                    class="flex gap-2 items-center border p-2 rounded-lg w-full max-w-[480px] flex-wrap border-blackA7"
+                >
+                  <TagsInputItem v-for="item in avpeopleNickname" :key="item" :value="item" class=" flex shadow-md items-center justify-center gap-2 bg-green8 aria-[current=true]:bg-green9 rounded p-1">
+                    <TagsInputItemText class="text-sm pl-1" />
+                    <TagsInputItemDelete
+                        class="p-0.5 rounded bg-transparent hover:bg-blackA4"
+                        @click="avpeopleNickname.splice(avpeopleNickname.indexOf(item), 1); avpeople.splice(avpeople.indexOf(avpeopleNickname.indexOf(item)), 1);atpeopleNickname.splice(atpeopleNickname.indexOf(item), 1); atpeople.splice(atpeople.indexOf(atpeopleNickname.indexOf(item)), 1)"
+                    >
+                      X
+                    </TagsInputItemDelete>
+                  </TagsInputItem>
+                  <ComboboxRoot v-model="v" class="relative">
+                    <ComboboxAnchor class="min-w-[160px] inline-flex items-center justify-between rounded px-[15px] text-[13px] leading-none h-[35px] gap-[5px] text-grass11 shadow-[0_2px_10px] shadow-black/10 hover:bg-mauve3 focus:shadow-[0_0_0_2px] focus:shadow-black data-[placeholder]:text-grass9 outline-none">
+                      <ComboboxInput
+                          :modelValue="inputs1"
+                          @input="handleInput(1)"
+                          @compositionstart="composing = true"
+                          @compositionend="composing = false;handleInput(1)"
+                          @keydown.enter.prevent
+                          class="!bg-transparent outline-none text-grass11 h-full selection:bg-grass5 placeholder-mauve8"
+                          placeholder="请输入需要查询的用户"
+                      />
+                    </ComboboxAnchor>
+
+                    <ComboboxContent class="absolute z-10 w-full mt-2 min-w-[200px] bg-white dark:bg-black overflow-hidden rounded shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=top]:animate-slideDownAndFade data-[side=right]:animate-slideLeftAndFade data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade">
+                      <ComboboxViewport class="p-[5px]">
+                        <ComboboxEmpty class="text-mauve8 text-xs font-medium text-center py-2" />
+
+                        <ComboboxGroup>
+
+                          <ComboboxItem
+                              v-for="(option, index) in state.options" :key="index"
+                              class="text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] pr-[35px] pl-[25px] relative select-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:outline-none data-[highlighted]:bg-grass9 data-[highlighted]:text-grass1"
+                              :value="option"
+                              @click="if(avpeople.indexOf(option.id) === -1){avpeopleNickname.push(option.nickname);avpeople.push(option.id); inputs1 = '';judgeAtSafty();}"
                           >
                             <ComboboxItemIndicator
                                 class="absolute left-0 w-[25px] inline-flex items-center justify-center"
@@ -211,7 +284,8 @@ import {
   ComboboxViewport
 } from "radix-vue";
 const location = ref('');
-const inputs = ref('');
+const inputs0 = ref('');
+const inputs1 = ref('');
 
 const v = ref('')
 
@@ -221,14 +295,23 @@ const state = reactive({
   // hasNext: false
 })
 let composing = false;
-const find = () => {
+
+const handleInput=(withMe :number) =>{
+  if(composing) {
+    return;
+  }
+  const inputs = withMe === 0 ? inputs0 : inputs1;
+  inputs.value = event.target.value;
   if(inputs.value === '') {
     state.options = [];
     return;
   }
   $fetch('/api/user/list', {
     method: 'POST',
-    body: JSON.stringify({ find: inputs.value })
+    body: JSON.stringify({
+      find: inputs.value,
+      withMe: withMe,
+    })
   }).then((res) => {
     if (res.success) {
       state.options = res.data;
@@ -236,14 +319,6 @@ const find = () => {
       state.options = [];
     }
   });
-}
-
-const handleInput=() =>{
-  if(composing) {
-    return;
-  }
-  inputs.value = event.target.value;
-  find();
 }
 
 const textareaRef = ref()
@@ -259,14 +334,24 @@ const fmtLocation = computed(() => {
   if (location.value) {
     return location.value.split(' ').join(' · ')
   }
-  return '所在位置'
+  return ''
 })
 
 const fmtAite = computed(() => {
   if(atpeopleNickname.value.length > 0) {
     return '提醒: ' + atpeopleNickname.value.join('、')
   }
-  return '提醒谁看'
+  return ''
+})
+
+const fmtAvailable = computed(() => {
+  if(avpeopleNickname.value.length > 0) {
+    if(avpeople.value.length === 1 && avpeople.value[0] === userId.value) {
+      return '私密'
+    }
+    return '仅: ' + avpeopleNickname.value.join('、') + '可见'
+  }
+  return '公开'
 })
 
 const content = ref('')
@@ -347,11 +432,15 @@ const imgs = ref<string[]>([])
 const atpeople = ref<number[]>([])
 const atpeopleNickname = ref<string[]>([])
 
+const avpeople = ref<number[]>([])
+const avpeopleNickname = ref<string[]>([])
+
 const submitMemo = async () => {
   if (content.value === '') {
     toast.warning('请输入内容')
     return
   }
+  judgeAtSafty()
   toast.promise($fetch('/api/memo/save', {
         method: 'POST',
         body: JSON.stringify({
@@ -359,6 +448,7 @@ const submitMemo = async () => {
           content: content.value,
           imgUrls: imgs.value,
           atpeople: atpeople.value,
+          avpeople: avpeople.value,
           location: location.value,
           externalFavicon: externalFavicon.value,
           externalTitle: externalTitle.value,
@@ -373,6 +463,8 @@ const submitMemo = async () => {
             imgs.value = []
             atpeople.value = []
             atpeopleNickname.value = []
+            avpeople.value = []
+            avpeopleNickname.value = []
             location.value = ''
             externalFavicon.value = ''
             externalTitle.value = ''
@@ -431,6 +523,16 @@ memoUpdateEvent.on((event: Memo) => {
       $fetch('/api/user/settings/get?user='+atpeople.value[i]).then((res: any) => {
         if (res.success) {
           atpeopleNickname.value.push(res.data.nickname)
+        }
+      })
+    }
+  }
+  if(event.avpeople) {
+    avpeople.value = event.avpeople.split(',').map(Number)
+    for (let i = 0; i < avpeople.value.length; i++) {
+      $fetch('/api/user/settings/get?user='+avpeople.value[i]).then((res: any) => {
+        if (res.success) {
+          avpeopleNickname.value.push(res.data.nickname)
         }
       })
     }
@@ -524,6 +626,17 @@ async function updateLocation() {
     });
   } catch (error) {
     console.error(error);
+  }
+}
+
+const judgeAtSafty = () => {
+  if(avpeople.value.length > 0) {
+    for(let i = 0; i < atpeople.value.length; i++) {
+      if(avpeople.value.indexOf(atpeople.value[i]) === -1) {
+        avpeople.value.push(atpeople.value[i]);
+        avpeopleNickname.value.push(atpeopleNickname.value[i]);
+      }
+    }
   }
 }
 

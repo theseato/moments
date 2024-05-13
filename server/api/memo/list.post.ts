@@ -1,4 +1,5 @@
 import prisma from "~/lib/db";
+import {context} from "esbuild";
 
 type ListMemoReq = {
   user: any;
@@ -19,7 +20,6 @@ export default defineEventHandler(async (event) => {
       user = undefined;
     }
   }
-
   const size = 10;
   let data = [];
   if(user){
@@ -49,6 +49,19 @@ export default defineEventHandler(async (event) => {
       },
       where: {
         userId: user,
+        OR: [
+          {
+            availableForProple: null,
+          },
+          {
+            availableForProple: '',
+          },
+          {
+            availableForProple: {
+              contains: `#${event.context.userId}$`,
+            },
+          },
+        ],
       },
       orderBy: [
         { pinned: 'desc' },
@@ -88,7 +101,20 @@ export default defineEventHandler(async (event) => {
         pinned: true,
         content: {
           contains: tagname? '#'+tagname: '',
-        }
+        },
+        OR: [
+          {
+            availableForProple: null,
+          },
+          {
+            availableForProple: '',
+          },
+          {
+            availableForProple: {
+              contains: `#${event.context.userId}$`,
+            },
+          },
+        ],
       },
       orderBy: [
         { createdAt: 'desc' }
@@ -121,6 +147,19 @@ export default defineEventHandler(async (event) => {
         },
       },
       where: {
+        OR: [
+          {
+            availableForProple: null,
+          },
+          {
+            availableForProple: '',
+          },
+          {
+            availableForProple: {
+              contains: `#${event.context.userId}$`,
+            },
+          },
+        ],
         NOT: [
           {
             userId: 1,
@@ -129,7 +168,7 @@ export default defineEventHandler(async (event) => {
         ],
         content: {
           contains: tagname? '#'+tagname: '',
-        }
+        },
       },
       orderBy: [
         { createdAt: 'desc' }
@@ -143,6 +182,7 @@ export default defineEventHandler(async (event) => {
     ...memo,
     comments: memo.comments.filter(comment => comment.content && comment.content.length < 100),
     hasMoreComments: memo._count.comments > 5 || memo.comments.some(comment => comment.content && comment.content.length >= 100),
+    avpeople: (memo.availableForProple ? memo.availableForProple.split(",").map(item => item.split("#")[1].split("$")[0]) : []).join(','),
   }));
   // 截取前5条评论
   data = data.map(memo => ({
@@ -154,7 +194,20 @@ export default defineEventHandler(async (event) => {
       userId: user ? user : undefined,
       content: {
         contains: tagname? '#'+tagname: '',
-      }
+      },
+      OR: [
+        {
+          availableForProple: null,
+        },
+        {
+          availableForProple: '',
+        },
+        {
+          availableForProple: {
+            contains: `#${event.context.userId}$`,
+          },
+        },
+      ],
     },
   });
   const totalPage = Math.ceil(total / size);

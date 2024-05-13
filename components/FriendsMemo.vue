@@ -254,6 +254,7 @@ const removeMemo = async () => {
 
 const editMemo = async () => {
   showToolbar.value = false
+  console.log(props.memo)
   memoUpdateEvent.emit(props.memo)
 }
 

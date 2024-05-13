@@ -2,6 +2,7 @@
   <div>
     <div class="p-2 sm:p-4">
       <FriendsMemo :memo="data?.data as any as Memo" v-if="data?.data" :show-more="false" @memo-update="refresh" />
+      <span v-if="data?.success==false">{{ data?.message }}</span>
     </div>
   </div>
 </template>

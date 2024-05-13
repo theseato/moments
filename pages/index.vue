@@ -21,7 +21,7 @@
     </div>
   </div>
   <div id="version-info">
-    当前版本: <span id="version">V0.3.6</span>
+    当前版本: <span id="version">V0.3.7</span>
     <div class="update-details">
       更新日志:
       <br/>
@@ -62,6 +62,8 @@
       ·V0.3.5 2024-05-03 将后台配置更新到页面设置中，更方便更新修改管理
       <br/>
       ·V0.3.6 2024-05-04 新增@功能，被艾特用户拥有跟作者相同的事件通知
+      <br/>
+      ·V0.3.7 2024-05-12 新增查看权限功能，支持私密，或者部分用户可见
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
