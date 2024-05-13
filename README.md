@@ -2,6 +2,8 @@
 
 > 本项目复刻自kingwrcy大佬的[moments](https://github.com/kingwrcy/moments)
 
+> 感谢[@jkjoy](https://github.com/jkjoy)大考提供的Dockerfile和docker-compose.yaml
+
 ## 项目介绍
 
 已经实现的功能:
@@ -15,6 +17,7 @@
 - 上传完的图片可以拖动排序
 - tag/标签功能
 - @/提及功能
+- 查看权限功能，支持私密，或者部分用户可见
 
 新功能预告:
 
