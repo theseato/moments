@@ -20,9 +20,6 @@ export default defineEventHandler(async (event) => {
       user = undefined;
     }
   }
-  if(event.context.userId){
-
-  }
   const size = 10;
   let data = [];
   if(user){
@@ -52,6 +49,19 @@ export default defineEventHandler(async (event) => {
       },
       where: {
         userId: user,
+        OR: [
+          {
+            availableForProple: null,
+          },
+          {
+            availableForProple: '',
+          },
+          {
+            availableForProple: {
+              contains: `#${event.context.userId}$`,
+            },
+          },
+        ],
       },
       orderBy: [
         { pinned: 'desc' },
@@ -137,15 +147,6 @@ export default defineEventHandler(async (event) => {
         },
       },
       where: {
-        NOT: [
-          {
-            userId: 1,
-            pinned: true,
-          },
-        ],
-        content: {
-          contains: tagname? '#'+tagname: '',
-        },
         OR: [
           {
             availableForProple: null,
@@ -159,6 +160,15 @@ export default defineEventHandler(async (event) => {
             },
           },
         ],
+        NOT: [
+          {
+            userId: 1,
+            pinned: true,
+          },
+        ],
+        content: {
+          contains: tagname? '#'+tagname: '',
+        },
       },
       orderBy: [
         { createdAt: 'desc' }
