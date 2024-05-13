@@ -17,7 +17,6 @@
 <script setup lang="ts">
 import { settingsUpdateEvent } from '~/lib/event'
 import { getImgUrl } from '~/lib/utils';
-import { Sun, MoonStar, LogIn, ArrowLeft } from 'lucide-vue-next'
 import {useAsyncData} from "#imports";
 import type {User} from "~/lib/types";
 const token = useCookie('token')
@@ -27,11 +26,13 @@ const showBack = () => {
 }
 
 const userId = useCookie('userId');
-const url = window.location.pathname
 let findId = userId.value
-if(url.startsWith('/user/')) {
-  findId = url.split('/user/')[1]
-}
+onMounted(() => {
+  const url = window.location.pathname;
+  if (url.startsWith('/user/')) {
+    findId = url.split('/user/')[1];
+  }
+});
 const response = await $fetch('/api/user/settings/get?user=' + (findId == 'undefined' ? '0' : findId));
 
 const { data: res, refresh } = await useAsyncData('userinfo', async () => response)
