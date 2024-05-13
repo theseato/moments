@@ -2,7 +2,7 @@
 
 > 本项目复刻自kingwrcy大佬的[moments](https://github.com/kingwrcy/moments)
 
-> 感谢[@jkjoy](https://github.com/jkjoy)大考提供的Dockerfile和docker-compose.yaml
+> 感谢[@jkjoy](https://github.com/jkjoy)大佬提供的Dockerfile和docker-compose.yaml
 
 ## 项目介绍
 
