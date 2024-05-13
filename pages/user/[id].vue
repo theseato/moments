@@ -60,11 +60,41 @@ const showBack = () => {
   return route.path.startsWith('/detail') || route.path.startsWith('/settings') || route.path.startsWith('/user')
 }
 const userId = useCookie('userId');
-const url = window.location.pathname
 let findId = userId.value
-if(url.startsWith('/user/')) {
-  findId = url.split('/user/')[1]
-}
+
+onMounted(async () => {
+  const url = window.location.pathname
+  if(url.startsWith('/user/')) {
+    findId = url.split('/user/')[1]
+  }
+  await firstLoad();
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadMore();
+    }
+  }, {
+    // 上边框距离屏幕底部一定距离时触发
+    rootMargin: '500px',
+  });
+
+  if (getMore.value) {
+    observer.observe(getMore.value);
+  }
+
+  // 当组件卸载时，停止观察
+  onUnmounted(() => {
+    if (getMore.value) {
+      observer.unobserve(getMore.value);
+    }
+  });
+  // 监听 getMore 引用的变化，并重新设置观察者
+  watch(getMore, () => {
+    setupObserver();
+  }, {
+    immediate: true // 立即触发，确保初始 setup
+  });
+});
+
 const response = await $fetch('/api/user/settings/get?user=' + (findId == 'undefined' ? '0' : findId));
 
 const { data: res, refresh } = await useAsyncData('userinfo', async () => response)
@@ -114,34 +144,7 @@ const annotatedMemoList = computed(() => {
   });
 })
 
-onMounted(async () => {
-  await firstLoad();
-  const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) {
-      loadMore();
-    }
-  }, {
-    // 上边框距离屏幕底部一定距离时触发
-    rootMargin: '500px',
-  });
 
-  if (getMore.value) {
-    observer.observe(getMore.value);
-  }
-
-  // 当组件卸载时，停止观察
-  onUnmounted(() => {
-    if (getMore.value) {
-      observer.unobserve(getMore.value);
-    }
-  });
-  // 监听 getMore 引用的变化，并重新设置观察者
-  watch(getMore, () => {
-    setupObserver();
-  }, {
-    immediate: true // 立即触发，确保初始 setup
-  });
-});
 const setupObserver = () => {
   // 清除现有的观察者（如果有）
   if (observer && getMore.value) {
