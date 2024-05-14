@@ -114,7 +114,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
 import { Heart, HeartCrack, MessageSquareMore, Trash2, FilePenLine, Pin } from 'lucide-vue-next'
-import { memoUpdateEvent } from '@/lib/event'
+import { memoUpdateEvent, memoAddEvent } from '@/lib/event'
 import { getImgUrl } from '~/lib/utils';
 import {
   AlertDialog,
@@ -168,13 +168,20 @@ const props = withDefaults(
   }>(), {}
 )
 
-for(let i=0;i<props.memo.atpeople?.split(',').length;i++){
-  $fetch('/api/user/settings/get?user='+props.memo.atpeople?.split(',')[i]).then(res => {
-    if (res.success) {
-      atpeoplenickname.value += ' ' + res.data.nickname
+const refreshAtpeople = async ()=>{
+  if(props.memo.atpeople?.split(',')){
+    atpeoplenickname.value = ''
+    for(let i=0;i<props.memo.atpeople?.split(',').length;i++){
+      $fetch('/api/user/settings/get?user='+props.memo.atpeople?.split(',')[i]).then(res => {
+        if (res.success) {
+          atpeoplenickname.value += ' ' + res.data.nickname
+        }
+      })
     }
-  })
+  }
 }
+
+refreshAtpeople()
 
 const emit = defineEmits(['memo-update'])
 
@@ -203,9 +210,6 @@ const gridCols = computed(() => {
 const like = async () => {
   showToolbar.value = false
   const contain = likeList.value.find((id) => id === props.memo.id)
-
-
-
   const res = await $fetch('/api/memo/like', {
     method: 'POST',
     body: JSON.stringify({
@@ -254,9 +258,19 @@ const removeMemo = async () => {
 
 const editMemo = async () => {
   showToolbar.value = false
-  console.log(props.memo)
   memoUpdateEvent.emit(props.memo)
 }
+
+memoAddEvent.on((id: any, body: any) => {
+  if (id == props.memo.id) {
+    emit('memo-update')
+    atpeoplenickname.value = ''
+    props.memo.atpeople = body.data.atpeople
+    for(let i=0;i<body.atpeopleNickname.length;i++){
+      atpeoplenickname.value += ' ' + body.atpeopleNickname[i]
+    }
+  }
+})
 
 
 const refreshComment = async () => {
@@ -280,22 +294,17 @@ const replaceNewLinesExceptInCodeBlocks = (text: string) =>{
   let result = '';
 
   for (let i = 0; i < segments.length; i++) {
-    if (i % 2 === 0) { // Outside of code blocks
-      // Replace sequences of new lines, except when followed directly by "-", "1. ", or ">"
+    if (i % 2 === 0) {
       segments[i] = segments[i].replace(/(\n)(?!(\n*- |\n*1\. |\n*>))/g, '\n<br />\n\n')
           .replace(/(\n{2,})(- |\d\. )/g, (match, p1, p2) => '\n<br />\n\n'.repeat(p1.length - 1) + p2);
-      // Replace hashtags with markdown links
       segments[i] = segments[i].replaceAll(/#(\S+)/g, '[#$1](/tags/$1)');
     }
-    // Reassemble the text with code blocks
     if (i < segments.length - 1) {
       result += segments[i] + '```';
     } else {
       result += segments[i];
     }
   }
-
-  // Convert Markdown to HTML (assuming marked is available and imported)
   return marked(result);
 }
 
@@ -322,8 +331,8 @@ watchOnce(height, () => {
 .full-cover-image-single {
   object-fit: cover;
   object-position: center;
-  max-height: 200px;  /* 最大高度为200px */
-  height: auto;      /* 高度自动调整以保持横宽比 */
+  max-height: 200px;
+  height: auto;
   width: auto;
   border: transparent 1px solid;
 }

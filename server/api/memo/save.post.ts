@@ -140,5 +140,6 @@ export default defineEventHandler(async (event) => {
 
   return {
     success: true,
+    id: result.id,
   };
 });

@@ -8,8 +8,16 @@ export default defineEventHandler(async (event) => {
   const url = new URL(event.req.url, `http://${event.req.headers.host}`);
   const params = new URLSearchParams(url.search);
 
+  const paramUser = params.get('user');
+
+
+
   // 获取用户 ID，如果没有提供则默认为 1
-  let userId = parseInt(params.get('user')||"1");
+  let userId = 1;
+
+    if (paramUser && /^\d+$/.test(paramUser)) {
+        userId = parseInt(paramUser);
+    }
 
   if (!userId || userId < 1) {
     userId = event.context.userId;

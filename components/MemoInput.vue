@@ -121,7 +121,7 @@
                     <TagsInputItemText class="text-sm pl-1" />
                     <TagsInputItemDelete
                         class="p-0.5 rounded bg-transparent hover:bg-blackA4"
-                        @click="atpeopleNickname.splice(atpeopleNickname.indexOf(item), 1); atpeople.splice(atpeople.indexOf(atpeopleNickname.indexOf(item)), 1)"
+                        @click="atpeople.splice(atpeopleNickname.indexOf(item), 1);atpeopleNickname.splice(atpeopleNickname.indexOf(item), 1);"
                     >
                       X
                     </TagsInputItemDelete>
@@ -194,7 +194,7 @@
                     <TagsInputItemText class="text-sm pl-1" />
                     <TagsInputItemDelete
                         class="p-0.5 rounded bg-transparent hover:bg-blackA4"
-                        @click="avpeopleNickname.splice(avpeopleNickname.indexOf(item), 1); avpeople.splice(avpeople.indexOf(avpeopleNickname.indexOf(item)), 1);atpeopleNickname.splice(atpeopleNickname.indexOf(item), 1); atpeople.splice(atpeople.indexOf(atpeopleNickname.indexOf(item)), 1)"
+                        @click="avpeople.splice(avpeopleNickname.indexOf(item), 1);avpeopleNickname.splice(avpeopleNickname.indexOf(item), 1);if(atpeopleNickname.indexOf(item)>0){atpeople.splice(atpeopleNickname.indexOf(item), 1);atpeopleNickname.splice(atpeopleNickname.indexOf(item), 1);}"
                     >
                       X
                     </TagsInputItemDelete>
@@ -257,7 +257,7 @@
 import { getImgUrl, insertTextAtCursor } from '~/lib/utils';
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { memoUpdateEvent } from '@/lib/event'
+import { memoUpdateEvent, memoAddEvent } from '@/lib/event'
 import type { Memo } from '~/lib/types';
 import { useAnimate } from '@vueuse/core';
 import { Image, Music4, Settings, Trash2, LogOut,  Link, Youtube, CircleX, Check, FileSliders } from 'lucide-vue-next'
@@ -283,6 +283,7 @@ import {
   ComboboxTrigger,
   ComboboxViewport
 } from "radix-vue";
+import {memo} from "@tanstack/virtual-core";
 const location = ref('');
 const inputs0 = ref('');
 const inputs1 = ref('');
@@ -325,7 +326,7 @@ const textareaRef = ref()
 const showEmojiRef = ref<HTMLElement>()
 const keyframes = { transform: 'rotate(360deg)' }
 const showEmoji = ref(false)
-const emit = defineEmits(['memoAdded'])
+const emit = defineEmits(['memo-added'])
 const toggleShowEmoji = () => {
   showEmoji.value = !showEmoji.value
   useAnimate(showEmojiRef.value, keyframes, { duration: 1000, easing: 'ease-in-out' })
@@ -441,23 +442,25 @@ const submitMemo = async () => {
     return
   }
   judgeAtSafty()
+  const body = {
+    id: id.value,
+    content: content.value,
+    imgUrls: imgs.value,
+    atpeople: atpeople.value,
+    avpeople: avpeople.value,
+    location: location.value,
+    externalFavicon: externalFavicon.value,
+    externalTitle: externalTitle.value,
+    externalUrl: externalUrl.value
+  }
   toast.promise($fetch('/api/memo/save', {
         method: 'POST',
-        body: JSON.stringify({
-          id: id.value,
-          content: content.value,
-          imgUrls: imgs.value,
-          atpeople: atpeople.value,
-          avpeople: avpeople.value,
-          location: location.value,
-          externalFavicon: externalFavicon.value,
-          externalTitle: externalTitle.value,
-          externalUrl: externalUrl.value
-        })
+        body: JSON.stringify(body)
       }), {
         loading: '提交中...',
         success: (data) => {
           if (data.success) {
+            memoAddEvent.emit(data.id, {data:body,atpeopleNickname:atpeopleNickname.value,avpeopleNickname:avpeopleNickname.value})
             content.value = ''
             id.value = -1
             imgs.value = []
@@ -470,7 +473,7 @@ const submitMemo = async () => {
             externalTitle.value = ''
             externalUrl.value = ''
             showEmoji.value = false
-            emit('memoAdded')
+            emit('memo-added')
             return '提交成功';
           } else {
             throw new Error(data.message)
@@ -518,6 +521,7 @@ memoUpdateEvent.on((event: Memo) => {
     imgs.value = event.imgs?.split(',')
   }
   if(event.atpeople) {
+    atpeopleNickname.value = []
     atpeople.value = event.atpeople.split(',').map(Number)
     for (let i = 0; i < atpeople.value.length; i++) {
       $fetch('/api/user/settings/get?user='+atpeople.value[i]).then((res: any) => {
@@ -528,6 +532,7 @@ memoUpdateEvent.on((event: Memo) => {
     }
   }
   if(event.avpeople) {
+    avpeopleNickname.value = []
     avpeople.value = event.avpeople.split(',').map(Number)
     for (let i = 0; i < avpeople.value.length; i++) {
       $fetch('/api/user/settings/get?user='+avpeople.value[i]).then((res: any) => {

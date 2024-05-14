@@ -21,7 +21,7 @@
     </div>
   </div>
   <div id="version-info">
-    当前版本: <span id="version">V0.3.7</span>
+    当前版本: <span id="version">V0.3.8</span>
     <div class="update-details">
       更新日志:
       <br/>
@@ -64,6 +64,8 @@
       ·V0.3.6 2024-05-04 新增@功能，被艾特用户拥有跟作者相同的事件通知
       <br/>
       ·V0.3.7 2024-05-12 新增查看权限功能，支持私密，或者部分用户可见
+      <br/>
+      ·V0.3.8 2024-05-14 修复编辑修改艾特用户时，无法更新提示的问题
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
@@ -155,6 +157,7 @@ const firstLoad = async () => {
           if (data.success) {
             state.memoList = data.data as any as Memo[]
             state.hasNext = data.hasNext || false
+
             return '加载成功';
           } else {
             return '加载失败: ' + data.message;
@@ -471,7 +474,7 @@ const welcome = async () => {
   font-size: 12px;
   color: rgba(128, 128, 128, 0.7);
   z-index: 9999;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.3s ease, max-width 0.3s ease;
   overflow: hidden;
   max-height: 20px;
   max-width: 100px;

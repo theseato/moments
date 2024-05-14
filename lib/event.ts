@@ -4,4 +4,6 @@ import type { Memo } from './types'
 const memoUpdateEvent = useEventBus<Memo>('memoUpdate')
 const settingsUpdateEvent = useEventBus<Memo>('settingsUpdate')
 
-export  {memoUpdateEvent,settingsUpdateEvent}
+const memoAddEvent = useEventBus<Memo>('memoAdded')
+
+export  {memoUpdateEvent, settingsUpdateEvent, memoAddEvent}

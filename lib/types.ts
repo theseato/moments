@@ -18,6 +18,7 @@ export type Memo = {
   hasMoreComments:boolean;
   pinned:boolean,
   atpeople?:string;
+  avpeople?:string;
   _count: {
     comments: number;
   };
