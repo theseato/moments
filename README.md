@@ -25,6 +25,10 @@
 
 ~~[]评论按住快捷键可复制~~
 
+## 开发进度
+
+[https://randallanjie.notion.site/2218a0eb29f4482e92a159b3c4a3147e?v=34be316502e14e96a40b1085d4593078&pvs=4](https://randallanjie.notion.site/2218a0eb29f4482e92a159b3c4a3147e?v=34be316502e14e96a40b1085d4593078&pvs=4)
+
 
 ## 搭建教程
 

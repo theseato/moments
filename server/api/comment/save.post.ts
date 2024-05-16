@@ -83,7 +83,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // 文本内容检查
-    if(siteConfig !== null && siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== ''){
+    if(siteConfig !== null && siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== '' && event.context.userId !== 1){
         const aliJudgeResponse1 = await aliTextJudge(content, 'comment_detection', siteConfig?.aliyunAccessKeyId||"", siteConfig?.aliyunAccessKeySecret||"");
         if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
             let labelsList = aliJudgeResponse1.Data.labels.split(',');

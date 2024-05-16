@@ -41,6 +41,7 @@ settingsUpdateEvent.on(async () => {
   await refresh()
 })
 
+
 </script>
 
 <style scoped></style>

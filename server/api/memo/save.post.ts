@@ -46,6 +46,12 @@ export default defineEventHandler(async (event) => {
         message: "内容不能为空",
         };
     }
+    // if(body.content.length > 600){
+    //     return {
+    //     success: false,
+    //     message: "内容长度不能超过600个字符",
+    //     };
+    // }
 
   const memo = await prisma.memo.findUnique({
     where: {
@@ -60,15 +66,19 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  if(siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== ''){
-    const aliJudgeResponse1 = await aliTextJudge(body.content, 'comment_detection', siteConfig?.aliyunAccessKeyId, siteConfig?.aliyunAccessKeySecret);
-    if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
-      let labelsList = aliJudgeResponse1.Data.labels.split(',');
-
-      return {
-        success: false,
-        message: "内容不符合规范：" + labelsList.map((label: string) => staticWord[label]).join(', '),
-      };
+  if(siteConfig?.enableAliyunDective && siteConfig?.aliyunAccessKeyId !== '' && siteConfig?.aliyunAccessKeySecret !== '' && event.context.userId !== 1){
+    // 将 body.content 按照每600个字符分割成数组
+    let contentArray = body.content.match(/[\s\S]{1,600}/g);
+    // 遍历数组，对每个数组元素进行文本审核
+    for(let i = 0; i < contentArray.length; i++) {
+      const aliJudgeResponse1 = await aliTextJudge(contentArray[i], 'comment_detection', siteConfig?.aliyunAccessKeyId, siteConfig?.aliyunAccessKeySecret);
+      if (aliJudgeResponse1.Data && aliJudgeResponse1.Data.labels && aliJudgeResponse1.Data.labels !== '') {
+        let labelsList = aliJudgeResponse1.Data.labels.split(',');
+        return {
+          success: false,
+          message: "内容不符合规范：" + labelsList.map((label: string) => staticWord[label]).join(', '),
+        };
+      }
     }
   }
 

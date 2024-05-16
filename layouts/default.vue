@@ -101,6 +101,15 @@
 
                 <DropdownMenuSeparator v-if="colorMode.value === 'light'" class="h-[1px] bg-green6 m-[5px]" />
 
+                <DropdownMenuItem
+                    class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
+                    @click="navigateTo('/about')"
+                >
+                  关于
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+
                 <DropdownMenuArrow class="fill-white" />
               </DropdownMenuContent>
             </DropdownMenuPortal>

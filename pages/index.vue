@@ -20,55 +20,7 @@
       ———— 没有更多啦～ ————
     </div>
   </div>
-  <div id="version-info">
-    当前版本: <span id="version">V0.3.8</span>
-    <div class="update-details">
-      更新日志:
-      <br/>
-      ·V0.1.0 2024-04-22 创建模板
-      <br/>
-      ·V0.1.1 2024-04-22 更新通知弹窗，添加动态加载
-      <br/>
-      ·V0.1.2 2024-04-23 支持markdown（不修改字体大小，也无列表等，保持朋友圈显示和谐）
-      <br/>
-      ·V0.2.0 2024-04-23 markdown功能完善，修复更新页面内容时markdown文本显示异常
-      <br/>
-      ·V0.2.1 2024-04-23 新增验证码功能
-      <br/>
-      ·V0.2.2 2024-04-24 新增访问速率限制，新增评论字数限制，将可变变量移动到.env文件
-      <br/>
-      ·V0.2.3 2024-04-24 新增邮件通知功能，所有被评论者（如果填写过邮箱）将会收到邮件通知
-      <br/>
-      ·V0.2.4 2024-04-24 新增自动获取位置，新增超长评论首页隐藏
-      <br/>
-      ·V0.2.5 2024-04-24 新增评论审核功能
-      <br/>
-      ·V0.2.6 2024-04-25 更新图片显示，新增图片懒加载
-      <br/>
-      ·V0.2.7 2024-04-26 更新多用户，demo版
-      <br/>
-      ·V0.2.8 2024-04-26 更新多用户权限控制
-      <br/>
-      ·V0.3.0 2024-04-26 正式开放多用户，欢迎注册尝试
-      <br/>
-      ·V0.3.1 2024-04-28 修复弹窗样式，更新变更用户名逻辑
-      <br/>
-      ·V0.3.2 2024-04-29 新增上传完的图片拖动排序功能
-      <br/>
-      ·V0.3.3 2024-04-30 新增用户邮箱修改功能
-      <br/>
-      ·V0.3.4 2024-05-01 新增“#”标签/话题功能，统一菜单栏位置，<br />更新置顶显示方式，修复消息回复框不关闭的问题
-      <br/>
-      ·V0.3.5 2024-05-03 将后台配置更新到页面设置中，更方便更新修改管理
-      <br/>
-      ·V0.3.6 2024-05-04 新增@功能，被艾特用户拥有跟作者相同的事件通知
-      <br/>
-      ·V0.3.7 2024-05-12 新增查看权限功能，支持私密，或者部分用户可见
-      <br/>
-      ·V0.3.8 2024-05-14 修复编辑修改艾特用户时，无法更新提示的问题
-    </div>
-    <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
-  </div>
+
 </template>
 
 <script setup lang="ts">
@@ -463,39 +415,5 @@ const welcome = async () => {
 
 <style scoped></style>
 <style>
-#version-info {
-  text-align: left;
-  position: fixed;
-  left: 10px;
-  bottom: 10px;
-  margin: 20px;
-  padding: 0;
-  border-radius: 5px;
-  font-size: 12px;
-  color: rgba(128, 128, 128, 0.7);
-  z-index: 9999;
-  transition: max-height 0.3s ease, max-width 0.3s ease;
-  overflow: hidden;
-  max-height: 20px;
-  max-width: 100px;
-}
 
-#version-info:hover {
-  color: white;
-  background-color: rgba(128, 128, 128, 0.7);
-  max-height: 100%;
-  max-width: 80%;
-}
-
-.update-details {
-  opacity: 0;
-  max-height: 0;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-#version-info:hover .update-details {
-  opacity: 1;
-  max-height: 100%;
-}
 </style>

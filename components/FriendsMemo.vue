@@ -129,7 +129,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import {marked} from "marked";
 import {toast} from "vue-sonner";
-import {PopoverRoot} from "radix-vue";
+import DOMPurify from 'dompurify';
 const token = useCookie('token')
 
 const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
@@ -195,6 +195,9 @@ let hh = ref(0)
 const { height } = useElementSize(el)
 const likeList = useStorage<Array<number>>('likeList', [])
 
+onClickOutside(toolbarRef, () => {
+  showToolbar.value = false
+})
 
 onMounted(async () => {
   if (token) {
@@ -289,25 +292,68 @@ const showLess = () => {
   el.value.classList.add('line-clamp-4')
 }
 
-const replaceNewLinesExceptInCodeBlocks = (text: string) =>{
-  const segments = text.split('```');
+// const renderer = new marked.Renderer();
+//
+// // 自定义段落的渲染方式
+// renderer.paragraph = function(text) {
+//   return `<p class="custom-paragraph">${text}</p>`;
+// };
+//
+// // 自定义标题的渲染方式
+// renderer.heading = function(text, level) {
+//   const id = encodeURIComponent(text.toLowerCase().replace(/\s+/g, '-'));
+//   return `<h${level} id="${id}" class="custom-heading">${text}</h${level}>`;
+// };
+//
+// // 自定义链接的渲染方式
+// renderer.link = function(href, title, text) {
+//   return `<a href="${href}" title="${title || ''}" class="custom-link">${text}</a>`;
+// };
+//
+// marked.setOptions({
+//   renderer: renderer
+// });
+
+const replaceNewLinesExceptInCodeBlocks = (text: string) => {
+  //
   let result = '';
+  const segments = text.split('```');
 
   for (let i = 0; i < segments.length; i++) {
     if (i % 2 === 0) {
-      segments[i] = segments[i].replace(/(\n)(?!(\n*- |\n*1\. |\n*>))/g, '\n<br />\n\n')
-          .replace(/(\n{2,})(- |\d\. )/g, (match, p1, p2) => '\n<br />\n\n'.repeat(p1.length - 1) + p2);
       segments[i] = segments[i].replaceAll(/#(\S+)/g, '[#$1](/tags/$1)');
-    }
-    if (i < segments.length - 1) {
-      result += segments[i] + '```';
-    } else {
-      result += segments[i];
-    }
-  }
-  return marked(result);
-}
 
+      // 将链接转换为a标签
+      segments[i] = segments[i].replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+      // 将segments[i]根据换行符分割成数组
+      const spices = segments[i].split('\n');
+      for (let j = 0; j < spices.length; j++) {
+        if(spices[j].startsWith('![')){
+          const img = spices[j].match(/!\[(.*?)\]\((.*?)\)/)
+          if(img){
+            spices[j] = `<img src="${img[2]}" alt="${img[1]}" class="cursor-pointer" @click="navigateTo('${img[2]}')"/>`
+          }
+        }else if (/^\d+\./.test(spices[j])) {
+          spices[j] = '<p>' + spices[j] + '</p>';
+        } else if (/^-/.test(spices[j])) {
+          spices[j] = '<li>' + spices[j].replace(/^-/, '') + '</li>';
+        } else {
+          spices[j] = '<span>' + spices[j] + '</span><br />';
+        }
+      }
+      segments[i] = spices.join('');
+    }else{
+      // segments[i] = segments[i].replaceAll(/\n/g, '<br>');
+      segments[i] = '<pre><code>' + segments[i] + '</code></pre>'
+    }
+    result += segments[i] + (i === segments.length - 1 ? '<br />' : '```');
+  }
+
+
+
+  return DOMPurify.sanitize(result, { ALLOWED_TAGS: ['a', 'p', 'span', 'ul', 'ol', 'li', 'img', 'strong', 'em', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br'] });
+}
 
 
 watchOnce(height, () => {
