@@ -1,11 +1,19 @@
 import prisma from "~/lib/db";
 
 type DetailMemoReq = {
-  id: number;
+  id: any;
 };
 
 export default defineEventHandler(async (event) => {
-  const { id } = (await readBody(event)) as DetailMemoReq;
+  let { id } = (await readBody(event)) as DetailMemoReq;
+    if (!id) {
+        return {
+        success: false,
+        message: "id 不能为空",
+        };
+    }else{
+        id = parseInt(id);
+    }
   const data = await prisma.memo.findUnique({
     where:{
       id
@@ -35,7 +43,8 @@ export default defineEventHandler(async (event) => {
   });
   if(data && data.availableForProple !== '' && data.availableForProple !== null){
     const info = data.availableForProple.split(',');
-    if(info.includes(event.context.userId)) {
+    console.log(info, event.context.userId)
+    if(info.includes('#'+event.context.userId+'$')) {
       return {
         data,
         success: true,

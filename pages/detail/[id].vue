@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="p-2 sm:p-4">
-      <FriendsMemo :memo="data?.data as any as Memo" v-if="data?.data" :show-more="false" @memo-update="refresh" />
-      <span v-if="data?.success==false">{{ data?.message }}</span>
+      <FriendsMemo :memo="data as any as Memo" v-if="success" :show-more="false" @memo-update="refresh" />
+      <span v-if="success==false">{{ message }}</span>
     </div>
   </div>
 </template>
@@ -10,19 +10,26 @@
 <script setup lang="ts">
 import type { Memo } from '~/lib/types';
 
-
-useHead({
-
-})
 const route = useRoute()
 const id = route.params.id
 
-const {data,refresh} = await useFetch('/api/memo/detail', {
-  key:`memoDetail-${id}`,
-  method: 'POST',
-  body: JSON.stringify({ id: parseInt(id as string) })
-})
+const success = ref(false)
+const message = ref('')
+const data = ref({} as Memo)
 
+onMounted(() => {
+  const res =  $fetch('/api/memo/detail', {
+    method: 'POST',
+    body: JSON.stringify({ id: id})
+  }).then(res => {
+    success.value = res.success
+    if (res.success) {
+      data.value = res.data
+    } else {
+      message.value = res.message
+    }
+  })
+})
 
 </script>
 
