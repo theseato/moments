@@ -292,28 +292,6 @@ const showLess = () => {
   el.value.classList.add('line-clamp-4')
 }
 
-// const renderer = new marked.Renderer();
-//
-// // 自定义段落的渲染方式
-// renderer.paragraph = function(text) {
-//   return `<p class="custom-paragraph">${text}</p>`;
-// };
-//
-// // 自定义标题的渲染方式
-// renderer.heading = function(text, level) {
-//   const id = encodeURIComponent(text.toLowerCase().replace(/\s+/g, '-'));
-//   return `<h${level} id="${id}" class="custom-heading">${text}</h${level}>`;
-// };
-//
-// // 自定义链接的渲染方式
-// renderer.link = function(href, title, text) {
-//   return `<a href="${href}" title="${title || ''}" class="custom-link">${text}</a>`;
-// };
-//
-// marked.setOptions({
-//   renderer: renderer
-// });
-
 const replaceNewLinesExceptInCodeBlocks = (text: string) => {
   //
   let result = '';
@@ -344,15 +322,14 @@ const replaceNewLinesExceptInCodeBlocks = (text: string) => {
       }
       segments[i] = spices.join('');
     }else{
-      // segments[i] = segments[i].replaceAll(/\n/g, '<br>');
       segments[i] = '<pre><code>' + segments[i] + '</code></pre>'
     }
     result += segments[i] + (i === segments.length - 1 ? '<br />' : '```');
   }
-
-
-
-  return DOMPurify.sanitize(result, { ALLOWED_TAGS: ['a', 'p', 'span', 'ul', 'ol', 'li', 'img', 'strong', 'em', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br'] });
+  if (result.endsWith('<br />')) {
+    result = result.substring(0, result.length - 6);
+  }
+  return DOMPurify.sanitize(result, { ALLOWED_TAGS: ['a', 'p', 'span', 'ul', 'ol', 'li', 'img', 'strong', 'em', 'blockquote', 'code', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'br', 'iframe'] });
 }
 
 
