@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="p-2 sm:p-4">
-      <FriendsMemo :memo="data as any as Memo" v-if="success" :show-more="false" @memo-update="refresh" />
+      <FriendsMemo :memo="data as any as Memo" v-if="success" :show-more="true" @memo-update="refresh" />
       <span v-if="success==false">{{ message }}</span>
     </div>
   </div>

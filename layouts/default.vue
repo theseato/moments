@@ -69,7 +69,7 @@
                   个人设置
                 </DropdownMenuItem>
 
-                <DropdownMenuSeparator class="h-[1px] bg-green6 m-[5px]" />
+                <DropdownMenuSeparator v-if="userId" class="h-[1px] bg-green6 m-[5px]" />
 
                 <DropdownMenuItem
                     v-if="userId"

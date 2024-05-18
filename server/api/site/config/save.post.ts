@@ -33,6 +33,7 @@ type SaveConfigsReq = {
     mailPass?: string,
     mailFrom?: string,
     mailName?: string,
+    notification?: string,
 };
 
 export default defineEventHandler(async (event) => {
@@ -82,6 +83,30 @@ export default defineEventHandler(async (event) => {
             mailName: data.mailName,
         },
     });
+
+    const notificationRecord = await prisma.notification.findFirst({
+        where: {
+            type: 2,
+        },
+    });
+
+    if(notificationRecord){
+        await prisma.notification.update({
+            where: {
+                id: notificationRecord.id,
+            },
+            data: {
+                message: data.notification,
+            },
+        });
+    }else{
+        await prisma.notification.create({
+            data: {
+                type: 2,
+                message: data.notification,
+            },
+        });
+    }
 
     return {
         success: true,

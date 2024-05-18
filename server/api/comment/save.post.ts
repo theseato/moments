@@ -143,10 +143,14 @@ export default defineEventHandler(async (event) => {
             email,
             website,
             author: event.context.userId !== undefined? (event.context.userId === memo?.userId? 1: 2): 0,
+            replyToUser: replyToId || 0,
+            linkedUser: event.context.userId || 0,
+            replyToId: replyToId || 0,
         },
     });
-    if(siteConfig && siteConfig?.enableEmail){
+    if(siteConfig){
         let notificationList: any[] = [];
+        notificationList.push(email || '');
         let comment = null;
 
         if(replyToId !== undefined && replyToId !== 0){
@@ -156,13 +160,26 @@ export default defineEventHandler(async (event) => {
                 }
             });
             if(comment !== null && comment.email !== null && comment.email !== '' && notificationList.indexOf(comment.email) === -1){
-                notificationList.push(comment);
-                // 邮箱通知被回复者
-                sendEmail({
-                    email: comment.email,
-                    subject: '新回复',
-                    message: `您在moments中的评论有新回复！用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+                notificationList.push(comment.email);
+                await prisma.notification.create({
+                    data: {
+                        type: 1,
+                        send_from: event.context.userId || 0,
+                        send_to_user_id: comment.linkedUser || 0,
+                        send_to_email: comment.email,
+                        linked_memo: memoId,
+                        message: `用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}`,
+                    },
                 });
+                // 邮箱通知被回复者
+                if(siteConfig?.enableEmail){
+                    sendEmail({
+                        email: comment.email,
+                        subject: '新回复',
+                        message: `您在moments中的评论有新回复！用户名为:  ${username} 回复了您的评论(${comment.content})，他回复道: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+                    });
+                }
+
             }
         }
         if(memo?.atpeople && memo?.atpeople !== ''){
@@ -175,11 +192,24 @@ export default defineEventHandler(async (event) => {
                     },
                 });
                 if(userat && userat.eMail && userat.eMail !== '' && notificationList.indexOf(userat.eMail) === -1){
-                    sendEmail({
-                        email: userat.eMail,
-                        subject: '新提及',
-                        message: `有一条新提及您的动态！用户名为:  ${username} 的用户在提及了您的动态中发表了评论，点击查看: ${siteUrl}/detail/${memoId}`,
+                    await prisma.notification.create({
+                        data: {
+                            type: 1,
+                            send_from: event.context.userId || 0,
+                            send_to_user_id: parseInt(item),
+                            send_to_email: userat.eMail,
+                            linked_memo: memoId,
+                            message: `用户名为:  ${username} 的用户在提及了您的动态中发表了评论，他说: ${content}`,
+                        },
                     });
+                    if(siteConfig?.enableEmail){
+                        sendEmail({
+                            email: userat.eMail,
+                            subject: '新提及',
+                            message: `有一条新提及您的动态！用户名为:  ${username} 的用户在提及了您的动态中发表了评论，点击查看: ${siteUrl}/detail/${memoId}`,
+                        });
+                    }
+
                 }
             }
         }
@@ -193,11 +223,24 @@ export default defineEventHandler(async (event) => {
             },
         });
         if(user && user.eMail && user.eMail !== '' && notificationList.indexOf(user.eMail) === -1){
-            sendEmail({
-                email: user.eMail || process.env.NOTIFY_MAIL || '',
-                subject: '新评论',
-                message: `您的moments有新评论！用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+            await prisma.notification.create({
+                data: {
+                    type: 1,
+                    send_from: event.context.userId || 0,
+                    send_to_user_id: memo?.userId || 0,
+                    send_to_email: user.eMail,
+                    linked_memo: memoId,
+                    message: `用户名为:  ${username} 在您的moment中发表了评论: ${content}`,
+                },
             });
+            if(siteConfig?.enableEmail){
+                sendEmail({
+                    email: user.eMail || process.env.NOTIFY_MAIL || '',
+                    subject: '新评论',
+                    message: `您的moments有新评论！用户名为:  ${username} 在您的moment中发表了评论: ${content}，点击查看: ${siteUrl}/detail/${memoId}`,
+                });
+            }
+
         }
     }
     // 返回成功响应

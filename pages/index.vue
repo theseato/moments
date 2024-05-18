@@ -61,9 +61,6 @@ onMounted(async () => {
   }, {
     immediate: true // 立即触发，确保初始 setup
   });
-  toast.message('站点通知', {
-    description: '本站点已经开放注册！需要注册/登陆？请点击右下角菜单！',
-  })
 });
 
 const setupObserver = () => {
@@ -175,7 +172,30 @@ const welcome = async () => {
 
   try {
     let tencentMapKey = '';
-    const siteConfig = await $fetch('/api/site/config/get')
+    // 获取本地存储的anonymous内容
+    const anonymous = JSON.parse(localStorage.getItem('anonymous'));
+
+    const siteConfig = await $fetch('/api/site/config/get?geteventnotification=true&email='+anonymous.email);
+    if (siteConfig && siteConfig.success && siteConfig.data.notification) {
+      setTimeout(() => {
+        toast.message('站点通知', {
+          description: siteConfig.data.notification.message,
+        });
+      }, 5);
+
+    }
+
+    if (siteConfig && siteConfig.success && siteConfig.data.notificationRecord) {
+      siteConfig.data.notificationRecord.forEach((record, index) => {
+        setTimeout(() => {
+          toast.message('互动通知', {
+            description: record.message,
+          });
+        }, (index+1) * 10);
+      });
+    }
+
+
     if (siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableTencentMap) {
       tencentMapKey = siteConfig.data.tencentMapKey;
     }else{

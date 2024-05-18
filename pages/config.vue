@@ -23,6 +23,11 @@
     </div>
 
     <div class="flex flex-col gap-2 qus-box">
+      <Label for="notification" class="font-bold">通知</Label>
+      <Input type="text" id="notification" placeholder="网站通知，如：欢迎访问" autocomplete="off" v-model="state.notification" />
+    </div>
+
+    <div class="flex flex-col gap-2 qus-box">
       <Label for="css" class="font-bold">全局自定义CSS</Label>
       <Textarea id="css" v-model="state.css" rows="3"></Textarea>
     </div>
@@ -237,6 +242,8 @@ const state = reactive({
   enableAliyunDective: false,
   aliyunAccessKeyId: '',
   aliyunAccessKeySecret: '',
+
+  notification: ''
 })
 
 const { data: res } = await useFetch<{ data: typeof state }>('/api/site/config/get',{key:'settings'})
@@ -272,7 +279,7 @@ state.enableAliyunDective = data?.enableAliyunDective || false
 state.aliyunAccessKeyId = data?.aliyunAccessKeyId || ''
 state.aliyunAccessKeySecret = data?.aliyunAccessKeySecret || ''
 enableS3.value = state.enableS3
-
+state.notification = data?.notification.message || ''
 
 
 const uploadImgs = async (event: Event, id: string) => {

@@ -19,6 +19,9 @@ model Comment {
   memoId    Int
   memo      Memo?    @relation(fields: [memoId], references: [id], onDelete: Cascade)
   author    Int?
+  replyToUser   Int?
+  linkedUser    Int?
+  replyToId Int?
 }
 
 model Memo {
@@ -103,4 +106,15 @@ model Config {
     mailPass    String?
     mailFrom    String?
     mailName    String?
+}
+
+model Notification {
+    id              Int      @id @default(autoincrement())
+    type            Int @default(0)
+    send_from       Int?
+    send_to_user_id Int?
+    send_to_email   String?
+    linked_memo     Int?
+    message         String? @default("Powered By Randall")
+    time            DateTime @default(now())
 }

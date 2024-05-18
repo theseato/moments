@@ -36,6 +36,9 @@ export type Comment = {
   updatedAt: string;
   memoId: number;
   author?:Boolean
+  replyToUser?: number
+  linkedUser?: number
+  replyToId?: number
 }
 
 export type User = {
@@ -83,4 +86,15 @@ export type config = {
     css: string;
     js: string;
     beianNo: string;
+}
+
+export type Notification = {
+  id: number;
+  type: number;
+  send_from?: number;
+  send_to_user_id?: number;
+  send_to_email?: string;
+  linked_memo?: number;
+  message?: string;
+  time: string;
 }

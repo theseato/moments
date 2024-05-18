@@ -149,7 +149,7 @@ onMounted(async () => {
   }
   const userId = useCookie('userId')
   if (userId.value) {
-    const user = await $fetch('/api/user/settings/get?userid='+userId.value)
+    const user = await $fetch('/api/user/settings/get?user='+userId.value)
     if (user) {
       info.value.username = user.data.nickname
       info.value.email = user.data.eMail

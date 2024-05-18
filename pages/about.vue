@@ -65,6 +65,8 @@
       ·V0.3.8 2024-05-14 修复编辑修改艾特用户时，无法更新提示的问题
       <br/>
       ·V0.3.9 2024-05-16 修复长文本审核异常，代码注入问题，markdown显示bug，v0.3.8_with_redis容器脚本bug
+      <br/>
+      ·V0.4.0 2024-05-18 新增站内通知功能，新增网站公告后台修改功能
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
