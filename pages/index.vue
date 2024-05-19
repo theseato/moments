@@ -175,7 +175,12 @@ const welcome = async () => {
     // 获取本地存储的anonymous内容
     const anonymous = JSON.parse(localStorage.getItem('anonymous'));
 
-    const siteConfig = await $fetch('/api/site/config/get?geteventnotification=true&email='+anonymous.email);
+    let siteConfig;
+    if(anonymous && anonymous.email){
+      siteConfig = await $fetch('/api/site/config/get?geteventnotification=true&email='+anonymous.email);
+    }else{
+      siteConfig = await $fetch('/api/site/config/get');
+    }
     if (siteConfig && siteConfig.success && siteConfig.data.notification) {
       setTimeout(() => {
         toast.message('站点通知', {
