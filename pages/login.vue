@@ -39,7 +39,6 @@ const login = async () => {
         success: (data) => {
           if (data.success) {
             navigateTo('/',{ replace: true });
-            location.reload();
             return '登录成功';
           } else {
             throw new Error(data.message)
