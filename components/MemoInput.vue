@@ -661,4 +661,12 @@ const judgeAtSafty = () => {
   border-right: none;
   padding: 5px;
 }
+img{
+  pointer-events: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select:none;
+  -o-user-select:none;
+  user-select:none;
+}
 </style>
