@@ -9,7 +9,7 @@ services:
     volumes:
       - ./redis:/data
   app:
-    image: ranjie/rmoments:v0.4.0
+    image: ranjie/rmoments:v0.4.1
     restart: always
     #env_file: .env
     networks:
