@@ -153,6 +153,8 @@ const userId = useCookie('userId')
 const colorMode = useColorMode()
 
 onMounted(async () => {
+  // document.documentElement.style.overflow = 'hidden';
+  // document.body.style.overflow = 'hidden';
   const userinfo = useState<User>('userinfo')
   const url = window.location.pathname
   let findId = userId.value
@@ -217,10 +219,19 @@ const logout = () => {
 
 </script>
 <style>
+body, html {
+  overflow: hidden;
+  -ms-overflow-style: none; /* IE 和 Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar, html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari 和 Opera */
+}
+
 .grecaptcha-badge {
   visibility: hidden;
 }
-
 
 div.tigger {
   position: absolute;

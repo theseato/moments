@@ -18,7 +18,7 @@
     </div>
   </div>
   <div id="version-info">
-    当前版本: <span id="version">V0.4.0</span>
+    当前版本: <span id="version">V0.4.1</span>
     <div class="update-details">
       更新日志:
       <br/>
@@ -67,6 +67,8 @@
       ·V0.3.9 2024-05-16 修复长文本审核异常，代码注入问题，markdown显示bug，v0.3.8_with_redis容器脚本bug
       <br/>
       ·V0.4.0 2024-05-18 新增站内通知功能，新增网站公告后台修改功能
+      <br/>
+      ·V0.4.1 2024-05-21 修复保存memo后图片打开异常、修复menu菜单显示异常、修复权限控制异常
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>

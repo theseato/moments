@@ -17,12 +17,19 @@
       </div>
 
       <div v-if="imgs.length">
-        <FancyBox class="grid my-1 gap-0.5" :style="gridStyle"
-                  :options="{ Carousel: { infinite: false } }">
-          <img loading="lazy"
-               :class="imgs.length === 1 ? 'cursor-pointer rounded full-cover-image-single' : 'cursor-pointer rounded full-cover-image-mult'"
-               v-lazy="getImgUrl(img)"
-               v-for="(img, index) in imgs" :key="index" />
+        <FancyBox
+            :key="fancyBoxKey"
+            class="grid my-1 gap-0.5"
+            :style="gridStyle"
+            ref="myFancyBox"
+            :options="{ Carousel: { infinite: false } }"
+        >
+          <img
+              loading="lazy"
+              :class="imgs.length === 1 ? 'cursor-pointer rounded full-cover-image-single' : 'cursor-pointer rounded full-cover-image-mult'"
+              v-lazy="getImgUrl(img)"
+              v-for="(img, index) in imgs" :key="index"
+          />
         </FancyBox>
       </div>
       <div class="text-[#57BE6B] font-medium dark:text-white text-xs mt-3 select-none" v-if="memo.userId === userId">
@@ -127,12 +134,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import {marked} from "marked";
 import {toast} from "vue-sonner";
 import DOMPurify from 'dompurify';
-const token = useCookie('token')
 
-const imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
+const token = useCookie('token')
+let fancyBoxKey = ref(0);
+
+let imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
+
+
+const myFancyBox = ref()
 
 const atpeoplenickname = ref('')
 
@@ -203,6 +214,9 @@ onMounted(async () => {
   if (token) {
     userId = useCookie('userId')
   }
+  await nextTick(() => {
+    fancyBoxKey.value++;
+  })
 })
 
 const gridCols = computed(() => {
@@ -269,12 +283,16 @@ memoAddEvent.on((id: any, body: any) => {
     emit('memo-update')
     atpeoplenickname.value = ''
     props.memo.atpeople = body.data.atpeople
-    for(let i=0;i<body.atpeopleNickname.length;i++){
+    for (let i = 0; i < body.atpeopleNickname.length; i++) {
       atpeoplenickname.value += ' ' + body.atpeopleNickname[i]
+    }
+
+    if(body.data.imgUrls.join(',') !== imgs.value.join(',')){
+      props.memo.imgs = body.data.imgUrls.join(',')
+      fancyBoxKey.value++;
     }
   }
 })
-
 
 const refreshComment = async () => {
   emit('memo-update', props.memo)

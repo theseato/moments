@@ -29,6 +29,16 @@ onUnmounted(() => {
   Fancybox.destroy();
 });
 
+
+onUpdated(() => {
+  Fancybox.unbind(container.value);
+  Fancybox.close();
+
+  Fancybox.bind(container.value, '[data-fancybox]', {
+    ...(props.options || {}),
+  });
+});
+
 </script>
 
 <template>
