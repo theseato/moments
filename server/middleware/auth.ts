@@ -20,7 +20,23 @@ const needAdminUrl = [
 ];
 
 export default defineEventHandler(async (event) => {
-  const token = getCookie(event, "token");
+  let token = getCookie(event, "token");
+  if(token){
+    const tokenInRedis = await redis.get(token);
+    if(!tokenInRedis){
+      token = undefined;
+      setCookie(event, "token", "", {
+        httpOnly: true,
+        maxAge: 0,
+        path: "/",
+      });
+      setCookie(event, "userId", "", {
+        httpOnly: true,
+        maxAge: 0,
+        path: "/",
+      });
+    }
+  }
   const url = getRequestURL(event);
 
   if (token && url.pathname === "/login") {
