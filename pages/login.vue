@@ -39,14 +39,19 @@ const login = async () => {
         success: (data) => {
           if (data.success) {
             navigateTo('/',{ replace: true });
+            window.dispatchEvent(new Event('menurefresh'));
             return '登录成功';
           } else {
-            throw new Error(data.message)
+            throw data.message;
           }
         },
-        error: (error) => `操作失败: ${error || '未知错误'}`,
+        error: (error) => `登录失败: ${error || '未知错误'}`,
+        finally() {
+
+        },
       }
   );
+
 }
 </script>
 

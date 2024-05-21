@@ -33,7 +33,7 @@
                 <DropdownMenuItem
                     v-if="!userId"
                     class="group text-[13px] leading-none text-grass11 rounded-[3px] flex items-center h-[25px] px-[5px] relative pl-[25px] select-none outline-none data-[disabled]:text-mauve8 data-[disabled]:pointer-events-none data-[highlighted]:bg-green9 data-[highlighted]:text-green1"
-                    @click="logout();navigateTo('/login')"
+                    @click="navigateTo('/login')"
                 >
                   登陆
                 </DropdownMenuItem>
@@ -185,7 +185,6 @@ onMounted(async () => {
   })
   const siteConfig = await $fetch('/api/site/config/get')
   if(siteConfig && siteConfig.success && siteConfig.data && siteConfig.data.enableRecaptcha){
-    // 加载远程js文件 https://recaptcha.net/recaptcha/api.js?render={{ recaptchaSiteKey }}
     if (!document.getElementById('recaptcha-script')) {
       const script = document.createElement('script');
       script.id = 'recaptcha-script';
@@ -196,19 +195,26 @@ onMounted(async () => {
       document.body.appendChild(script);
     }
   }
-});
+  window.addEventListener('menurefresh', () => {
+    userId.value = useCookie('userId').value
+    console.log('menurefresh')
+    console.log(userId.value)
+  })
+})
 
 const token = useCookie('token')
-const userIdOut = useCookie('userId')
 const logout = () => {
   token.value = ''
-  userIdOut.value = '0'
+  userId.value = '0'
   $fetch('/api/user/logout',
   {
     method: 'POST',
   })
+  window.location.reload()
   navigateTo('/', { replace: true })
 }
+
+
 
 </script>
 <style>
