@@ -214,9 +214,9 @@ onMounted(async () => {
   if (token) {
     userId = useCookie('userId')
   }
-  await nextTick(() => {
-    fancyBoxKey.value++;
-  })
+  // await nextTick(() => {
+  //   fancyBoxKey.value++;
+  // })
 })
 
 const gridCols = computed(() => {
@@ -279,6 +279,7 @@ const editMemo = async () => {
 }
 
 memoAddEvent.on((id: any, body: any) => {
+  console.log(id)
   if (id == props.memo.id) {
     emit('memo-update')
     atpeoplenickname.value = ''
@@ -286,7 +287,6 @@ memoAddEvent.on((id: any, body: any) => {
     for (let i = 0; i < body.atpeopleNickname.length; i++) {
       atpeoplenickname.value += ' ' + body.atpeopleNickname[i]
     }
-
     if(body.data.imgUrls.join(',') !== imgs.value.join(',')){
       props.memo.imgs = body.data.imgUrls.join(',')
       fancyBoxKey.value++;
@@ -311,7 +311,6 @@ const showLess = () => {
 }
 
 const replaceNewLinesExceptInCodeBlocks = (text: string) => {
-  //
   let result = '';
   const segments = text.split('```');
 
