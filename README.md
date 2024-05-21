@@ -10,9 +10,9 @@
 
 - 支持原生全部功能
 - 自动获取位置信息
-- markdown支持
-- 无感验证码支持
-- 消息推送（邮件）
+- markdown支持（部分）
+- 无感人机验证
+- 消息推送（邮件、站内消息推送）
 - 多用户
 - 上传完的图片可以拖动排序
 - tag/标签功能
@@ -28,11 +28,6 @@
 ## 开发进度
 
 [https://randallanjie.notion.site/2218a0eb29f4482e92a159b3c4a3147e?v=34be316502e14e96a40b1085d4593078&pvs=4](https://randallanjie.notion.site/2218a0eb29f4482e92a159b3c4a3147e?v=34be316502e14e96a40b1085d4593078&pvs=4)
-
-
-## 搭建教程
-
-[https://blog.randallanjie.com/archives/1714872362028](https://blog.randallanjie.com/archives/1714872362028)
 
 ## 使用方法
 
