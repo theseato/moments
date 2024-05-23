@@ -237,7 +237,6 @@ div.tigger {
   position: absolute;
   right: 10px;
   bottom: 10px;
-  z-index: 9999 !important;
 }
 
 @media (min-width: 1024px) {
