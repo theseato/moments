@@ -121,7 +121,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
 import { Heart, HeartCrack, MessageSquareMore, Trash2, FilePenLine, Pin } from 'lucide-vue-next'
-import { memoUpdateEvent, memoAddEvent, headigUpdateEvent} from '@/lib/event'
+import { memoUpdateEvent, memoAddEvent, headigUpdateEvent, memoDeleteEvent} from '@/lib/event'
 import { getImgUrl } from '~/lib/utils';
 import {
   AlertDialog,
@@ -141,7 +141,6 @@ const token = useCookie('token')
 let fancyBoxKey = ref(0);
 
 let imgs = computed(() => props.memo.imgs ? props.memo.imgs.split(',') : []);
-
 
 const myFancyBox = ref()
 
@@ -270,6 +269,8 @@ const removeMemo = async () => {
   if (res.success) {
     toast.success('删除成功')
     emit('memo-update')
+    memoDeleteEvent.emit()
+    location.reload()
   }
 }
 
@@ -281,6 +282,7 @@ const editMemo = async () => {
 memoAddEvent.on((id: any, body: any) => {
   console.log(id)
   if (id == props.memo.id) {
+    console.log('刷新id：'+ props.memo.id)
     emit('memo-update')
     atpeoplenickname.value = ''
     props.memo.atpeople = body.data.atpeople
@@ -292,6 +294,15 @@ memoAddEvent.on((id: any, body: any) => {
       fancyBoxKey.value++;
     }
   }
+  if(body.data.id <= 0){
+    emit('memo-update')
+    fancyBoxKey.value++;
+  }
+})
+
+memoDeleteEvent.on(() => {
+  emit('memo-update')
+  fancyBoxKey.value++;
 })
 
 const refreshComment = async () => {

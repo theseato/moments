@@ -95,7 +95,7 @@
             <PopoverContent class="w-auto">
               <div class="flex flex-row gap-2 text-sm">
                 <Button variant="outline" @click="updateLocation">自动获取</Button>
-                <Button variant="outline" @click="location = ''">清空</Button>
+                <Button variant="outline" @click="locationInfo = ''">清空</Button>
               </div>
             </PopoverContent>
           </Popover>
@@ -284,7 +284,7 @@ import {
   ComboboxViewport
 } from "radix-vue";
 import {memo} from "@tanstack/virtual-core";
-const location = ref('');
+const locationInfo = ref('');
 const inputs0 = ref('');
 const inputs1 = ref('');
 
@@ -332,8 +332,8 @@ const toggleShowEmoji = () => {
   useAnimate(showEmojiRef.value, keyframes, { duration: 1000, easing: 'ease-in-out' })
 }
 const fmtLocation = computed(() => {
-  if (location.value) {
-    return location.value.split(' ').join(' · ')
+  if (locationInfo.value) {
+    return locationInfo.value.split(' ').join(' · ')
   }
   return ''
 })
@@ -448,7 +448,7 @@ const submitMemo = async () => {
     imgUrls: imgs.value,
     atpeople: atpeople.value,
     avpeople: avpeople.value,
-    location: location.value,
+    location: locationInfo.value,
     externalFavicon: externalFavicon.value,
     externalTitle: externalTitle.value,
     externalUrl: externalUrl.value
@@ -460,6 +460,10 @@ const submitMemo = async () => {
         loading: '提交中...',
         success: (data) => {
           if (data.success) {
+          //   if(data.id>0){
+          //     location.reload();
+          //     return '提交成功';
+          //   }
             memoAddEvent.emit(data.id, {data:body,atpeopleNickname:atpeopleNickname.value,avpeopleNickname:avpeopleNickname.value})
             content.value = ''
             id.value = -1
@@ -468,7 +472,7 @@ const submitMemo = async () => {
             atpeopleNickname.value = []
             avpeople.value = []
             avpeopleNickname.value = []
-            location.value = ''
+            locationInfo.value = ''
             externalFavicon.value = ''
             externalTitle.value = ''
             externalUrl.value = ''
@@ -542,7 +546,7 @@ memoUpdateEvent.on((event: Memo) => {
       })
     }
   }
-  location.value = event.location || ''
+  locationInfo.value = event.location || ''
   externalFavicon.value = event.externalFavicon || ''
   externalTitle.value = event.externalTitle || ''
   externalUrl.value = event.externalUrl || ''
@@ -621,11 +625,11 @@ async function updateLocation() {
     toast.promise(getTmpLocation(), {
       loading: '获取位置中...',
       success: (data: any) => {
-        typeof data === "string" ? location.value = data : location.value = ''
+        typeof data === "string" ? locationInfo.value = data : locationInfo.value = ''
         return '获取位置成功';
       },
       error: (error: any) => {
-        location.value = '';
+        locationInfo.value = '';
         return error;
       }
     });
