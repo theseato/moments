@@ -41,9 +41,6 @@ export default defineEventHandler(async (event) => {
             }
         });
     }
-
-    console.log('filetype is : ',filetype)
-
   return {
     success: true,
     filename: "/upload/" + filename + "." + filetype,

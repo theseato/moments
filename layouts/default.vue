@@ -199,8 +199,6 @@ onMounted(async () => {
   }
   window.addEventListener('menurefresh', () => {
     userId.value = useCookie('userId').value
-    console.log('menurefresh')
-    console.log(userId.value)
   })
 })
 

@@ -58,7 +58,6 @@ export async function aliTextJudge(content: string, Service: string = "comment_d
         }
     } catch (err) {
         console.log(err);
-        // 确保在错误情况下也返回一个值，或者抛出一个错误
         return err;
     }
     return response;

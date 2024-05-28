@@ -185,7 +185,6 @@ export default defineEventHandler(async (event) => {
         if(memo?.atpeople && memo?.atpeople !== ''){
             const atpeople = memo?.atpeople?.split(',');
             for (const item of atpeople) {
-                console.log('item is : ',item)
                 const userat = await prisma.user.findUnique({
                     where: {
                         id: parseInt(item),

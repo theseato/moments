@@ -280,9 +280,7 @@ const editMemo = async () => {
 }
 
 memoAddEvent.on((id: any, body: any) => {
-  console.log(id)
   if (id == props.memo.id) {
-    console.log('刷新id：'+ props.memo.id)
     emit('memo-update')
     atpeoplenickname.value = ''
     props.memo.atpeople = body.data.atpeople

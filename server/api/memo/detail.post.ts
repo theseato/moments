@@ -43,7 +43,6 @@ export default defineEventHandler(async (event) => {
   });
   if(data && data.availableForProple !== '' && data.availableForProple !== null){
     const info = data.availableForProple.split(',');
-    console.log(info, event.context.userId)
     if(info.includes('#'+event.context.userId+'$')) {
       return {
         data,

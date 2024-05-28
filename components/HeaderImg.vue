@@ -75,7 +75,6 @@ async function fetchUserData(id: any) {
     user.avatarUrl = response.data.avatarUrl;
     user.slogan = response.data.slogan;
     user.headImgKey++; // Force re-render by changing key
-    console.log('User data:', response.data);
   }
 }
 
@@ -93,7 +92,6 @@ settingsUpdateEvent.on(async () => {
 
 headigUpdateEvent.on(async (event) => {
   const userId = event.detail.userId + '';
-  console.log('userid: ' + userId);
   await fetchUserData(userId);
 });
 </script>
