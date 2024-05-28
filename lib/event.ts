@@ -8,4 +8,6 @@ const headigUpdateEvent = useEventBus<Memo>('headigUpdateEvent')
 
 const memoAddEvent = useEventBus<Memo>('memoAdded')
 
-export  {memoUpdateEvent, settingsUpdateEvent, memoAddEvent,  headigUpdateEvent}
+const memoDeleteEvent = useEventBus<Memo>('memoDelete')
+
+export  {memoUpdateEvent, settingsUpdateEvent, memoAddEvent,  headigUpdateEvent, memoDeleteEvent}
