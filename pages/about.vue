@@ -18,7 +18,7 @@
     </div>
   </div>
   <div id="version-info">
-    当前版本: <span id="version">V0.4.1</span>
+    当前版本: <span id="version">V0.4.2</span>
     <div class="update-details">
       更新日志:
       <br/>
@@ -69,6 +69,8 @@
       ·V0.4.0 2024-05-18 新增站内通知功能，新增网站公告后台修改功能
       <br/>
       ·V0.4.1 2024-05-21 修复保存memo后图片打开异常、修复menu菜单显示异常、修复权限控制异常
+      <br/>
+      ·V0.4.2 2024-05-28 图片放大查看时隐藏菜单按钮，修复切换页面时头图不切换的bug，修复fancybox在新插入文章的时候刷新机制出现问题，修复docker启动时不检查upload文件夹是否存在
     </div>
     <div onclick="window.open('https://randallanjie.com/', '_blank');">Powered By Randall</div>
   </div>
