@@ -1,10 +1,10 @@
 <template>
 
   <div class="memo flex flex-row gap-2 sm:gap-4 text-sm border-x-0 pt-2 p-2 sm:p-4" :class="{'bg-slate-100 dark:bg-neutral-900':props.memo.pinned && props.memo.userId == 1}">
-    <img :src="props.memo.user.avatarUrl" class="avatar w-9 h-9 rounded" @click="navigateTo(`/user/${props.memo.userId}`)" />
+    <img :src="props.memo.user.avatarUrl" class="avatar w-9 h-9 rounded" @click="gotouser" />
     <div class="flex flex-col gap-.5 flex-1">
       <div class="flex flex-row justify-between items-center">
-        <div class="username text-[#576b95] cursor-default mb-1 dark:text-white" @click="navigateTo(`/user/${props.memo.userId}`)">{{ props.memo.user.nickname }}</div>
+        <div class="username text-[#576b95] cursor-default mb-1 dark:text-white" @click="gotouser">{{ props.memo.user.nickname }}</div>
         <Pin :size=14 v-if="props.memo.pinned && props.memo.userId == 1" />
       </div>
       <div class="memo-content text-sm friend-md words-container" ref="el" v-html="replaceNewLinesExceptInCodeBlocks(props.memo.content)"> </div>
@@ -121,7 +121,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
 import { Heart, HeartCrack, MessageSquareMore, Trash2, FilePenLine, Pin } from 'lucide-vue-next'
-import { memoUpdateEvent, memoAddEvent } from '@/lib/event'
+import { memoUpdateEvent, memoAddEvent, headigUpdateEvent} from '@/lib/event'
 import { getImgUrl } from '~/lib/utils';
 import {
   AlertDialog,
@@ -356,6 +356,13 @@ watchOnce(height, () => {
     el.value.classList.add('line-clamp-4')
   }
 })
+
+const gotouser = () => {
+  navigateTo(`/user/${props.memo.userId}`)
+  let event = new CustomEvent('headimgrefresh', { detail: { userId: props.memo.userId } });
+  // window.dispatchEvent(event);
+  headigUpdateEvent.emit(event)
+}
 
 </script>
 
