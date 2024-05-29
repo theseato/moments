@@ -35,6 +35,7 @@
 
 ## 群晖NAS的Docker使用教程
 1、先在docker文件夹里新建一个 moments文件夹（这一步就可以了，但为了后续的文件夹管理，建议再在moments文件夹里新建data文件夹）
+<br>
 2、使用portainer命令行进行镜像的拉取和设置，代码如下：
 ```
 version: '3'
